@@ -9,8 +9,6 @@ echo uses just one dash to absorb all flags, including duplicates. so:
 
 no set builtin means no set pipefail. then again my teammate is not handling children
 
-handle 2>
-
 handle quote waiting (pipes should be big enough)
 
 env parsing is just like argv parsing
@@ -109,6 +107,7 @@ quotes stop whitespace from being ignored
 
 --------------------------------------------
 
+|VETO| handle 2>
 |VETO| I need a linked list for history management. Not for arrow keys, but for '!' expansion
 |VETO| I need to interpret brackets
 globstars for all dirs? perplex lied, I have to glob manually
