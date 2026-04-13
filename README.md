@@ -7,9 +7,6 @@ echo uses just one dash to absorb all flags, including duplicates. so:
 	echo -eeeeeeeeeeeeeeeeeeeeeennnnnnnnnnnnnnnn is acceptable
 	check the other builtins too
 
-no set builtin means no set pipefail. then again my teammate is not handling children
-
-handle quote waiting (pipes should be big enough)
 
 env parsing is just like argv parsing
 
@@ -28,12 +25,6 @@ ctrl c should not add half typed input to history
 
 elkan and yiyuan forgor to exclude empty inputs from history (possibly being just nl)
 
-$? not a env var, store in shell for later retrieval
-
-perplexity says env is a node list, say hello to 10 init files jackass
-
-handle "shell variable", something akin to push swap where the assignment is forgotten is 0.1seconds
-
 quote handling is, thankfully, left to right (ignore quotes of different types too)
 
 not asked to handle any other syntax symbols
@@ -42,7 +33,7 @@ this project lives and dies by error reporting
 
 builtin with no options does not mean no args
 
-expand \$vars before checking for commands
+|VETO| expand \$vars before checking for commands
 	env vars cannot contain special identifiers:
 		$?    → last exit status
 		$$    → current PID  
@@ -67,21 +58,18 @@ do remember to ignore leading whitespace in front of command, run it anyway
 && and || blindly use the last exit status they got
 	pipelines count as one command in this case
 
-redirection assumes stdin/out, number and redirection without space says filenumber
+|VETO| redirection assumes stdin/out, number and redirection without space says filenumber
 	1> for out, 0< for in
 		cat 0< file vomits the file
 			echo never pays attention to stdin, heredocs are the shell's problem
 	this will be mildly irritating
 
-ctrl underscore nitpick
+ctrl underscore is backspace, thats already done
 
-wth is a subshell and how do you replicate it
 
 ctrl c stops the whole command pipeline
 
-just pass globstars \* into argv as is
-
-history features:
+|VETO| history features:
 !!           → last command
 !n           → history line n
 !string      → most recent command starting with "string"
@@ -96,6 +84,7 @@ sigint stuct to code 130 and sigquit to 131
 bash will init all heredocs regardless, bash will not init pipes unless truthy
 
 go see if the systems have flex and bison
+	news flash: the school systems do not have flex and bison programs to parse shell for us
 
 history inside heredocs should be present
 
@@ -110,6 +99,7 @@ quotes stop whitespace from being ignored
 |VETO| handle 2>
 |VETO| I need a linked list for history management. Not for arrow keys, but for '!' expansion
 |VETO| I need to interpret brackets
+|VETO| handle quote waiting (pipes should be big enough)
+|VETO| handle "shell variable", something akin to push swap where the assignment is forgotten is 0.1seconds
+|VETO| wth is a subshell and how do you replicate it
 globstars for all dirs? perplex lied, I have to glob manually
-redirection ok
-still keep 

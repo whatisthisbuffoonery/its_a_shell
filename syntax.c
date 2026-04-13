@@ -363,7 +363,7 @@ int	syntax_check(t_cmd **cmd, t_env *env, char *input)
 			return (1);
 	}
 	return (muh_number
-		|| (!expand_str(cmd, env->env)
+		|| (/*!expand_str(cmd, env->env)*/ //move over
 				/*&& rejoin_str(cmd)*/ //due to moving env expansion over, this is moving over too.
 					&& actually_check(cmd, env)));//0 on success
 }
