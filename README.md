@@ -44,7 +44,7 @@ this project lives and dies by error reporting
 
 builtin with no options does not mean no args
 
-expand $vars before checking for commands
+expand \$vars before checking for commands
 	env vars cannot contain special identifiers:
 		$?    → last exit status
 		$$    → current PID  
