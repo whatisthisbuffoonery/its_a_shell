@@ -1,18 +1,29 @@
 #include "h_minishell.h"
 
+int	isredir(int c)
+{
+	return (c == '>' || c == '<');
+}
+
 int	iscond(int c)
 {
-	return (c && (c == '|' || c == '&' || c == '>' || c == '<'));
+	return (c == '|' || c == '&');
+}
+
+int	isop(int c)
+{
+	return (isredir(c) || iscond(c));
 }
 
 int	iscontent(int c)
 {
-	return (!iscond(c) && !ft_isquote(c) && !ft_isspace(c));
+	return (c && !isop(c) && !ft_isquote(c) && !ft_isspace(c));
 }
 
 
 //put sig check at the start of each major step, putting it in while loops will be a bit cluttered
 
+/*type checking utilities-------------------------------------------------------*/
 
 
 int	super_check(char x, char y)
@@ -42,7 +53,7 @@ int	syntax_err(char *str)
 
 //heredoc takes a name too
 //expand envs and merge connected name nodes, inherit type field of first node
-int	actually_check(t_cmd **cmd, t_env *env)
+int	actually_check(t_cmd **cmd)
 {
 	int		name;
 	int		redir;
@@ -57,8 +68,8 @@ int	actually_check(t_cmd **cmd, t_env *env)
 	while (iter)
 	{
 		c = iter->type;
-		name += (!name && !redir && last_space && !iscond(c));
-		redir -= (redir && !iscond(c));
+		name += (!name && !redir && last_space && !isop(c));
+		redir -= (redir && !isop(c));
 		redir += (!redir && (c == '>' || c == '<'));
 		if (((c == '|' || c == '&' || !iter->next) && (!name-- || redir))
 			|| super_check(c, iter->next->type) || /*!ft_strcmp(iter->str, "&")*/)//single & not required
@@ -121,7 +132,7 @@ int	node_init(t_cmd **dst, char *src, int *cry)
 
 	i = 1;//oh mah gah
 	c = src[0];
-	while (!muh_number && ((iscond(c) && src[i] == c && i < 2)			//operator
+	while (!muh_number && ((isop(c) && src[i] == c && i < 2)			//operator
 		|| (iscontent(c) && iscontent(src[i]))							//operand
 			|| (ft_isquote(c) && src[i] && src[i] != c)))				//quote, also operand
 		i ++;
@@ -165,15 +176,20 @@ t_shnode	*expansion_dup(t_shnode *src)
 
 /*shnode utilities------------------------------------------------------------*/
 
+int	is_env(char c)
+{
+	return (c == '_' || ft_isalnum(c));
+}
+
 int add_expansion(t_cmd *dst, t_shnode *env, int *index)
 {
 	t_shnode	*ret;
 	char		*str;
 	int			i;
 
-	i = 1;
+	i = 0;
 	str = &dst->str[*index + 1];//dollar offset
-	while (iscontent(str[i]))
+	while (is_env(str[i]))
 		i ++;
 	*index += i + 1;//use env name len plus dollar
 	if (find_env(str, dst->env, i))
@@ -225,10 +241,10 @@ int	use_expansion(t_cmd *dst, char *ret)
 		ret[0] = '\0';
 	while (dst->str[i])
 	{
-		if (dst->str[i] == '$' && iscontent(dst->str[i + 1]))
+		if (dst->str[i] == '$' && is_env(dst->str[i + 1]))
 			concat_wrapper(dst, ret, &i, &len);//either strlen or strlcat
 		else if (dst->str[i]
-			&& (dst->str[i] != '$' || !iscontent(dst->str[i + 1])))
+			&& (dst->str[i] != '$' || !is_env(dst->str[i + 1])))
 			copy_wrapper(dst->str, ret, &i, &len);//copy one char//yes we copy dollar sign if env name is invalid
 	}
 	if (!ret
@@ -251,7 +267,7 @@ int	expand_str(t_cmd **cmd, t_shnode *env)
 		i = 0;
 		while (iter->str[i] && iter->type != '\'')
 		{
-			if (iter->str[i] == '$' && iscontent(iter->str[i + 1])
+			if (iter->str[i] == '$' && is_env(iter->str[i + 1])
 				&& add_expansion(iter, env, &i))
 				return (1);
 			i += (iter->str[i] && iter->str[i] != '$');
@@ -362,8 +378,9 @@ int	syntax_check(t_cmd **cmd, t_env *env, char *input)
 		if (cry)
 			return (1);
 	}
-	return (muh_number
-		|| (/*!expand_str(cmd, env->env)*/ //move over
+//	return (muh_number
+//		|| (/*!expand_str(cmd, env->env)*/ //move over
 				/*&& rejoin_str(cmd)*/ //due to moving env expansion over, this is moving over too.
-					&& actually_check(cmd, env)));//0 on success
+//					&& actually_check(cmd, env)));//0 on success
+	return (muh_number || (actually_check(cmd) && expand_str(cmd, env->env)));
 }
