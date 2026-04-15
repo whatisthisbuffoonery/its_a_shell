@@ -1,0 +1,3 @@
+omfl I just saw the paranthesis part in bonus and yeah I need to do a little more for syntax parsing.
+I've also decided that globbing is way too hard without isolating the valid globstars, which I will update syntax.c to do
+todo: put quotes back into the resulting node strings this is so painful

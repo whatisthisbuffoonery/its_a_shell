@@ -5,6 +5,11 @@ int	isredir(int c)
 	return (c == '>' || c == '<');
 }
 
+int	isbracket(int c)
+{
+	return (c == '(' || c == ')');
+}
+
 int	iscond(int c)
 {
 	return (c == '|' || c == '&');
@@ -17,7 +22,7 @@ int	isop(int c)
 
 int	iscontent(int c)
 {
-	return (c && !isop(c) && !ft_isquote(c) && !ft_isspace(c));
+	return (c && !isop(c) && !ft_isquote(c) && !ft_isspace(c) && !isbracket(c));
 }
 
 
@@ -37,23 +42,36 @@ int	super_check(char x, char y)
 	b = (y == '|' || y == '&');
 	c = (x == '>' || x == '<');
 	d = (y == '>' || y == '<');
-	return ((a && b) || (c && d) || (c && a));
+	if ((a && b) || (c && d) || (c && a))
+		return (1);
+	else if (x == '(' && isop(y))
+		return (1);
+	else if (y == '(' && !isop(x))
+		return (1);
+	else if (x == ')' && !isop(y))// cmd && (cmd && (cmd && cmd)) && cmd is valid
+		return (1);
+	else if (y == ')' && isop(x))
+		return (1);
+	return (0);
 }
 
-int	syntax_err(char *str)
+int	syntax_err(int n, char *str)
 {
-	ft_putstr_fd("minishell: ", 2);
-	if (!str)
-		str = "NULL";
-	ft_putstr_fd("unexpected token near \"", 2);
-	ft_putstr_fd(str, 2);
-	write(2, "\"\n", 2);
+	if (n)
+	{
+		ft_putstr_fd("minishell: ", 2);
+		if (!str)
+			str = "NULL";
+		ft_putstr_fd("unexpected token near \"", 2);
+		ft_putstr_fd(str, 2);
+		write(2, "\"\n", 2);
+	}
 	return (1);
 }
 
 //heredoc takes a name too
 //expand envs and merge connected name nodes, inherit type field of first node
-int	actually_check(t_cmd **cmd)
+int	actually_check(t_cmd **cmd, int depth)
 {
 	int		name;
 	int		redir;
@@ -70,10 +88,11 @@ int	actually_check(t_cmd **cmd)
 		c = iter->type;
 		name += (!name && !redir && last_space && !isop(c));
 		redir -= (redir && !isop(c));
-		redir += (!redir && (c == '>' || c == '<'));
-		if (((c == '|' || c == '&' || !iter->next) && (!name-- || redir))
-			|| super_check(c, iter->next->type) || /*!ft_strcmp(iter->str, "&")*/)//single & not required
-			return (syntax_err(iter->str));
+		redir += (!redir && isredir(c));
+		if (((iscond(c) || !iter->next) && (!name-- || redir))
+			|| super_check(c, iter->next->type) /*!ft_strcmp(iter->str, "&")*/)//single & not required
+			return (syntax_err(1, iter->str));
+		else if (isbracket(c) && (!depth || actually_check//new thing
 		last_space = iter->end_space;
 		iter = iter->next;
 	}
@@ -134,7 +153,8 @@ int	node_init(t_cmd **dst, char *src, int *cry)
 	c = src[0];
 	while (!muh_number && ((isop(c) && src[i] == c && i < 2)			//operator
 		|| (iscontent(c) && iscontent(src[i]))							//operand
-			|| (ft_isquote(c) && src[i] && src[i] != c)))				//quote, also operand
+			|| (ft_isquote(c) && src[i] && src[i] != c))				//quote, also operand
+				|| (isbracket(c) && i < 1))								//put brackets in their own node
 		i ++;
 	ret = cmd_node(src, i, c, cry);
 	cmd_node_append(dst, ret);

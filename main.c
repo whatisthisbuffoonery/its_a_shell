@@ -1,5 +1,12 @@
 #include "h_minishell.h"
 
+volatile sig_atomic_t	muh_number;
+
+void	sighands(int code)
+{
+	muh_number = code;
+}
+
 void	signal_init(void)
 {
 	sigset_t			mask;
@@ -12,7 +19,7 @@ void	signal_init(void)
 		|| sigaddset(&mask, SIGQUIT), "signal mask error"))//these return -1
 		return ;
 	ft_memset(&hands, 0, sizeof(struct sigaction));
-	hands = {.sa_mask = mask, .sa_handler = sighands};//, .sa_flags = SA_RESTART};//exclude restart flag
+	hands = (struct sigaction){.sa_mask = mask, .sa_handler = sighands};//, .sa_flags = SA_RESTART};//exclude restart flag
 	err(sigaction(SIGINT, &hands, NULL), "SIGINT setup error");
 	err(sigaction(SIGQUIT, &hands, NULL), "SIGQUIT setup error");
 }
@@ -21,20 +28,36 @@ void	signal_init(void)
 io[2]: two fds, debating to not store pipe relationships in node. also dont init pipes on false branch
 */
 
+void	print_cmd(t_cmd **cmd, int *last)
+{
+	t_cmd	*iter;
+
+	iter = *cmd;
+	while (iter)
+	{
+		ft_printf("|%s|\n", iter->str);
+		iter = iter->next;
+	}
+	ft_printf("\nexit status: %d\n", *last);
+}
+
 int	good_syntax(t_cmd **cmd, char *input, int *last, t_env *env)//how about we dont fork
 {
 	t_cmd	*iter;
 
 	if (!input || !input[0])
 		return (0);//no op, dun change exit
-	if (syntax_check(cmd, env, src) && !muh_number)//this is not a child
+	if (syntax_check(cmd, env, input) && !muh_number)//this is not a child
 	{
 		*last = 1;
+		print_cmd(cmd, last);
 		return (0);
 	}
 	iter = *cmd;
-	while (iter && !muh_number)
-		*last = do_cmd(&iter);
+	(void) iter;
+//	while (iter && !muh_number)
+//		*last = do_cmd(&iter);
+	print_cmd(cmd, last);
 	if (muh_number)
 		*last = muh_number;//make sure 128 is or sumshit already added
 	return (1);
@@ -73,6 +96,8 @@ int	main(int c, char **v, char **e)
 	t_cmd	*cmd;//linked list
 
 	//check_subshell(c, v, e);//keywords out of scope
+	(void) c;
+	(void) v;
 	signal_init();//
 	last = 0;
 	cmd = NULL;
@@ -81,7 +106,7 @@ int	main(int c, char **v, char **e)
 	while (1)
 	{
 		errno = 0;
-		input = readline();
+		input = readline("minishell% ");
 		if (!input)
 			return (buh_bye(last, &env));//say 'exit'//clear history func
 		if (input[0])
