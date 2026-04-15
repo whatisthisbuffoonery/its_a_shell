@@ -1,0 +1,29 @@
+hey.
+
+this is my attempt at filling out the behaviour of bash in an organised manner
+we will go in chronological order
+
+bash divides all words into, roughly, name, operator, and meta nodes
+meta nodes influence how commands are queued up for execution
+most other things fall into name nodes
+	anything in quotes is, or is a part of, a name node
+	wildcards '*' are an operator node (they lose meaning when put in quotes), but they otherwise follow syntax checking rules when regarded as part of a name node
+	redirection operators '<>' consume the node on their right. if it is not a name node, that stops the input from running anything (syntax error)
+meta nodes '&|()' require that:
+	& and | need a command on both sides
+	( and ) need a command on the inside of the bracket, and optionally a meta node on the outside (this isnt another bracket
+
+fulfilling all that, bash will then move on to evaluate each command separately (will generally no longer stop the input from running because of errors)
+using redirections with a glob (i.e. '> *.c') will emit 'ambiguous redirect' as an error and move on
+general errors (invalid args, open error, read error, heredoc error, command not found, etc) will emit their own errors
+
+and yeah thats it!
+
+
+
+
+
+
+omfl I just saw the paranthesis part in bonus and yeah I need to do a little more for syntax parsing.
+I've also decided that globbing is way too hard without isolating the valid globstars, which I will update syntax.c to do
+todo: put quotes back into the resulting node strings this is so painful

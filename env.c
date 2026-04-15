@@ -145,6 +145,7 @@ int	shell_assert(int cond, char *s)
 	return (cond);
 }
 
+//note: this func should only be called on making another child within minishell, bash hands off an updated shell lvl already
 int	update_shell_lvl(t_env *dst)
 {
 	t_shnode	*iter;
