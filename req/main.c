@@ -47,7 +47,7 @@ t_cmd	*cmd_node(char *src, int i, char c, int *cry)
 		err(-1, "cmd node malloc");
 		return (NULL);
 	}
-	ret->str = ft_substr(src, (ft_isquote(c) != 0), i);
+	ret->str = ft_substr(src, 0, i + (ft_isquote(c) != 0));
 	ret->next = NULL;
 	ret->env = NULL;
 	ret->type = '\0';
@@ -142,7 +142,7 @@ void	print_cmd(t_cmd **cmd, int *last)
 	iter = *cmd;
 	while (iter)
 	{
-		ft_printf("|%s|\n", iter->str);
+		ft_printf("[%s]\n", iter->str);
 		iter = iter->next;
 	}
 	ft_printf("\nexit status: %d\n", *last);
