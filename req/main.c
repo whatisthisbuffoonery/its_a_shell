@@ -34,7 +34,7 @@ int	isop(int c)
 
 int	iscontent(int c)
 {
-	return (c && !isop(c) && !ft_isquote(c) && !ft_isspace(c) && !isbracket(c));
+	return (c && c != '*' && !isop(c) && !ft_isquote(c) && !ft_isspace(c) && !isbracket(c));
 }
 
 t_cmd	*cmd_node(char *src, int i, char c, int *cry)
@@ -90,7 +90,7 @@ int	node_init(t_cmd **dst, char *src, int *cry)
 	while (!muh_number && ((isop(c) && src[i] == c && i < 2)			//operator
 		|| (iscontent(c) && iscontent(src[i]))							//operand
 			|| (ft_isquote(c) && src[i] && src[i] != c)					//quote, also operand
-				|| ((isbracket(c) || c == '*') && i < 1))				//put brackets in their own node
+				|| ((isbracket(c) || c == '*') && i < 1)))				//put brackets in their own node
 		i ++;
 	ret = cmd_node(src, i, c, cry);
 	cmd_node_append(dst, ret);
@@ -271,6 +271,7 @@ int	shell_assert(int cond, char *s)
 	return (cond);
 }
 
+//note: this func should only be called on making another child within minishell, bash hands off an updated shell lvl already
 int	update_shell_lvl(t_env *dst)
 {
 	t_shnode	*iter;
