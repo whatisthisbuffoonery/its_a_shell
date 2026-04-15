@@ -1,12 +1,17 @@
 #include "h_minishell.h"
 
+int	ft_strcmp_wrapper(t_shnode *a, t_shnode *b)
+{
+	return (ft_strcmp(a->str, b->str));
+}
+
 static void	window_shopping(t_shnode *curr, t_shnode *a, t_shnode *b)
 {
 	t_shnode	*iter;
 
 	while (a && b)
 	{
-		if (ft_strcmp(a, b) < 0)
+		if (ft_strcmp_wrapper(a, b) < 0)
 		{
 			curr->next = a;
 			a = a->next;
@@ -62,7 +67,7 @@ static void	merge_sort(t_shnode **head)
 		merge_sort(&a);
 	if (b && b->next)
 		merge_sort(&b);
-	if (b && ft_strcmp(a, b) > 0)
+	if (b && ft_strcmp_wrapper(a, b) > 0)
 	{
 		*head = b;
 		b = b->next;
@@ -130,6 +135,16 @@ t_shnode	*env_init_node(char *e)
 	return (ret);
 }
 
+int	shell_assert(int cond, char *s)
+{
+	if (cond)
+	{
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(s, 2);
+	}
+	return (cond);
+}
+
 int	update_shell_lvl(t_env *dst)
 {
 	t_shnode	*iter;
@@ -140,10 +155,10 @@ int	update_shell_lvl(t_env *dst)
 	{
 		iter = env_init_node("SHLVL=1");
 		if (!iter)
-			return (-1, "could not replace missing shlvl")
-		env_add(iter, dst, "env");
+			return (err(-1, "could not replace missing shlvl"));
+		env_add(dst, iter, "env");
 		env_add(dst, iter, "export");
-		return ;
+		return (0);
 	}
 	if (iter->str)
 		ret = ft_itoa(ft_atoi(iter->str) + 1);
@@ -170,10 +185,10 @@ int	update_shell_name(t_env *dst)
 	{
 		iter = env_init_node("SHELL=minishell");
 		if (!iter)
-			return (-1, "could not replace missing shell name")
-		env_add(iter, dst, "env");
+			return (err(-1, "could not replace missing shell name"));
+		env_add(dst, iter, "env");
 		env_add(dst, iter, "export");
-		return ;
+		return (0);
 	}
 	ret = ft_strdup("minishell");
 	if (!ret)
@@ -191,14 +206,13 @@ int	update_shell_name(t_env *dst)
 void	env_init(t_env *dst, char **e)
 {
 	int			i;
-	int			k;
 	t_shnode	*iter;
 
 	i = 0;
 	ft_memset(dst, 0, sizeof(t_env));
 	while (e[i])
 	{
-		iter = env_node_init(e[i]);
+		iter = env_init_node(e[i]);
 		if (err((-!iter), "export node malloc"))
 			break ;
 		env_add(dst, iter, "env");
@@ -208,5 +222,4 @@ void	env_init(t_env *dst, char **e)
 	merge_sort(&dst->env);
 	update_shell_lvl(dst);
 	update_shell_name(dst);
-	env_init_cont(dst);
 }

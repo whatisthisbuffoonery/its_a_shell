@@ -1,2 +1,2 @@
 all:
-	clang -Wall -Wextra -Werror main.c -lreadline -lhistory -lft -L../../libft -I../../libft/includes
+	clang -Wall -Wextra -Werror main.c -lreadline -lhistory -L../../temp/uwu/libft -lft -I../../libft/includes -I.

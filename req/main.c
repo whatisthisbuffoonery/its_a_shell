@@ -1,3 +1,5 @@
+
+/*
 #include <signal.h>
 #include <stdio.h>
 #include <readline/readline.h>
@@ -5,8 +7,95 @@
 #include <sys/wait.h>
 #include <errno.h>
 #include "libft.h"
+*/
+#include "h_minishell.h"
 
 volatile sig_atomic_t	muh_number;
+
+int	isredir(int c)
+{
+	return (c == '>' || c == '<');
+}
+
+int	isbracket(int c)
+{
+	return (c == '(' || c == ')');
+}
+
+int	iscond(int c)
+{
+	return (c == '|' || c == '&');
+}
+
+int	isop(int c)
+{
+	return (isredir(c) || iscond(c));
+}
+
+int	iscontent(int c)
+{
+	return (c && !isop(c) && !ft_isquote(c) && !ft_isspace(c) && !isbracket(c));
+}
+
+t_cmd	*cmd_node(char *src, int i, char c, int *cry)
+{
+	t_cmd	*ret;
+
+	ret = malloc(sizeof(t_cmd));
+	if (!ret)
+	{
+		err(-1, "cmd node malloc");
+		return (NULL);
+	}
+	ret->str = ft_substr(src, (ft_isquote(c) != 0), i);
+	ret->next = NULL;
+	ret->env = NULL;
+	ret->type = '\0';
+	if (!ret->str)
+		*cry = (err(-1, "cmd node str malloc"));
+	ret->type = c;
+	if (ret->str && !ft_strcmp(ret->str, "&"))//single & not required
+		ret->type = '@';
+	ret->end_space = ft_isspace(src[i + (src[i] && ft_isquote(c))]);//bool
+	return (ret);
+}
+
+void	cmd_node_append(t_cmd **dst, t_cmd *ret)
+{
+	t_cmd	*iter;
+
+	iter = *dst;
+	while (iter && iter->next)
+		iter = iter->next;
+	if (!iter)
+		*dst = ret;
+	else
+		iter->next = ret;
+}
+
+//this splits words, quotes, and operators &, |, >, <
+
+//splitting words from quotes is done for simplicity,
+//but should be recombined if they were not separated by whitespace
+
+//check for ending whitespace, ls'>'wa should stay as one element
+int	node_init(t_cmd **dst, char *src, int *cry)
+{
+	int		i;
+	char	c;
+	t_cmd	*ret;
+
+	i = 1;//oh mah gah
+	c = src[0];
+	while (!muh_number && ((isop(c) && src[i] == c && i < 2)			//operator
+		|| (iscontent(c) && iscontent(src[i]))							//operand
+			|| (ft_isquote(c) && src[i] && src[i] != c)				//quote, also operand
+				|| (isbracket(c) && i < 1)))								//put brackets in their own node
+		i ++;
+	ret = cmd_node(src, i, c, cry);
+	cmd_node_append(dst, ret);
+	return (i + (ft_isquote(c) != 0));
+}
 
 void	do_thing(char *buf)
 {
@@ -46,32 +135,61 @@ void	do_thing(char *buf)
 	ft_putstr("done\n");
 }
 
+void	print_cmd(t_cmd **cmd, int *last)
+{
+	t_cmd	*iter;
+
+	iter = *cmd;
+	while (iter)
+	{
+		ft_printf("|%s|\n", iter->str);
+		iter = iter->next;
+	}
+	ft_printf("\nexit status: %d\n", *last);
+}
+
+void	clean_cmd(t_cmd **cmd)
+{
+	t_cmd	*iter;
+	t_cmd	*next;
+
+	iter = *cmd;
+	while(iter)
+	{
+		next = iter->next;
+		free(iter->str);
+		free(iter);
+		iter = next;
+	}
+}
+
 void	shell_print(char *buf)
 {
-	int i = 0;
+	int	i = 0;
+	int	cry = 0;
+	t_cmd	*cmd = NULL;
 
-	ft_putchar('|');
 	while (buf && buf[i])
 	{
-		if (ft_isprint(buf[i]))
-			ft_putchar(buf[i]);
-		else
-		{
-			if (buf[i] == '\n')
-				ft_putstr("\\n");
-			else
-				ft_putchar('.');
-		}
-		i ++;
+		while (ft_isspace(buf[i]))
+			i ++;
+		if (!buf[i])
+			break ;
+		i += node_init(&cmd, &buf[i], &cry);
+		if (cry)
+			return ;
 	}
-	ft_putchar('|');
 	if (buf && buf[0])
+	{
+		print_cmd(&cmd, &cry);
 		add_history(buf);
+		clean_cmd(&cmd);
+	}
 	else if (!buf)
 		ft_putstr("NULL");
 	ft_putchar('\n');
-	if (buf && buf[0] == 's' && !buf[1])
-		do_thing(buf);
+//	if (buf && buf[0] == 's' && !buf[1])
+//		do_thing(buf);
 	free(buf);
 }
 

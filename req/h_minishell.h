@@ -7,7 +7,7 @@
 # include <readline/history.h>
 # include <sys/wait.h>
 # include <errno.h>
-# include "libft.h"
+# include "../../temp/uwu/libft/includes/libft.h"
 
 //didnt use
 typedef struct s_handler

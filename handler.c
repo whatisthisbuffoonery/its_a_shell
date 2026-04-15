@@ -1,5 +1,6 @@
 #include "h_minishell.h"
 
+/*
 void	sigh(struct sigaction *handler)
 {
 	sigset_t	mask;
@@ -13,7 +14,7 @@ void	sigh(struct sigaction *handler)
 	handler[0].sa_handler = me_handle_signals;
 	handler[1].sa_handler = me_handle_signals;
 }
-
+*/
 int	rl_handle_signals(void)//sigaction flag interrupt, rl handler	//does nl + redisplay (if not running a child)
 {
 	write(1, "\n", 1);
