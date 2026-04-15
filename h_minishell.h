@@ -9,13 +9,6 @@
 # include <errno.h>
 # include "libft.h"
 
-//didnt use
-typedef struct s_handler
-{
-	struct sigaction	mini;
-	struct sigaction	old;	//execve resets signal handlers for us, don't use. //although, signal masks will persist into execve. //I have to go dig up the online source for this
-}						t_handler;
-
 typedef struct s_shnode
 {
 	struct s_shnode	*next;
@@ -62,14 +55,7 @@ typedef struct s_glob
 	int			index;
 }				t_glob;
 
-//didnt use
-typedef struct s_minishell
-{
-	t_cmd	*cmd;
-	t_env	*env;
-}			t_minishell;
-
-int	err(int n, char *s);
+int	ft_err(int n, char *s);
 int	cleanup(int code, t_cmd **cmd, t_env *env);
 void	env_init(t_env *dst, char **e);
 int	rl_handle_signals(void);

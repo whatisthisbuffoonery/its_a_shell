@@ -52,16 +52,6 @@ int	isbuiltin(t_cmd *cmd, int (**dst)(t_cmd *, int *))//number of asterisks for 
 	return (0);
 }
 
-void	cmd_glob(t_cmd **dst, t_cmd *start)//would be called from fork wrapper just prior to cmd child. assume no 'ambiguous redirect' error here
-{
-	char	**match;//strings before, in between, and after globs. //include strings of nodes from 
-	char	**results;//todo: self growing array that I do not have to count manually for
-	char	*nope;//use this to blank out entries, or maybe 
-
-	nope = "nope";
-	results = NULL;
-	//initialise results using prefix (first asterisk appearance), then filter using suffix(any other strings or asterisk appearances).
-	//you could 
 
 void	cmd_child(t_cmd *iter, int fd[])//can call builtins, should be called on either binaries or pipelines, not builtins outside of pipelines
 {
@@ -102,4 +92,12 @@ int	do_cmd(t_cmd **head, int last)
 	if (iter)
 		*head = iter->next;
 	return (last);
+}
+
+int	cmd_parse(t_cmd **cmd)
+{
+	t_ast	ast;//bruh
+
+	if (!*cmd)
+		return (0);
 }

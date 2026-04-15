@@ -1,15 +1,49 @@
-int	cleanup(int code, t_cmd **cmd, t_env *env)
-{
-	static t_cmd	**cmd_list;
-	static t_env	*env_lists;
+#include "h_minishell.h"
 
-	if (!cmd_list)
+void	clean_shnode(t_shnode *env)
+{
+	t_shnode	*next;
+
+	while (env)
 	{
-		cmd_list = cmd;
-		env_lists = env;
-		return (0);
+		free(env->str);
+		free(env->name);
+		next = env->next;
+		free(env);
+		env = next;
 	}
-	//clean all lists
-	exit(code);
-	return (0);
+}
+
+void	clean_env_dup(t_shnode *env)
+{
+	t_shnode	*next;
+
+	while (env)
+	{
+		next = env->next;
+		free(env);
+		env = next;
+	}
+}
+
+void	clean_env(t_env *env)
+{
+	clean_shnode(env->export);
+	clean_shnode_dup(env->env);
+}
+
+void	clean_cmd(t_cmd **cmd)
+{
+	t_cmd	*iter;
+	t_cmd	*next;
+
+	iter = *cmd;
+	while(iter)
+	{
+		next = iter->next;
+		clean_shnode_dup(iter->env);
+		free(iter->str);
+		free(iter);
+		iter = next;
+	}
 }

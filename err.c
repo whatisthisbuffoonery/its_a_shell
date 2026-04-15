@@ -1,6 +1,6 @@
 #include "h_minishell.h"
 
-int	err(int n, char *s)
+int	ft_err(int n, char *s)
 {
 	if (n < 0)
 	{
