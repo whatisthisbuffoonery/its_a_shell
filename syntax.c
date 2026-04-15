@@ -111,7 +111,7 @@ t_cmd	*cmd_node(char *src, int i, char c, int *cry)
 		err(-1, "cmd node malloc");
 		return (NULL);
 	}
-	ret->str = ft_substr(src, (ft_isquote(c) != 0), i);
+	ret->str = ft_substr(src, 0, i + (ft_isquote(c) != 0));
 	ret->next = NULL;
 	ret->env = NULL;
 	ret->type = '\0';
@@ -154,7 +154,7 @@ int	node_init(t_cmd **dst, char *src, int *cry)
 	while (!muh_number && ((isop(c) && src[i] == c && i < 2)			//operator
 		|| (iscontent(c) && iscontent(src[i]))							//operand
 			|| (ft_isquote(c) && src[i] && src[i] != c))				//quote, also operand
-				|| (isbracket(c) && i < 1))								//put brackets in their own node
+				|| ((isbracket(c) || c == '*') && i < 1))				//put brackets in their own node
 		i ++;
 	ret = cmd_node(src, i, c, cry);
 	cmd_node_append(dst, ret);
