@@ -207,6 +207,8 @@ t_shnode	*expansion_dup(t_shnode *src)
 {
 	t_shnode	*ret;
 
+	if (!src)
+		return (NULL);
 	ret = malloc(sizeof(t_shnode));
 	if (!ret)
 	{
@@ -531,9 +533,10 @@ void	print_env(t_shnode *env)
 {
 	while (env)
 	{
-		ft_printf("[%s, %s] ", env->name, env_safe(env->str, "NULL"));
+		ft_printf("<%s, %s> ", env->name, env_safe(env->str, "NULL"));
 		env = env->next;
 	}
+	ft_putstr("\n\n");
 }
 
 void	print_cmd(t_cmd **cmd, int *last)
@@ -566,7 +569,7 @@ void	clean_cmd(t_cmd **cmd)
 	}
 }
 
-void	shell_print(char *buf)
+void	shell_print(char *buf, t_env *env)
 {
 	int	i = 0;
 	int	cry = 0;
@@ -584,6 +587,7 @@ void	shell_print(char *buf)
 	}
 	if (buf && buf[0])
 	{
+		expand_str(&cmd, env->env);
 		print_cmd(&cmd, &cry);
 		add_history(buf);
 		clean_cmd(&cmd);
@@ -681,7 +685,7 @@ int main(int c, char **v, char **e)
 //		if (muh_number)
 //			free(buf);
 //		else
-		shell_print(buf);
+		shell_print(buf, &env);
 		if (/*!muh_number &&*/ !buf)
 		{
 			ft_putstr("exiting now\n");
