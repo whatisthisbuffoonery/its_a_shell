@@ -58,6 +58,7 @@ typedef struct s_glob
 	t_cmd		*cmd;//for cleanup convenience
 	char		*str;//the str field from cmd //use this if glob comes up with nothing
 	t_shnode	*results;
+	t_shnode	*work;//to handle sequential adding of results so that iteration logic is cleaner (iter = tail of work->next)
 	int			index;
 }				t_glob;
 
