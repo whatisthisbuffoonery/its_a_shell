@@ -22,7 +22,7 @@ int	isop(int c)
 
 int	iscontent(int c)
 {
-	return (c && !isop(c) && !ft_isquote(c) && !ft_isspace(c) && !isbracket(c));
+	return (c && c != '*' && !isop(c) && !ft_isquote(c) && !ft_isspace(c) && !isbracket(c));
 }
 
 
@@ -108,7 +108,7 @@ t_cmd	*cmd_node(char *src, int i, char c, int *cry)
 	ret = malloc(sizeof(t_cmd));
 	if (!ret)
 	{
-		err(-1, "cmd node malloc");
+		ft_err(-1, "cmd node malloc");
 		return (NULL);
 	}
 	ret->str = ft_substr(src, 0, i + (ft_isquote(c) != 0));
@@ -116,7 +116,7 @@ t_cmd	*cmd_node(char *src, int i, char c, int *cry)
 	ret->env = NULL;
 	ret->type = '\0';
 	if (!ret->str)
-		*cry = (err(-1, "cmd node str malloc"));
+		*cry = (ft_err(-1, "cmd node str malloc"));
 	ret->type = c;
 	if (ret->str && !ft_strcmp(ret->str, "&"))//single & not required
 		ret->type = '@';
@@ -185,7 +185,7 @@ t_shnode	*expansion_dup(t_shnode *src)
 	ret = malloc(sizeof(t_shnode));
 	if (!ret)
 	{
-		err(-1, "expansion malloc");
+		ft_err(-1, "expansion malloc");
 		return (NULL);
 	}
 	ret->name = src->name;
@@ -268,7 +268,7 @@ int	use_expansion(t_cmd *dst, char *ret)
 			copy_wrapper(dst->str, ret, &i, &len);//copy one char//yes we copy dollar sign if env name is invalid
 	}
 	if (!ret
-		&& (!err(-!malloc_cond((void **) &ret, len), "expansion result malloc")))
+		&& (!ft_err(-!malloc_cond((void **) &ret, len), "expansion result malloc")))
 		return (use_expansion(dst, ret));
 	else if (!ret)
 		return (1);
@@ -335,7 +335,7 @@ int	join_name_nodes(t_cmd *head, int i)
 	}
 	ret = ft_calloc(len + 1, sizeof(char));//strlcat needs at least the first char to be null
 	if (!ret)
-		return (err(-1, "join str malloc"));
+		return (ft_err(-1, "join str malloc"));
 	iter = head;
 	k = 0;
 	while (k++ <= i)

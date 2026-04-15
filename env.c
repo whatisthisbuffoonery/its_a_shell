@@ -94,7 +94,7 @@ int	env_add(t_env *env, t_shnode *src, char *dst)
 	{
 		ret = malloc(sizeof(t_shnode));
 		if (!ret)
-			return (err(-1, "env dup malloc"));
+			return (ft_err(-1, "env dup malloc"));
 		ret->name = src->name;
 		ret->str = src->str;
 		list = &env->env;
@@ -156,7 +156,7 @@ int	update_shell_lvl(t_env *dst)
 	{
 		iter = env_init_node("SHLVL=1");
 		if (!iter)
-			return (err(-1, "could not replace missing shlvl"));
+			return (ft_err(-1, "could not replace missing shlvl"));
 		env_add(dst, iter, "env");
 		env_add(dst, iter, "export");
 		return (0);
@@ -166,7 +166,7 @@ int	update_shell_lvl(t_env *dst)
 	else
 		ret = ft_itoa(1);
 	if (!ret)
-		return (err(-1, "shlvl update error"));
+		return (ft_err(-1, "shlvl update error"));
 	free(iter->str);
 	iter->str = ret;
 	iter = find_env("SHLVL", dst->env, ft_strlen("SHLVL"));
@@ -186,14 +186,14 @@ int	update_shell_name(t_env *dst)
 	{
 		iter = env_init_node("SHELL=minishell");
 		if (!iter)
-			return (err(-1, "could not replace missing shell name"));
+			return (ft_err(-1, "could not replace missing shell name"));
 		env_add(dst, iter, "env");
 		env_add(dst, iter, "export");
 		return (0);
 	}
 	ret = ft_strdup("minishell");
 	if (!ret)
-		return (err(-1, "shell name update error"));
+		return (ft_err(-1, "shell name update error"));
 	free(iter->str);
 	iter->str = ret;
 	iter = find_env("SHELL", dst->env, ft_strlen("SHELL"));
@@ -214,7 +214,7 @@ void	env_init(t_env *dst, char **e)
 	while (e[i])
 	{
 		iter = env_init_node(e[i]);
-		if (err((-!iter), "export node malloc"))
+		if (ft_err((-!iter), "export node malloc"))
 			break ;
 		env_add(dst, iter, "env");
 		env_add(dst, iter, "export");
