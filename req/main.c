@@ -12,6 +12,16 @@
 
 volatile sig_atomic_t	muh_number;
 
+int	ft_err(int n, char *s)
+{
+	if (n < 0)
+	{
+		ft_putstr_fd("minishell: ", 2);
+		perror(s);
+	}
+	return (n);
+}
+
 int	isredir(int c)
 {
 	return (c == '>' || c == '<');
@@ -237,6 +247,129 @@ int	env_add(t_env *env, t_shnode *src, char *dst)
 	return (0);
 }
 
+void	shnode_append(t_shnode **dst, t_shnode *src)
+{
+	t_shnode	*iter;
+
+	iter = *dst;
+	while (iter && iter->next)
+		iter = iter->next;
+	if (iter)
+		iter->next = src;
+	else
+		*dst = src;
+}
+
+/*shnode utilities------------------------------------------------------------*/
+
+int	is_env(char c)
+{
+	return (c == '_' || ft_isalnum(c));
+}
+
+int add_expansion(t_cmd *dst, t_shnode *env, int *index)
+{
+	t_shnode	*ret;
+	char		*str;
+	int			i;
+
+	i = 0;
+	str = &dst->str[*index + 1];//dollar offset
+	while (is_env(str[i]))
+		i ++;
+	*index += i + 1;//use env name len plus dollar
+	if (find_env(str, dst->env, i))
+		return (0);
+	env = find_env(str, env, i);
+	ret = expansion_dup(env);//mallocs a node, does not malloc the strings so dont free those
+	if (!ret)
+		return (1);
+	shnode_append(&dst->env, ret);
+	return (0);
+}
+
+void	copy_wrapper(char *src, char *dst, int *i, int *len)
+{
+	if (dst)
+		dst[*len] = src[*i];
+	*i += 1;
+	*len += 1;
+}
+
+void	concat_wrapper(t_cmd *dst, char *ret, int *i, int *len)
+{
+	t_shnode	*iter;
+	char		*str;
+	int			k;
+
+	k = 0;
+	iter = dst->env;
+	str = &dst->str[*i + 1];
+	while (iscontent(str[*i + k]))
+		k ++;
+	while (iter && ft_strncmp(str, iter->name, k))
+		iter = iter->next;
+	if (ret && iter)
+		*len += ft_strlcat(ret, iter->str, -1);
+	else if (iter)
+		*len += ft_strlen(iter->str);
+	*i += k + 1;
+}
+
+int	use_expansion(t_cmd *dst, char *ret)
+{
+	int		i;
+	int		len;
+
+	i = 0;
+	len = 0;
+	if (ret)
+		ret[0] = '\0';
+	while (dst->str[i])
+	{
+		if (dst->str[i] == '$' && is_env(dst->str[i + 1]))
+			concat_wrapper(dst, ret, &i, &len);//either strlen or strlcat
+		else if (dst->str[i]
+			&& (dst->str[i] != '$' || !is_env(dst->str[i + 1])))
+			copy_wrapper(dst->str, ret, &i, &len);//copy one char//yes we copy dollar sign if env name is invalid
+	}
+	if (!ret
+		&& (!ft_err(-!malloc_cond((void **) &ret, len), "expansion result malloc")))
+		return (use_expansion(dst, ret));
+	else if (!ret)
+		return (1);
+	free(dst->str);
+	dst->str = ret;
+	return (0);
+}
+
+int	expand_str(t_cmd **cmd, t_shnode *env)
+{
+	t_cmd	*iter;
+	int		i;
+
+	iter = *cmd;
+	while(iter)
+	{
+		i = 0;
+		while (iter->str[i] && iter->type != '\'')
+		{
+			if (iter->str[i] == '$' && is_env(iter->str[i + 1])
+				&& add_expansion(iter, env, &i))
+				return (1);
+			i += (iter->str[i] && iter->str[i] != '$');
+		}
+		iter = iter->next;
+	}
+	iter = *cmd;
+	while (iter)//move this over to command forking side, expand envs before each command, not before *all* commands
+	{
+		if (iter->type != '\'' && iter->env && use_expansion(iter, NULL))
+			return (1);
+		iter = iter->next;
+	}
+	return (0);
+}
 t_shnode	*env_init_node(char *e)
 {
 	t_shnode	*ret;
@@ -388,6 +521,21 @@ void	do_thing(char *buf)
 	ft_putstr("done\n");
 }
 
+char	*env_safe(char *s, char *n)
+{
+	if (!s)
+		return (n);
+	return (s);
+}
+void	print_env(t_shnode *env)
+{
+	while (env)
+	{
+		ft_printf("[%s, %s] ", env->name, env_safe(env->str, "NULL"));
+		env = env->next;
+	}
+}
+
 void	print_cmd(t_cmd **cmd, int *last)
 {
 	t_cmd	*iter;
@@ -396,6 +544,8 @@ void	print_cmd(t_cmd **cmd, int *last)
 	while (iter)
 	{
 		ft_printf("[%s]\n", iter->str);
+		if (iter->env)
+			print_env(iter->env);
 		iter = iter->next;
 	}
 	ft_printf("\nexit status: %d\n", *last);
