@@ -94,7 +94,8 @@ int	do_cmd(t_cmd **head, int last)
 	return (last);
 }
 
-int	cmd_parse(t_cmd **cmd)
+//need to clean and update env lists on fork, which happens in here
+int	cmd_parse(t_cmd **cmd, t_env *env)
 {
 	t_ast	ast;//bruh
 
