@@ -57,7 +57,7 @@ t_cmd	*cmd_node(char *src, int i, char c, int *cry)
 		err(-1, "cmd node malloc");
 		return (NULL);
 	}
-	ret->str = ft_substr(src, 0, i + (ft_isquote(c) != 0));
+	ret->str = ft_substr(src, 0, i + (2 * (ft_isquote(c) != 0)));
 	ret->next = NULL;
 	ret->env = NULL;
 	ret->type = '\0';
@@ -66,7 +66,7 @@ t_cmd	*cmd_node(char *src, int i, char c, int *cry)
 	ret->type = c;
 	if (ret->str && !ft_strcmp(ret->str, "&"))//single & not required
 		ret->type = '@';
-	ret->end_space = ft_isspace(src[i + (src[i] && ft_isquote(c))]);//bool
+	ret->end_space = ft_isspace(src[i + (1 * (src[i] && ft_isquote(c)))]);//bool
 	return (ret);
 }
 
@@ -104,88 +104,9 @@ int	node_init(t_cmd **dst, char *src, int *cry)
 		i ++;
 	ret = cmd_node(src, i, c, cry);
 	cmd_node_append(dst, ret);
-	return (i + (ft_isquote(c) != 0));
+	return (i + (1 * (ft_isquote(c) != 0)));//thing
 }
 
-int	ft_strcmp_wrapper(t_shnode *a, t_shnode *b)
-{
-	return (ft_strcmp(a->name, b->name));
-}
-
-static void	window_shopping(t_shnode *curr, t_shnode *a, t_shnode *b)
-{
-	t_shnode	*iter;
-
-	while (a && b)
-	{
-		if (ft_strcmp_wrapper(a, b) < 0)
-		{
-			curr->next = a;
-			a = a->next;
-		}
-		else
-		{
-			curr->next = b;
-			b = b->next;
-		}
-		curr = curr->next;
-	}
-	iter = b;
-	if (!b)
-		iter = a;
-	while (iter)
-	{
-		curr->next = iter;
-		curr = curr->next;
-		iter = iter->next;
-	}
-}
-
-static void	merge_split(t_shnode **head, t_shnode **a, t_shnode **b)
-{
-	t_shnode	*i;
-	t_shnode	*k;
-
-	i = *head;
-	k = NULL;
-	*a = i;
-	if (i)
-		k = i->next;
-	while (k && k->next)
-	{
-		i = i->next;
-		k = k->next->next;
-	}
-	if (i)
-		*b = i->next;
-	if (*b)
-		i->next = NULL;
-}
-
-static void	merge_sort(t_shnode **head)
-{
-	t_shnode	*a;
-	t_shnode	*b;
-
-	a = NULL;
-	b = NULL;
-	merge_split(head, &a, &b);
-	if (a && a->next)
-		merge_sort(&a);
-	if (b && b->next)
-		merge_sort(&b);
-	if (b && ft_strcmp_wrapper(a, b) > 0)
-	{
-		*head = b;
-		b = b->next;
-	}
-	else
-	{
-		*head = a;
-		a = a->next;
-	}
-	window_shopping(*head, a, b);
-}
 
 /*merge sort section-------------------------------------------------------------------------------*/
 
@@ -196,9 +117,12 @@ int	shnode_strlen(t_shnode *env)
 	return (0);
 }
 
-t_shnode	*find_env(char *str, t_shnode *list, int n)
+t_shnode	*find_env(char *str, t_shnode *list, int len)
 {
-	while (list && (list->name[n] || ft_strncmp(str, list->name, n)))
+	unsigned int	n;
+
+	n = (unsigned int) len;
+	while (list && (ft_strlen(list->name) != n || ft_strncmp(str, list->name, n)))
 		list = list->next;
 	return (list);
 }
@@ -303,19 +227,22 @@ void	concat_wrapper(t_cmd *dst, char *ret, int *i, int *len)
 	t_shnode	*iter;
 	char		*str;
 	int			k;
+	int			tmp_len;
 
 	k = 0;
 	iter = dst->env;
 	str = &dst->str[*i + 1];
-	while (iscontent(str[*i + k]))
+	tmp_len = 0;
+	while (is_env(str[k]))//huh
 		k ++;
-	while (iter && ft_strncmp(str, iter->name, k))
-		iter = iter->next;
+	iter = find_env(str, dst->env, k);
 	if (ret && iter)
-		*len += ft_strlcat(ret, iter->str, -1);
-	else if (iter)
-		*len += ft_strlen(iter->str);
+		ft_strlcat(ret, iter->str, -1);
+	if (iter)
+		tmp_len += ft_strlen(iter->str);
 	*i += k + 1;
+	*len += tmp_len;
+	ft_printf("\n\nk: %d, tmp_len: %d\n\n", k, tmp_len);
 }
 
 int	use_expansion(t_cmd *dst, char *ret)
@@ -335,8 +262,9 @@ int	use_expansion(t_cmd *dst, char *ret)
 			&& (dst->str[i] != '$' || !is_env(dst->str[i + 1])))
 			copy_wrapper(dst->str, ret, &i, &len);//copy one char//yes we copy dollar sign if env name is invalid
 	}
+	ft_printf("\nis null: %d, len: %d\n", !ret, len);
 	if (!ret
-		&& (!ft_err(-!malloc_cond((void **) &ret, len), "expansion result malloc")))
+		&& (!ft_err(-!malloc_cond((void **) &ret, len + 1), "expansion result malloc")))
 		return (use_expansion(dst, ret));
 	else if (!ret)
 		return (1);
@@ -678,7 +606,7 @@ int main(int c, char **v, char **e)
 	sigaction(SIGQUIT, &handler[1], &old[1]);
 	muh_number = 0;
 	env_init(&env, e);
-	env_print(&env);
+//	env_print(&env);
 	while (1)
 	{
 		buf = readline("I am a shell% ");
