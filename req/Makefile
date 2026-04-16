@@ -1,2 +1,10 @@
+CC := clang
+CC_FLAGS := -Wall -Wextra -Werror
+LIBFT_DIR := ../../temp/uwu/libft
+
+LIBS := -L$(LIBFT_DIR) -lreadline -lhistory -lft
+INCLUDES := -I$(LIBFT_DIR)
+SRC := merge_sort.c main.c
+
 all:
-	clang -Wall -Wextra -Werror -g main.c -lreadline -lhistory -L../../temp/uwu/libft -lft -I../../libft/includes -I.
+	$(CC) $(CC_FLAGS) $(SRC) $(LIBS) $(INCLUDES)
