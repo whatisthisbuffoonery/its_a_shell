@@ -9,6 +9,7 @@
 # include <errno.h>
 # include "../../temp/uwu/libft/includes/libft.h"
 
+extern volatile sig_atomic_t	muh_number;
 
 typedef struct s_shnode
 {
@@ -55,17 +56,41 @@ typedef struct s_glob
 	int			index;
 }				t_glob;
 
-int	err(int n, char *s);
-int	cleanup(int code, t_cmd **cmd, t_env *env);
-void	env_init(t_env *dst, char **e);
-int	rl_handle_signals(void);
-int	syntax_check(t_cmd **cmd, t_env *env, char *input);
-int	isop(int c);
-int	isredir(int c);
-int	iscontent(int c);
-int	iscond(int c);
+int			isbracket(int c);
+int			isop(int c);
+int			isredir(int c);
+int			iscontent(int c);
+int			iscond(int c);
+int			isenv(char c);
+int			envname(char *s);
+
+void		signal_init(void);
+int			rl_handle_signals(void);
+
+void		shnode_append(t_shnode **dst, t_shnode *src);
+t_shnode	*shnode_dup(t_shnode *src);
 t_shnode	*find_env(char *str, t_shnode *list, int n);
-void	merge_sort(t_shnode **head);
+
+int			env_add(t_env *env, t_shnode *src, char *dst);
+int			expand_str(t_cmd **cmd, t_shnode *env);
+
+int			node_init(t_cmd **dst, char *src, int *cry);
+void		env_init(t_env *dst, char **e);
+
+int			ft_err(int n, char *s);
+int			shell_assert(int cond, char *s);
+
+void		merge_sort(t_shnode **head);
+
+void		clean_cmd(t_cmd **cmd);
+void		clean_shnode_dup(t_shnode **shnode);
+void		clean_shnode(t_shnode **shnode);
+
+int			ft_crutch(char *s, int n);
+void		env_print(t_env *env);
+void		shell_print(t_cmd **cmd, char *buf, t_env *env);
+
+int			syntax_check(t_cmd **cmd, t_env *env, char *input);
 
 #endif
 //global var thing
