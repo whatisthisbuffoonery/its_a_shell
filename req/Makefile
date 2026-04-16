@@ -16,6 +16,7 @@ all: $(NAME)
 $(NAME): $(OBJ)
 	$(MAKE) -C $(LIBFT_DIR)
 	$(CC) $(CC_FLAGS) $(OBJ) $(LIBS) $(INCLUDES) -o $(NAME)
+	echo "todo: debug end space and decide wtf we will do with floating asterisks"
 
 $(OBJ): %.o: %.c
 	$(CC) $(CC_FLAGS) -c $< $(INCLUDES) -o $@
