@@ -23,7 +23,7 @@ int	puthex_p(uintptr_t n, char alphacase, int write_hex)
 	else
 		hex = HEX_L;
 	if (n == 0)
-		return (ft_putchar('0', write_hex));
+		return (ft_putchar2('0', write_hex));
 	i = sizeof(buf);
 	while (n > 0 && i > 0)
 	{
@@ -52,7 +52,7 @@ int	puthex_u(unsigned int n, char alphacase, int write_hex, t_arg *arg)
 	else
 		hex = HEX_L;
 	if (n == 0)
-		return (ft_putchar('0', write_hex) + len);
+		return (ft_putchar2('0', write_hex) + len);
 	i = sizeof(buf);
 	while (n > 0 && i > 0)
 	{

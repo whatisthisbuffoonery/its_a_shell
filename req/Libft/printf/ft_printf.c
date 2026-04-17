@@ -33,7 +33,7 @@ int	ft_printf(const char *str, ...)
 			free(arg);
 		}
 		else
-			len += ft_putchar(*str, 1);
+			len += ft_putchar2(*str, 1);
 		str++;
 	}
 	va_end(ap);

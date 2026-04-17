@@ -6,7 +6,7 @@
 /*   By: achew <achew@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/12 18:46:43 by achew             #+#    #+#             */
-/*   Updated: 2025/12/17 19:27:31 by achew            ###   ########.fr       */
+/*   Updated: 2026/04/17 13:38:40 by achew            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static int	put_truncated(char *str, int write_str, t_arg *arg)
 	return (j);
 }
 
-int	ft_putstr(char *str, int write_str, t_arg *arg)
+int	ft_putstr2(char *str, int write_str, t_arg *arg)
 {
 	int	i;
 

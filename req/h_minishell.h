@@ -7,7 +7,9 @@
 # include <readline/history.h>
 # include <sys/wait.h>
 # include <errno.h>
-# include "../../temp/uwu/libft/includes/libft.h"
+# include "Libft/libft/libft.h"
+# include "Libft/printf/ft_printf.h"
+# include "Libft/gnl/get_next_line_bonus.h"
 
 extern volatile sig_atomic_t	muh_number;
 
@@ -91,6 +93,15 @@ void		env_print(t_env *env);
 void		shell_print(t_cmd **cmd, char *buf, t_env *env);
 
 int			syntax_check(t_cmd **cmd, t_env *env, char *input);
+
+
+int			ft_strcmp(char *a, char *b);
+int			ft_isquote(int c);
+int			ft_isspace(int c);
+char		*ft_strndup(const char *src, size_t n);
+void		*malloc_cond(void **dst, size_t size);
+void		ft_putchar(char n);
+void		ft_putstr(char *a);
 
 #endif
 //global var thing

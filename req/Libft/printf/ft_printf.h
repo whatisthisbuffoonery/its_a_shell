@@ -6,7 +6,7 @@
 /*   By: achew <achew@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/04 11:40:54 by achew             #+#    #+#             */
-/*   Updated: 2025/12/18 16:56:07 by achew            ###   ########.fr       */
+/*   Updated: 2026/04/17 13:38:52 by achew            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,8 +70,8 @@ int		ft_printf(const char *str, ...);
 int		*is_fmt(const char *str);
 t_arg	*init_arg(const char *str, int *fmt_len, va_list ap);
 int		print_data(t_arg *arg);
-int		ft_putchar(char c, int write_char);
-int		ft_putstr(char *str, int write_str, t_arg *arg);
+int		ft_putchar2(char c, int write_char);
+int		ft_putstr2(char *str, int write_str, t_arg *arg);
 int		ft_putnbr(long long nb_ll, int write_nbr, t_arg *arg);
 int		putnbr_u(unsigned int nb, int write_nbr, t_arg *arg);
 int		putptr(void *ptr, int write_ptr, t_arg *arg);

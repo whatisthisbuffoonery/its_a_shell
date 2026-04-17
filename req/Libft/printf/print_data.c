@@ -35,7 +35,7 @@ int	print_data(t_arg *arg)
 		&& !(arg->flags & zero_padding))
 		len += pad(*arg);
 	if (arg->type == string)
-		len += ft_putstr(arg->data.s, 1, arg);
+		len += ft_putstr2(arg->data.s, 1, arg);
 	else if (arg->type == pointer)
 		len += putptr(arg->data.p, 1, arg);
 	else if (arg->type == decimal || arg->type == integer)
@@ -47,7 +47,7 @@ int	print_data(t_arg *arg)
 	else if (arg->type == hexadecimal_upper)
 		len += puthex_u(arg->data.u, 'u', 1, arg);
 	else
-		len += ft_putchar(arg->data.d, 1);
+		len += ft_putchar2(arg->data.d, 1);
 	if ((arg->min_width >= 0) && (arg->flags & left_justify))
 		len += pad(*arg);
 	return (len);
