@@ -1,20 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_putchar.c                                       :+:      :+:    :+:   */
+/*   ft_putstr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: achew <achew@student.42singapore.sg>       +#+  +:+       +#+        */
+/*   By: dthoo <dthoo@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/04 11:39:12 by achew             #+#    #+#             */
-/*   Updated: 2025/12/15 00:28:31 by achew            ###   ########.fr       */
+/*   Created: 2026/01/22 17:17:51 by dthoo             #+#    #+#             */
+/*   Updated: 2026/04/17 13:59:04 by achew            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_printf.h"
+#include "h_minishell.h"
 
-int	ft_putchar2(char c, int write_char)
+//make a nullable version
+
+void	ft_putstr(char *a)
 {
-	if (write_char)
-		write(1, &c, 1);
-	return (1);
+	int	i;
+
+	i = 0;
+	while (a[i])
+		i ++;
+	write(1, a, i);
 }

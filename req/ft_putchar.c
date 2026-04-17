@@ -3,18 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   ft_putchar.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: achew <achew@student.42singapore.sg>       +#+  +:+       +#+        */
+/*   By: dthoo <dthoo@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/04 11:39:12 by achew             #+#    #+#             */
-/*   Updated: 2025/12/15 00:28:31 by achew            ###   ########.fr       */
+/*   Created: 2026/03/01 14:38:27 by dthoo             #+#    #+#             */
+/*   Updated: 2026/03/01 14:38:29 by dthoo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_printf.h"
+#include <unistd.h>
 
-int	ft_putchar2(char c, int write_char)
+void	ft_putchar(char n)
 {
-	if (write_char)
-		write(1, &c, 1);
-	return (1);
+	write(1, &n, 1);
 }

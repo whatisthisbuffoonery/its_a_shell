@@ -19,7 +19,7 @@ static void	get_zero_padded_width(t_arg *arg)
 	else if (arg->type == character || arg->type == percent)
 		arg->zero_padded_width = 1;
 	else if (arg->type == string)
-		arg->zero_padded_width = ft_putstr(arg->data.s, 0, arg);
+		arg->zero_padded_width = ft_putstr2(arg->data.s, 0, arg);
 	else if (arg->type == pointer)
 		arg->zero_padded_width = putptr(arg->data.p, 0, arg);
 	else if (arg->type == unsigned_decimal)
@@ -35,7 +35,7 @@ static void	get_data_width(t_arg *arg)
 	else if (arg->type == character || arg->type == percent)
 		arg->data_width = 1;
 	else if (arg->type == string)
-		arg->data_width = ft_putstr(arg->data.s, 0, NULL);
+		arg->data_width = ft_putstr2(arg->data.s, 0, NULL);
 	else if (arg->type == pointer)
 		arg->data_width = putptr(arg->data.p, 0, NULL);
 	else if (arg->type == unsigned_decimal)
