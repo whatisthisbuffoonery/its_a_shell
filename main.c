@@ -1,45 +1,45 @@
 #include "h_minishell.h"
 
-volatile sig_atomic_t	muh_number;
-
-void	sighands(int code)
-{
-	muh_number = code;
-}
-
-void	signal_init(void)
-{
-	sigset_t			mask;
-	struct sigaction	hands;
-
-	rl_catch_signals = 0;
-	rl_catch_sigwinch = 0;
-	rl_signal_event_hook = rl_handle_signals;
-	if (ft_err(sigemptyset(&mask) || sigaddset(&mask, SIGTERM)
-		|| sigaddset(&mask, SIGQUIT), "signal mask error"))//these return -1
-		return ;
-	ft_memset(&hands, 0, sizeof(struct sigaction));
-	hands = (struct sigaction){.sa_mask = mask, .sa_handler = sighands};//, .sa_flags = SA_RESTART};//exclude restart flag
-	ft_err(sigaction(SIGINT, &hands, NULL), "SIGINT setup error");
-	ft_err(sigaction(SIGQUIT, &hands, NULL), "SIGQUIT setup error");
-}
+//volatile sig_atomic_t	muh_number;
+//
+//void	sighands(int code)
+//{
+//	muh_number = code;
+//}
+//
+//void	signal_init(void)
+//{
+//	sigset_t			mask;
+//	struct sigaction	hands;
+//
+//	rl_catch_signals = 0;
+//	rl_catch_sigwinch = 0;
+//	rl_signal_event_hook = rl_handle_signals;
+//	if (ft_err(sigemptyset(&mask) || sigaddset(&mask, SIGTERM)
+//		|| sigaddset(&mask, SIGQUIT), "signal mask error"))//these return -1
+//		return ;
+//	ft_memset(&hands, 0, sizeof(struct sigaction));
+//	hands = (struct sigaction){.sa_mask = mask, .sa_handler = sighands};//, .sa_flags = SA_RESTART};//exclude restart flag
+//	ft_err(sigaction(SIGINT, &hands, NULL), "SIGINT setup error");
+//	ft_err(sigaction(SIGQUIT, &hands, NULL), "SIGQUIT setup error");
+//}
 
 /*
 io[2]: two fds, debating to not store pipe relationships in node. also dont init pipes on false branch
 */
 
-void	print_cmd(t_cmd **cmd, int *last)
-{
-	t_cmd	*iter;
-
-	iter = *cmd;
-	while (iter)
-	{
-		ft_printf("|%s|\n", iter->str);
-		iter = iter->next;
-	}
-	ft_printf("\nexit status: %d\n", *last);
-}
+//void	print_cmd(t_cmd **cmd, int *last)
+//{
+//	t_cmd	*iter;
+//
+//	iter = *cmd;
+//	while (iter)
+//	{
+//		ft_printf("|%s|\n", iter->str);
+//		iter = iter->next;
+//	}
+//	ft_printf("\nexit status: %d\n", *last);
+//}
 
 int	good_syntax(t_cmd **cmd, char *input, int *last, t_env *env)//how about we dont fork
 {
@@ -63,29 +63,29 @@ int	good_syntax(t_cmd **cmd, char *input, int *last, t_env *env)//how about we d
 	return (1);
 }
 
-int	buh_bye(int last, t_env *env)
-{
-	t_shnode *curr;
+//int	buh_bye(int last, t_env *env)
+//{
+//	t_shnode *curr;
+//
+//	curr = env->export;
+//	while (curr)
+//	{
+//		free(curr->str);
+//		curr = curr->next;
+//	}
+//	curr = env->env;
+//	while (curr)
+//	{
+//		free(curr->str);
+//		curr = curr->next;
+//	}
+//	free(env->export);
+//	ft_putstr("exit\n");
+//	rl_clear_history();
+//	return (last);
+//}
 
-	curr = env->export;
-	while (curr)
-	{
-		free(curr->str);
-		curr = curr->next;
-	}
-	curr = env->env;
-	while (curr)
-	{
-		free(curr->str);
-		curr = curr->next;
-	}
-	free(env->export);
-	ft_putstr("exit\n");
-	rl_clear_history();
-	return (last);
-}
-
-void	clean_cmd(t_cmd **cmd);//did ya make all cmd nodes their own malloc
+//void	clean_cmd(t_cmd **cmd);//did ya make all cmd nodes their own malloc
 
 //sig quit does not produce '^\' for sleep, but that is not required...?
 int	main(int c, char **v, char **e)
