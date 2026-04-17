@@ -15,6 +15,7 @@ t_cmd	*cmd_node(char *src, int i, char c, int *cry)
 		ft_err(-1, "cmd node malloc");
 		return (NULL);
 	}
+	shell_assert(!i || !c, "zero string???? how???????\n");
 	ret->str = ft_substr(src, 0, i + (1 * ft_crutch(src, i)));//src[0] is a quote if it is a quote section, flag adds the other quote
 //	ft_printf("substr: %d, bool: %d, str: %s\n", i, ft_crutch(src, i), ret->str);
 	ret->next = NULL;
@@ -24,12 +25,12 @@ t_cmd	*cmd_node(char *src, int i, char c, int *cry)
 		*cry = (ft_err(-1, "cmd node str malloc"));
 	ret->type = c;
 	if (ret->str && !ft_strcmp(ret->str, "&"))//single & not required
-		ret->type = '@';
+		ret->type = '\0';//reject this at checking
 	ret->end_space = ft_isspace(src[i + (src[i] && ft_crutch(src, i))]);//bool
 	return (ret);
 }
 
-void	cmd_node_append(t_cmd **dst, t_cmd *ret)
+void	cmd_node_append(t_cmd **dst, t_cmd *src)
 {
 	t_cmd	*iter;
 
@@ -37,9 +38,9 @@ void	cmd_node_append(t_cmd **dst, t_cmd *ret)
 	while (iter && iter->next)
 		iter = iter->next;
 	if (!iter)
-		*dst = ret;
+		*dst = src;
 	else
-		iter->next = ret;
+		iter->next = src;
 }
 
 //this splits words, quotes, and operators &, |, >, <

@@ -36,15 +36,16 @@ typedef struct	s_env
 	t_shnode	*env;			//env vars corresponding to env builtin		//env list stores env variables in alphabet order, items with empty strings as values are never added to this list
 }				t_env;			//PSA empty strings can be in env list, null strings cannot
 
-typedef struct s_ast
+typedef struct s_cst
 {
 	t_cmd			*cmd;	//first valid cmd string, might be a glob
 	t_cmd			*args;
 	t_cmd			*op;	//nearest operator to the right of cmd, really should be an enum
 	t_cmd			*redir;
-	struct s_ast	*next;	//points to next cmd after op, take note of depth
+	t_cmd			*brackets;//just for cleanup convenience
+	struct s_cst	*next;	//points to next cmd after op, take note of depth
 	int				depth;
-}					t_ast;
+}					t_cst;
 
 //how does this make globbing less painful than before? moar norminette space is how
 //advise separating strcmp and opendir operations
