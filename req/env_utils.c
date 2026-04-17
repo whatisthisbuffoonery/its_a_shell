@@ -10,7 +10,7 @@ int add_expansion(t_cmd *dst, t_shnode *env, int *index)
 	str = &dst->str[*index + 1];//dollar offset
 	while (isenv(str[i]))
 		i ++;
-	ft_printf("adding... index: %d, i: %d\n", *index, i);
+//	ft_printf("adding... index: %d, i: %d\n", *index, i);
 	*index += i + 1;//use env name len plus dollar
 	env = find_env(str, env, i);
 	if (find_env(str, dst->env, i) || !env)
