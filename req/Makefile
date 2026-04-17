@@ -6,7 +6,7 @@
 #    By: achew <achew@student.42singapore.sg>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/10/28 21:29:55 by achew             #+#    #+#              #
-#    Updated: 2026/04/17 13:57:58 by achew            ###   ########.fr        #
+#    Updated: 2026/04/17 14:31:11 by achew            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 # **************************************************************************** #
@@ -85,7 +85,7 @@ EXTRA_OBJ =
 EXTRA_HDR =
 endif
 
-$(NAME): $(OBJ) $(EXTRA_OBJ) $(HDR)
+$(NAME): $(OBJ) $(EXTRA_OBJ) $(HDR) $(LIBS)
 	$(CC) $(CFLAGS) $(INCLUDES) \
 		$(OBJ) $(EXTRA_OBJ) \
 		$(LIBS) \
