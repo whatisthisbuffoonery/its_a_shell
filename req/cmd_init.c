@@ -2,7 +2,7 @@
 
 int	ft_crutch(char *s, int n)
 {
-	return ((ft_isquote(s[0]) != 0 && ft_isquote(s[n]) != 0));
+	return (ft_isquote(s[0]) != 0 && s[n] == s[0]);
 }
 
 t_cmd	*cmd_node(char *src, int i, char c, int *cry)
