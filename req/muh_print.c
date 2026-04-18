@@ -30,32 +30,19 @@ void	print_cmd(t_cmd **cmd)
 		iter = iter->next;
 	}
 }
-
+/*
 void	shell_print(t_cmd **cmd, char *buf, t_env *env)
 {
 	int		i = 0;
 	int		cry = 0;
 	t_node	*node;
 
-	while (buf && buf[i])//cmd_init replaces this
-	{
-		while (ft_isspace(buf[i]))
-			i ++;
-		if (!buf[i])
-			break ;
-		i += node_init(cmd, &buf[i], &cry);
-		if (cry)
-			return ;
-	}
-//	if (buf)
-//		ft_printf("strlen: %d, i: %d\n", ft_strlen(buf), i);
 	if (buf && buf[0])
 	{
 		expand_str(cmd, env->env);
 		print_cmd(cmd, &cry);
 		node = parse(*cmd);
-		ast_print(node, 0);
-	//	cmd_init(buf, cmd);
+		expand_str(cmd, env->env);//note to move this step after cst init for semantics
 //		print_cmd(cmd, &cry);
 		add_history(buf);
 	}
@@ -64,7 +51,7 @@ void	shell_print(t_cmd **cmd, char *buf, t_env *env)
 	ft_putchar('\n');
 	free(buf);
 }
-
+*/
 void	env_print(t_env *env)
 {
 	t_shnode	*iter;

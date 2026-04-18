@@ -6,11 +6,11 @@ NAME := minishell
 
 LIBS := -L$(LIBFT_DIR) -lreadline -lhistory -lft
 INCLUDES := -I$(LIBFT_DIR)
-SRC_FILE := merge_sort.c main.c checker.c err.c cleanup.c \
-			env_init.c env_utils.c cmd_init.c \
-			print.c shnode_utils.c signal.c syntax_utils.c
-
-#SRC := $(SRC_FILE:%.c=$(SRC_DIR)/%.c)
+SRC_FILE := merge_sort.c main.c err.c cleanup.c signal.c \
+			env_init.c env_utils.c shnode_utils.c \
+			cmd_init.c checker.c \
+			muh_print.c \
+			cst_init.c cst_utils.c cst_check.c
 
 OBJ := $(SRC_FILE:.c=.o)
 
