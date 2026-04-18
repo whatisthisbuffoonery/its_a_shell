@@ -25,7 +25,7 @@ t_cmd	*cmd_node(char *src, int i, char c, int *cry)
 		*cry = (ft_err(-1, "cmd node str malloc"));
 	ret->type = c;
 	if (ret->str && !ft_strcmp(ret->str, "&"))//single & not required
-		ret->type = '\0';//reject this at checking
+		ret->type = "me is name node"[0];
 	ret->end_space = ft_isspace(src[i + (src[i] && ft_crutch(src, i))]);//bool
 	return (ret);
 }

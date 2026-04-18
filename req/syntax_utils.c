@@ -73,21 +73,6 @@ t_cst	*cst_complain(int *complain, t_cst *cst, char *s)
 	return (cst);
 }
 
-//(ls) > file redirects subshell output to file, I should put redir and depth fields in t_cmd
-//or maybe put the bracket as cmd '(' / op ')' (stick ')' together with an actual op)
-int	redir_wrapper(t_cst *cst, t_cmd **src)
-{
-	t_cmd	*redir;
-	t_cmd	*arg;
-
-	redir = *src;
-	if (!redir || !redir->next || !isname(redir->next))
-		return (1);
-	*src = redir->next;
-	arg = subcmd(src, isjoined);
-	cmd_node_append(&cst->redir, redir);
-	return (0);
-}
 
 int	check_depth(t_cst *cst)
 {
@@ -109,7 +94,32 @@ int	check_depth(t_cst *cst)
 	return (depth);
 }
 
+//(ls) > file redirects subshell output to file, I should put redir and depth fields in t_cmd
+//or maybe put the bracket as cmd '(' / op ')' (stick ')' together with an actual op)
+int	redir_wrapper(t_cst *cst, t_cmd **src)
+{
+	t_cmd	*redir;
+	t_cmd	*arg;
+	t_cmd	*iter;
+	int		depth;
 
+	redir = *src;
+	if (!redir || !redir->next || !isname(redir->next))
+		return (1);
+	*src = redir->next;
+	arg = subcmd(src, isjoined);
+	iter = arg;
+	depth = check_depth(cst);
+	while (iter)
+	{
+		iter->depth = depth;
+		iter = iter->next;
+	}
+	cmd_node_append(&cst->redir, redir);
+	return (0);
+}
+
+//check if we already have a close bracket and only allow ops and redirs if so
 int	meta_wrapper(t_cst *cst, t_cmd **index)
 {
 	t_cmd	**list;
@@ -134,8 +144,9 @@ int	meta_wrapper(t_cst *cst, t_cmd **index)
 	cmd_node_append(&cst->brack)//hmm
 }
 
-//check cmd contents first la
+//note to allow ((ls) > a) but not ( > a (ls))
 //reminder to go back and undo the change to single & type
+//call this using the cmd ptr in main, we will just implement moar cleanup funcs for the new types
 t_cst	*cst_init(t_cmd **cmd, int *complain, int depth)
 {
 	t_cst	*cst;
@@ -148,7 +159,7 @@ t_cst	*cst_init(t_cmd **cmd, int *complain, int depth)
 	cst->depth = depth;
 	while (iter && !cst->op)
 	{
-		if (isname(iter))
+		if (isname(iter))//get this to check for close brackets
 			name_wrapper(cst, &iter);
 		else if (isredir(iter->type) && redir_wrapper(cst, &iter))
 			return (cst_complain(complain, iter->str));//syntax err
@@ -159,5 +170,5 @@ t_cst	*cst_init(t_cmd **cmd, int *complain, int depth)
 	}
 	if (iter)
 		cst->next = cst_init(&iter, complain, check_depth(cst));
-	return (cst);
+	return (cst);//have a checker for check_depth(cst) && !iter
 }

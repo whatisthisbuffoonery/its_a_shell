@@ -1,0 +1,96 @@
+#: ignore line (comment)
+read from file, argv with -c, or stdin
+so called metacharacters and alias expansion
+so called simple and compound commands
+so called shell and filename expansions
+yeet the redirection things out of the arg list
+do command (done)
+handle children and exit status (done)
+
+|VETO| history expansion
+quoting use '', "", |VETO| $'', |VETO| \
+
+\\n would just erase \n (double quotes or no quotes)
+
+cannot escape '' within '', can escape "" within "" using \
+
+''ignore everything
+""does not ignore $ ! ` \, \ is literal unless it escapes something else <<<
+
+something sumshit \! the backslash isnt removed we not doing it
+
+* and @ become special in dquotes
+
+|VETO| locale translation
+	it lets you prepare pre translated strings for scripts to other human languages (.po files)
+
+interactive comments, so called, on by default
+
+-------------------------------------------------------------------------------------------
+
+simple command: echo a b c
+
+compound command:
+	|VETO| reserved words
+	simple commands
+	pipelines
+	list of commands (&&, ||)
+	compound commands
+	coprocesses (???)
+	gnu parallel (???)
+
+## reserved words:
+
+if		then	elif	else	fi			time
+for		in		until	while	do			done
+case	esac	coproc	select	function
+{		}		[[		]]		!
+
+most reserved words are recognised if they are the first word in a command
+'in' and 'do' are recognised if they are the third word of a 'for' command
+'in' is also recognised if it is the third word in a 'case' or 'select' command
+
+
+## pipelines: commands chained using '|' or |VETO| '|&'
+|& will additionally link stderr to next command
+
+'time' will generate stats for time taken to finish pipeline
+
+a subshell is created for all commands in a pipeline,
+unlike outside a pipeline where builtins do not get a subshell by default (?)
+
+|VETO| pipefail
+
+## command lits
+
+|| && & ;
+
+; doesnt have a condition
+
+& is async command. something something job control, something something stdin is now /dev/null
+
+|VETO| looping contructs
+
+## grouping commands
+
+(reminder that $does_not_exist does not error: no names + no operators + no starving redir symbols)
+--------------------------------------------------------------------------------------------
+
+## tilde expansion
+
+god no.
+also remember to code against a $oldpwd with a null string
+
+## heredoc
+
+OH HELL NO
+1. do not env expand delim
+2. check if any part of delim was a quoted token
+	if so, just copy heredoc wholesale
+	if not, we have to env expand the heredoc contents
+
+## builtins
+
+cd dash prints new pwd on success
+
+aaannnnddddd thats it 
