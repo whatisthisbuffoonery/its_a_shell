@@ -120,7 +120,7 @@ int main(int c, char **v, char **e)
 			cmd_init(buf, &cmd);//reminder to check for parsing failure
 			//shell_print(&cmd, buf, &env);
 			print_cmd(&cmd);
-			ft_printf("is it joined: %d, what end_space: %d\n", isjoined(cmd), cmd->end_space);
+//			ft_printf("is it joined: %d, what end_space: %d\n", isjoined(cmd), cmd->end_space);
 			add_history(buf);
 			/*
 			tmp = subcmd(&cmd, isjoined);

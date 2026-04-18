@@ -67,7 +67,7 @@ int	node_init(t_cmd **dst, char *src, int *cry)
 	return (i + ft_crutch(ret->str, i));//thing //replaced c with ret str
 }
 
-void	cmd_init(char *buf, t_cmd **cmd)
+int	cmd_init(char *buf, t_cmd **cmd)
 {
 	int	i;
 	int	cry;
@@ -82,6 +82,7 @@ void	cmd_init(char *buf, t_cmd **cmd)
 			break ;
 		i += node_init(cmd, &buf[i], &cry);
 		if (cry)
-			return ;
+			return (1);
 	}
+	return (0);
 }

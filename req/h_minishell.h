@@ -107,6 +107,12 @@ int			iscond(int c);
 int			isenv(char c);
 int			envname(char *s);
 
+int			single(t_cmd *iter);
+int			isname(t_cmd *node);
+int			isjoined(t_cmd *node);
+int			hascommand(t_cst *cst);
+int			ismeta(t_cmd *cmd);
+
 void		signal_init(void);
 int			rl_handle_signals(void);
 
@@ -119,7 +125,7 @@ void		cmd_node_append(t_cmd **dst, t_cmd *src);
 int			env_add(t_env *env, t_shnode *src, char *dst);
 int			expand_str(t_cmd **cmd, t_shnode *env);
 
-void		cmd_init(char *buf, t_cmd **cmd);
+int			cmd_init(char *buf, t_cmd **cmd);
 int			node_init(t_cmd **dst, char *src, int *cry);
 void		env_init(t_env *dst, char **e);
 t_cst		*cst_init(t_cmd **cmd, int *complain, int depth);
@@ -127,10 +133,12 @@ t_cmd		*subcmd(t_cmd **index, int (*f)(t_cmd *));
 
 int			ft_err(int n, char *s);
 int			shell_assert(int cond, char *s);
+t_cst		*cst_complain(int *complain, t_cst *cst, char *s);
 
 void		merge_sort(t_shnode **head);
 
 int			isjoined(t_cmd *node);
+int			counttype(t_cmd *node, char c);
 
 void		clean_cmd(t_cmd **cmd);
 void		clean_shnode_dup(t_shnode **shnode);
