@@ -2,7 +2,8 @@
 
 int	isname(t_cmd *node)
 {
-	return (node && (iscontent(node->type) || node->type == '*'));
+	return (node && (iscontent(node->type) || ft_isquote(node->type)
+			|| node->type == '*'));
 }
 
 int	isjoined(t_cmd *node)
@@ -32,22 +33,23 @@ t_cmd	*subcmd(t_cmd **index, int (*f)(t_cmd *))
 	t_cmd	*next;
 	t_cmd	*ret;
 
-	iter = *index;
-	ret = *index;
-	while (f(iter))//isjoined will need to check next too
-		iter = iter->next;
-	next = iter;
+	iter = *index;//start from node 1
+	ret = *index;//remember node 1
+	while (f(iter))
+		iter = iter->next;//it is just isjoined here
+	next = iter;//in ls"a" sumshit, next is "a" due to !"a"->next || "a"->end_space
 	if (iter)
 	{
 		next = iter->next;
 		iter->next = NULL;
 	}
-	*index = next;
+	*index = next;//index = sumshit
 	return (ret);
 }
 
 int	name_wrapper(t_cst *cst, t_cmd **iter)
 {
+	ft_printf("bool: %d\n", counttype(cst->brackets, ')'));
 	if (counttype(cst->brackets, ')'))
 		return (1);
 	if (!cst->cmd)
@@ -68,9 +70,9 @@ t_cst	*cst_complain(int *complain, t_cst *cst, char *s)
 {
 	if (s)
 	{
-		ft_putstr_fd("minishell: unexpected token near `");
-		ft_putstr_fd(s);
-		ft_putstr_fd("\'\n");
+		ft_putstr_fd("minishell: unexpected token near `", 2);
+		ft_putstr_fd(s, 2);
+		ft_putstr_fd("\'\n", 2);
 	}
 	*complain = 1;
 	return (cst);
@@ -82,7 +84,7 @@ int	check_depth(t_cst *cst)
 	t_cmd	*iter;
 
 	depth = cst->depth;
-	if (!depth->brackets)
+	if (!cst->brackets)
 		return (depth);
 	iter = cst->brackets;
 	while (iter)
@@ -93,7 +95,7 @@ int	check_depth(t_cst *cst)
 			depth --;
 		iter = iter->next;
 	}
-	shell_assert(depth < 0, "negative depth?\n");
+	shell_assert((depth < 0), "negative depth?\n");
 	return (depth);
 }
 
@@ -127,6 +129,11 @@ int	hascommand(t_cst *cst)
 	return (cst->cmd || cst->redir);
 }
 
+int	ismeta(t_cmd *cmd)
+{
+	return (cmd && (iscond(cmd->type) || isbracket(cmd->type)));
+}
+
 //check if we already have a close bracket and only allow ops and redirs if so
 int	meta_wrapper(t_cst *cst, t_cmd **index)
 {
@@ -134,9 +141,9 @@ int	meta_wrapper(t_cst *cst, t_cmd **index)
 	char	c;
 
 	c = (*index)->type;
-	if (!iscond(c) && !isbracket(c))
-		return (1);
-	else if ((hascommand(cst) && c == '(') || (!hascommand(cst) && c != '('))//don't allow ls() or > redir ()
+	//if (!iscond(c) && !isbracket(c))
+	//	return (1);
+	if ((hascommand(cst) && c == '(') || (!hascommand(cst) && c != '('))//don't allow ls() or > redir ()
 		return (1);
 	else if (!check_depth(cst) && c == ')')
 		return (1);
@@ -153,23 +160,23 @@ int	meta_wrapper(t_cst *cst, t_cmd **index)
 t_cst	*cst_init(t_cmd **cmd, int *complain, int depth)
 {
 	t_cst	*cst;
-	t_cmd	*iter;
+//	t_cmd	*iter;
 
-	iter = *cmd;
+//	iter = *cmd;
 	cst = ft_calloc(sizeof(t_cst), 1);
 	if (ft_err(-!cst, "cst malloc"))
 		return (cst_complain(complain, cst, NULL));//dont print on NULL
 	cst->depth = depth;
-	while (iter && !cst->op)
+	while (*cmd && !cst->op)
 	{
-		if (isname(iter) && name_wrapper(cst, &iter))
-			return (cst_complain(complain, cst, iter->str));
-		else if (isredir(iter->type) && redir_wrapper(cst, &iter))
-			return (cst_complain(complain, cst, iter->str));
-		else if (meta_wrapper(cst, &iter))
-			return (cst_complain(complain, cst, iter->str));
+		if (isname(*cmd) && name_wrapper(cst, cmd))
+			return (cst_complain(complain, cst, (*cmd)->str));
+		else if (*cmd && isredir((*cmd)->type) && redir_wrapper(cst, cmd))//seriously??
+			return (cst_complain(complain, cst, (*cmd)->str));
+		else if (ismeta(*cmd) && meta_wrapper(cst, cmd))
+			return (cst_complain(complain, cst, (*cmd)->str));
 	}
-	if (iter)
-		cst->next = cst_init(&iter, complain, check_depth(cst));
+	if (*cmd)
+		cst->next = cst_init(cmd, complain, check_depth(cst));
 	return (cst);//have a checker for check_depth(cst) && !iter
 }
