@@ -60,10 +60,10 @@ int main(int c, char **v, char **e)
 
 	(void) c;
 	(void) v;
-//	signal_init();
+	signal_init();
 	cmd = NULL;
 	env_init(&env, e);
-//	env_print(&env);
+	env_print(&env);
 	last = 0;
 	while (1)
 	{

@@ -20,6 +20,7 @@ typedef struct s_shnode
 	char			*str;
 }					t_shnode;
 
+
 typedef struct s_cmd
 {
 	struct s_cmd	*next;
@@ -37,6 +38,13 @@ typedef struct	s_env
 	t_shnode	*export;		//env vars corresponding to export builtin	//export list stores env variables in no particular order, but can contain items with empty strings
 	t_shnode	*env;			//env vars corresponding to env builtin		//env list stores env variables in alphabet order, items with empty strings as values are never added to this list
 }				t_env;			//PSA empty strings can be in env list, null strings cannot
+								//
+typedef struct s_commmand
+{
+	char				type; //type=s for simple commands, type=g for grouping cmd, ie. (cmd)
+	t_cmd				**seq; //sequence of words separated by blanks, terminated by ctrl operator (and also beginning with ctrl op if type=g), any quote removal upon initialization
+	struct s_command	*next; //this list is sorted by the correct order of execution
+}						t_command;
 
 typedef struct s_cst
 {
