@@ -46,12 +46,15 @@ t_cmd	*subcmd(t_cmd **index, int (*f)(t_cmd *))
 	return (ret);
 }
 
-void	name_wrapper(t_cst *cst, t_cmd **iter)
+int	name_wrapper(t_cst *cst, t_cmd **iter)
 {
+	if (counttype(cst->brackets, ')'))
+		return (1);
 	if (!cst->cmd)
 		cst->cmd = subcmd(iter, isjoined);
 	else
 		cmd_node_append(&cst->args, subcmd(iter, isjoined));
+	return (0);
 }
 
 int	single(t_cmd *iter)
@@ -119,6 +122,11 @@ int	redir_wrapper(t_cst *cst, t_cmd **src)
 	return (0);
 }
 
+int	hascommand(t_cst *cst)
+{
+	return (cst->cmd || cst->redir);
+}
+
 //check if we already have a close bracket and only allow ops and redirs if so
 int	meta_wrapper(t_cst *cst, t_cmd **index)
 {
@@ -130,21 +138,17 @@ int	meta_wrapper(t_cst *cst, t_cmd **index)
 	c = src->type;
 	if (!iscond(c) && !isbracket(c))
 		return (1);
-	else if (cst->cmd && c == '(')//don't allow ls()
-		return (1);
-	else if (!cst->cmd && c != '(')
+	else if ((hascommand(cst) && c == '(') || (!hascommand(cst) && c != '('))//don't allow ls() or > redir ()
 		return (1);
 	else if (!check_depth(cst) && c == ')')
 		return (1);
-//	if (counttype(cst->brackets, c))
-//		return (1)
 	list = &cst->brackets;
 	if (iscond(c))
 		list = &cst->op;
 	cmd_node_append(&cst->brack)//hmm
 }
 
-//note to allow ((ls) > a) but not ( > a (ls))
+//note to allow ((ls) > a) but not ( > a (ls)), which 
 //reminder to go back and undo the change to single & type
 //call this using the cmd ptr in main, we will just implement moar cleanup funcs for the new types
 t_cst	*cst_init(t_cmd **cmd, int *complain, int depth)
@@ -159,12 +163,10 @@ t_cst	*cst_init(t_cmd **cmd, int *complain, int depth)
 	cst->depth = depth;
 	while (iter && !cst->op)
 	{
-		if (isname(iter))//get this to check for close brackets
-			name_wrapper(cst, &iter);
+		if (isname(iter) && name_wrapper(cst, &iter))
+			return (cst_complain(complain, cst, iter->str));
 		else if (isredir(iter->type) && redir_wrapper(cst, &iter))
-			return (cst_complain(complain, iter->str));//syntax err
-	//	else if (iscond(iter->type))
-	//		cst->op = subcmd(&iter, single);
+			return (cst_complain(complain, cst, iter->str));
 		else if (meta_wrapper(cst, &iter))
 			return (cst_complain(complain, cst, iter->str));
 	}

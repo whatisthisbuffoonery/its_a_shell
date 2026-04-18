@@ -5,7 +5,7 @@ it has a next pointer that will point to a node with a bracket
 
 we will call it a t_shlist
 
-cst_init guarantees that '(' tokens are within the first few nodes alongside redirections,
+cst_init guarantees that '(' tokens are within the first few nodes, NOT INCLUDING redirections,
 and that ')' are within the last few right before a list operator (|| &&)
 in order to collect these redirections properly, redirections matching the old depth level:
 		in the node containing the '(' open bracket
