@@ -51,29 +51,96 @@ int	shell_exit(t_env *env, int last)
 	return (last);
 }
 
+void	print_more_cmd(t_cmd *cmd)
+{
+	print_cmd(&cmd);
+	if (cmd)
+		print_env(cmd->env);
+}
+
+//does not handle brackets, that will be handled in shlist print instead
+void	print_cst(t_cst *cst, int check)
+{
+	while (cst)
+	{
+		print_more_cmd(cst->cmd);
+		print_more_cmd(cst->args);
+		print_more_cmd(cst->redir);
+		print_more_cmd(cst->op);
+
+		cst = cst->next;
+	}
+	if (!check)
+		ft_printf("no syntax errors found prior to checking empty brackets / missing command in tail\n");
+}
+
+void	clean_cst(t_cst **cst)
+{
+	t_cst	*iter;
+	t_cst	*next;
+
+	iter = *cst;
+	while (iter)
+	{
+		clean_cmd(&iter->cmd);
+		clean_cmd(&iter->args);
+		clean_cmd(&iter->op);
+		clean_cmd(&iter->redir);
+		clean_cmd(&iter->brackets);
+		next = iter->next;
+		free(iter);
+		iter = next;
+	}
+	*cst = NULL;
+}
+
 int main(int c, char **v, char **e)
 {
 	int		last;
 	char	*buf;
 	t_env	env;
 	t_cmd	*cmd;
+	t_cmd	*tmp;
+	t_cst	*cst;
 
-	(void) c;
-	(void) v;
 	signal_init();
 	cmd = NULL;
+	tmp = NULL;
+	cst = NULL;
 	env_init(&env, e);
-	env_print(&env);
-	last = 0;
+	//env_print(&env);
 	while (1)
 	{
+		last = 0;
 		buf = readline("I am a shell% ");
 		if (/*!muh_number &&*/ !buf)
 			return (shell_exit(&env, last));
-		cmd_init(buf, &cmd);
-		cst_init(
-		shell_print(&cmd, buf, &env);
+		if (buf[0])
+		{
+			cmd_init(buf, &cmd);//reminder to check for parsing failure
+			//shell_print(&cmd, buf, &env);
+			print_cmd(&cmd);
+			ft_printf("is it joined: %d, what end_space: %d\n", isjoined(cmd), cmd->end_space);
+			add_history(buf);
+			/*
+			tmp = subcmd(&cmd, isjoined);
+			ft_putstr("cmd: ");
+			print_cmd(&cmd);
+			ft_putstr("\ntmp: ");
+			print_cmd(&tmp);
+			ft_putchar('\n');
+			*/
+			cst = cst_init(&cmd, &last, 0);
+			print_cst(cst, last);
+			clean_cst(&cst);
+		}
+		free(buf);
 		clean_cmd(&cmd);
+		clean_cmd(&tmp);
 		muh_number = 0;
 	}
+	(void) c;
+	(void) v;
+	(void) cst;
+	(void) tmp;
 }

@@ -16,7 +16,7 @@ void	print_env(t_shnode *env)
 	ft_putstr("\n\n");
 }
 
-void	print_cmd(t_cmd **cmd, int *last)
+void	print_cmd(t_cmd **cmd)//, int *last)
 {
 	t_cmd	*iter;
 
@@ -29,7 +29,7 @@ void	print_cmd(t_cmd **cmd, int *last)
 		iter = iter->next;
 	}
 //	ft_printf("\nexit status: %d\n", *last);
-	(void) last;
+//	(void) last;
 }
 
 void	shell_print(t_cmd **cmd, char *buf, t_env *env)
@@ -56,12 +56,16 @@ void	shell_print(t_cmd **cmd, char *buf, t_env *env)
 	if (buf && buf[0])
 	{
 <<<<<<< HEAD
+<<<<<<< HEAD
 		expand_str(cmd, env->env);
 		print_cmd(cmd, &cry);
 		node = parse(*cmd);
 		ast_print(node, 0);
 =======
 		cmd_init(buf, cmd);
+=======
+	//	cmd_init(buf, cmd);
+>>>>>>> 54a45dd (did half of syntax)
 		expand_str(cmd, env->env);//note to move this step after cst init for semantics
 //		print_cmd(cmd, &cry);
 >>>>>>> 0efbb77 (uh oh)
