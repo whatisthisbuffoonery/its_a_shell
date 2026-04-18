@@ -25,6 +25,8 @@ typedef struct s_cmd
 	struct s_cmd	*next;
 	t_shnode		*env;		//expansion list //assert that operators are never assigned this list
 	char			*str;		//stores one word, operator, or quoted section
+	int				order;
+	int				depth;
 	char			type;		//stores just first char of pre parsed string, which might be a dquote excluded from str field
 	char			end_space;	//bool for whether the char after the token was whitespace
 }					t_cmd;
@@ -58,6 +60,15 @@ typedef struct s_glob
 	t_shnode	*results;
 	int			index;
 }				t_glob;
+
+//there was the opportunity to name this, confusingly, t_ast
+typedef struct s_shlist
+{
+	t_cst			*cst;//list of commands
+	struct s_shlist	*down;
+	struct s_shlist	*across;
+	t_cmd			*redir;//each shlist will self assign redirections whose depth is lower than itself
+}					t_shlist;
 
 int			isbracket(int c);
 int			isop(int c);
@@ -105,4 +116,3 @@ void		ft_putchar(char n);
 void		ft_putstr(char *a);
 
 #endif
-//global var thing

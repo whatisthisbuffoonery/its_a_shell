@@ -1,0 +1,30 @@
+I have decided to.... make another overarching struct over cst.
+
+this new struct will collect csts in lists and pipelines until it hits a different depth
+it has a next pointer that will point to a node with a bracket
+
+we will call it a t_shlist
+
+cst_init guarantees that '(' tokens are within the first few nodes alongside redirections,
+and that ')' are within the last few right before a list operator (|| &&)
+in order to collect these redirections properly, redirections matching the old depth level:
+		in the node containing the '(' open bracket
+		in the node after the corresponding ')' close bracket
+	are removed from those nodes and placed in shlist
+
+how exactly we arrange this stuff?
+
+take for example ls && ((echo a || echo b) && echo c)
+
+which produces:
+	[ls, &&]
+	[(, (, echo, a, ||]
+	[echo, b, ), &&]
+	[echo, c, )]
+shlist 1 takes the first cst and points to the second
+shlist 2 removes an open bracket, taking it for itself, and points to the second cst
+shlist 3 takes the other open bracket, and the second and third csts, removing the close bracket to count depth
+shlist 2 wakes up after shlist 3 finishes, and takes the fourth cst
+
+this implementation will require that each cst have a int field 'sequence' for shlist to use. gud enuf.
+each shlist is envisioned to be a complete subshell command list, where it stores its own global redirects
