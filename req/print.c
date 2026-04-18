@@ -33,8 +33,9 @@ void	print_cmd(t_cmd **cmd, int *last)
 }
 void	shell_print(t_cmd **cmd, char *buf, t_env *env)
 {
-	int	i = 0;
-	int	cry = 0;
+	int		i = 0;
+	int		cry = 0;
+	t_node	*node;
 
 	while (buf && buf[i])
 	{
@@ -52,6 +53,8 @@ void	shell_print(t_cmd **cmd, char *buf, t_env *env)
 	{
 		expand_str(cmd, env->env);
 		print_cmd(cmd, &cry);
+		node = parse(*cmd);
+		ast_print(node, 0);
 		add_history(buf);
 	}
 	else if (!buf)

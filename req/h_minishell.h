@@ -39,12 +39,33 @@ typedef struct	s_env
 	t_shnode	*env;			//env vars corresponding to env builtin		//env list stores env variables in alphabet order, items with empty strings as values are never added to this list
 }				t_env;			//PSA empty strings can be in env list, null strings cannot
 								//
-typedef struct s_commmand
+typedef enum e_node_kind
 {
-	char				type; //type=s for simple commands, type=g for grouping cmd, ie. (cmd)
-	t_cmd				**seq; //sequence of words separated by blanks, terminated by ctrl operator (and also beginning with ctrl op if type=g), any quote removal upon initialization
-	struct s_command	*next; //this list is sorted by the correct order of execution
-}						t_command;
+	N_CMD,		//simple command		  
+	N_PIPE,		//pipeline  left | right
+	N_AND,		//left && right 
+	N_OR,		//left || right
+	N_GROUP,	//( inner )	  
+	N_REDIR,	//redirection
+}	t_node_kind;
+
+typedef struct s_node
+{
+	t_node_kind		kind;
+	char			**argv; // N_CMD  – argv array (NULL-terminated) 
+	int				argc;
+	char			*redir_op;		// N_REDIR – attached to the cmd or group it belongs to 
+	char			*redir_target;
+	struct s_node	*redir_next;	// linked list of redirects on one cmd 
+	struct s_node	*left;			// N_PIPE / N_AND / N_OR / N_GROUP 
+	struct s_node	*right;			// unused for N_GROUP 
+}					t_node;
+
+typedef struct s_parser	//parser state
+{
+	t_cmd	*cur;	// current token 
+	int		err;	// non-zero → parse failed 
+}	t_parser;
 
 typedef struct s_cst
 {
@@ -114,6 +135,14 @@ void		shell_print(t_cmd **cmd, char *buf, t_env *env);
 
 int			syntax_check(t_cmd **cmd, t_env *env, char *input);
 
+t_node		*parse(t_cmd *tokens);
+t_node		*parse_list(t_parser *p);
+t_node		*parse_pipeline(t_parser *p);
+t_node		*parse_command(t_parser *p);
+t_node		*parse_group(t_parser *p);
+t_node		*parse_simple_cmd(t_parser *p);
+t_node		*parse_redirects(t_parser *p);
+void		ast_print(t_node *n, int depth);
 
 int			ft_strcmp(char *a, char *b);
 int			ft_isquote(int c);
