@@ -68,9 +68,11 @@ int main(int c, char **v, char **e)
 	while (1)
 	{
 		buf = readline("I am a shell% ");
-		shell_print(&cmd, buf, &env);
 		if (/*!muh_number &&*/ !buf)
 			return (shell_exit(&env, last));
+		cmd_init(buf, &cmd);
+		cst_init(
+		shell_print(&cmd, buf, &env);
 		clean_cmd(&cmd);
 		muh_number = 0;
 	}

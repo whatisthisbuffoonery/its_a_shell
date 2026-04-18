@@ -66,3 +66,22 @@ int	node_init(t_cmd **dst, char *src, int *cry)
 	cmd_node_append(dst, ret);
 	return (i + ft_crutch(ret->str, i));//thing //replaced c with ret str
 }
+
+void	cmd_init(char *buf, t_cmd **cmd)
+{
+	int	i;
+	int	cry;
+
+	i = 0;
+	cry = 0;
+	while (buf && buf[i])
+	{
+		while (ft_isspace(buf[i]))
+			i ++;
+		if (!buf[i])
+			break ;
+		i += node_init(cmd, &buf[i], &cry);
+		if (cry)
+			return ;
+	}
+}

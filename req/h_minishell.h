@@ -117,6 +117,7 @@ t_shnode	*find_env(char *str, t_shnode *list, int n);
 int			env_add(t_env *env, t_shnode *src, char *dst);
 int			expand_str(t_cmd **cmd, t_shnode *env);
 
+void		cmd_init(char *buf, t_cmd **cmd);
 int			node_init(t_cmd **dst, char *src, int *cry);
 void		env_init(t_env *dst, char **e);
 
