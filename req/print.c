@@ -31,8 +31,10 @@ void	print_cmd(t_cmd **cmd, int *last)
 //	ft_printf("\nexit status: %d\n", *last);
 	(void) last;
 }
+
 void	shell_print(t_cmd **cmd, char *buf, t_env *env)
 {
+<<<<<<< HEAD
 	int		i = 0;
 	int		cry = 0;
 	t_node	*node;
@@ -47,14 +49,22 @@ void	shell_print(t_cmd **cmd, char *buf, t_env *env)
 		if (cry)
 			return ;
 	}
+=======
+>>>>>>> 0efbb77 (uh oh)
 //	if (buf)
 //		ft_printf("strlen: %d, i: %d\n", ft_strlen(buf), i);
 	if (buf && buf[0])
 	{
+<<<<<<< HEAD
 		expand_str(cmd, env->env);
 		print_cmd(cmd, &cry);
 		node = parse(*cmd);
 		ast_print(node, 0);
+=======
+		cmd_init(buf, cmd);
+		expand_str(cmd, env->env);//note to move this step after cst init for semantics
+//		print_cmd(cmd, &cry);
+>>>>>>> 0efbb77 (uh oh)
 		add_history(buf);
 	}
 	else if (!buf)
@@ -64,6 +74,7 @@ void	shell_print(t_cmd **cmd, char *buf, t_env *env)
 //		do_thing(buf);
 	free(buf);
 }
+
 void	env_print(t_env *env)
 {
 	t_shnode	*iter;

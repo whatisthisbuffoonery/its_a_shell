@@ -1,13 +1,13 @@
 #include "h_minishell.h"
 
-int	isjoined(t_cmd *node)
-{
-	return (node && !node->end_space && (iscontent(node->type) || node->type == '*'));
-}
-
 int	isname(t_cmd *node)
 {
 	return (node && (iscontent(node->type) || node->type == '*'));
+}
+
+int	isjoined(t_cmd *node)
+{
+	return (isname(node) && isname(node->next) && !node->end_space);
 }
 
 //I wouldn't plug this in
@@ -34,7 +34,7 @@ t_cmd	*subcmd(t_cmd **index, int (*f)(t_cmd *))
 
 	iter = *index;
 	ret = *index;
-	while (f(iter))
+	while (f(iter))//isjoined will need to check next too
 		iter = iter->next;
 	next = iter;
 	if (iter)
@@ -76,7 +76,6 @@ t_cst	*cst_complain(int *complain, t_cst *cst, char *s)
 	return (cst);
 }
 
-
 int	check_depth(t_cst *cst)
 {
 	int		depth;
@@ -94,6 +93,7 @@ int	check_depth(t_cst *cst)
 			depth --;
 		iter = iter->next;
 	}
+	shell_assert(depth < 0, "negative depth?\n");
 	return (depth);
 }
 
@@ -131,11 +131,9 @@ int	hascommand(t_cst *cst)
 int	meta_wrapper(t_cst *cst, t_cmd **index)
 {
 	t_cmd	**list;
-	t_cmd	*src;
 	char	c;
 
-	src = *index;
-	c = src->type;
+	c = (*index)->type;
 	if (!iscond(c) && !isbracket(c))
 		return (1);
 	else if ((hascommand(cst) && c == '(') || (!hascommand(cst) && c != '('))//don't allow ls() or > redir ()
@@ -145,7 +143,8 @@ int	meta_wrapper(t_cst *cst, t_cmd **index)
 	list = &cst->brackets;
 	if (iscond(c))
 		list = &cst->op;
-	cmd_node_append(&cst->brack)//hmm
+	cmd_node_append(list, subcmd(index, single));
+	return (0);
 }
 
 //note to allow ((ls) > a) but not ( > a (ls)), which 
