@@ -96,17 +96,21 @@ void	clean_cst(t_cst **cst)
 
 int main(int c, char **v, char **e)
 {
-	int		last;
-	char	*buf;
+	int		last;//put inside env
+	char	*buf;//put inside env...?
 	t_env	env;
 	t_cmd	*cmd;
 	t_cmd	*tmp;
 	t_cst	*cst;
+	t_cmd	*redir;
+	t_dlist	*dlist;
 
 	signal_init();
 	cmd = NULL;
 	tmp = NULL;
 	cst = NULL;
+	dlist = NULL;
+	redir = NULL;
 	env_init(&env, e);
 	//env_print(&env);
 	while (1)
@@ -120,23 +124,21 @@ int main(int c, char **v, char **e)
 			cmd_init(buf, &cmd);//reminder to check for parsing failure
 			//shell_print(&cmd, buf, &env);
 			print_cmd(&cmd);
-//			ft_printf("is it joined: %d, what end_space: %d\n", isjoined(cmd), cmd->end_space);
+			//ft_printf("is it joined: %d, what end_space: %d\n", isjoined(cmd), cmd->end_space);
 			add_history(buf);
-			/*
-			tmp = subcmd(&cmd, isjoined);
-			ft_putstr("cmd: ");
-			print_cmd(&cmd);
-			ft_putstr("\ntmp: ");
-			print_cmd(&tmp);
-			ft_putchar('\n');
-			*/
 			cst = cst_init(&cmd, &last, 0);
-			print_cst(cst, last);
+			//print_cst(cst, last);
+			if (!last)
+			{
+				dlist = dlist_init(cst, &last, 0, &redir);
+				print_dlist(dlist);
+			}
 			clean_cst(&cst);
 		}
 		free(buf);
 		clean_cmd(&cmd);
-		clean_cmd(&tmp);
+		clean_cst(&cst);
+		clean_dlist(&dlist);
 		muh_number = 0;
 	}
 	(void) c;
