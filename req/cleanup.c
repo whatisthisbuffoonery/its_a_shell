@@ -32,6 +32,13 @@ void	clean_shnode_dup(t_shnode **shnode)
 	*shnode = NULL;
 }
 
+void	cmd_delone(t_cmd *cmd)
+{
+	free(cmd->str);
+	clean_shnode_dup(&cmd->env);
+	free(cmd);
+}
+
 void	clean_cmd(t_cmd **cmd)
 {
 	t_cmd	*iter;
@@ -41,9 +48,7 @@ void	clean_cmd(t_cmd **cmd)
 	while(iter)
 	{
 		next = iter->next;
-		free(iter->str);
-		clean_shnode_dup(&iter->env);
-		free(iter);
+		cmd_delone(iter);
 		iter = next;
 	}
 	*cmd = NULL;

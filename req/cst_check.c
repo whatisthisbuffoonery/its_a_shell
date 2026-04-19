@@ -1,6 +1,6 @@
 #include "h_minishell.h"
 
-int	single(t_cmd *iter)
+int	single_cmd(t_cmd *iter)
 {
 	(void) iter;
 	return (0);

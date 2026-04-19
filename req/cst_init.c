@@ -74,7 +74,7 @@ int	meta_wrapper(t_cst *cst, t_cmd **index)
 	list = &cst->brackets;
 	if (iscond(c))
 		list = &cst->op;
-	cmd_node_append(list, subcmd(index, single));
+	cmd_node_append(list, subcmd(index, single_cmd));
 	return (0);
 }
 
@@ -84,9 +84,7 @@ int	meta_wrapper(t_cst *cst, t_cmd **index)
 t_cst	*cst_init(t_cmd **cmd, int *complain, int depth)
 {
 	t_cst	*cst;
-//	t_cmd	*iter;
 
-//	iter = *cmd;
 	cst = ft_calloc(sizeof(t_cst), 1);
 	if (ft_err(-!cst, "cst malloc"))
 		return (cst_complain(complain, cst, NULL));//dont print on NULL
@@ -102,5 +100,7 @@ t_cst	*cst_init(t_cmd **cmd, int *complain, int depth)
 	}
 	if (*cmd)
 		cst->next = cst_init(cmd, complain, check_depth(cst));
-	return (cst);//have a checker for check_depth(cst) && !iter
+	if (!*cmd && check_depth(cst))
+		return (cst_complain(complain, cst, "\0"));
+	return (cst);
 }

@@ -2,14 +2,17 @@
 
 int	rl_handle_signals(void)//sigaction flag interrupt, rl handler	//does nl + redisplay (if not running a child)
 {
+	//else if (muh_number == SIGQUIT)
+	//	ft_putstr("^\\");
 	if (muh_number == SIGINT)
+	{
 		ft_putstr("^C");
-	else if (muh_number == SIGQUIT)
-		ft_putstr("^\\");
-	write(1, "\n", 1);
-	rl_on_new_line();
-	rl_replace_line("", 0);
-	rl_redisplay();
+		write(1, "\n", 1);
+		rl_on_new_line();
+		rl_replace_line("", 0);
+		rl_redisplay();
+	}
+	muh_number = 0;
 	return (0);
 }
 
@@ -26,8 +29,8 @@ void	signal_init(void)
 	rl_catch_signals = 0;
 	rl_catch_sigwinch = 0;
 	rl_signal_event_hook = rl_handle_signals;
-	if (ft_err(sigemptyset(&mask) || sigaddset(&mask, SIGTERM)
-		|| sigaddset(&mask, SIGQUIT), "signal mask error"))//these return -1
+	if (ft_err((sigemptyset(&mask) || sigaddset(&mask, SIGTERM)
+		|| sigaddset(&mask, SIGQUIT)), "signal mask error"))//these return -1
 		return ;
 	ft_memset(&hands, 0, sizeof(struct sigaction));
 	hands = (struct sigaction){.sa_mask = mask, .sa_handler = sighands};//, .sa_flags = SA_RESTART;//exclude restart flag

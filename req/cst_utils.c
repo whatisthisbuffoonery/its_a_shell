@@ -1,5 +1,11 @@
 #include "h_minishell.h"
 
+//go rename single func later
+int	copy_cmd(t_cmd *cmd)
+{
+	return (cmd != NULL);
+}
+
 int	counttype(t_cmd *node, char c)
 {
 	int	i;

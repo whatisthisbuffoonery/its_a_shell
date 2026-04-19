@@ -26,7 +26,6 @@ typedef struct s_cmd
 	struct s_cmd	*next;
 	t_shnode		*env;		//expansion list //assert that operators are never assigned this list
 	char			*str;		//stores one word, operator, or quoted section
-	int				order;
 	int				depth;
 	char			type;		//stores just first char of pre parsed string, which might be a dquote excluded from str field
 	char			end_space;	//bool for whether the char after the token was whitespace
@@ -91,13 +90,13 @@ typedef struct s_glob
 }				t_glob;
 
 //there was the opportunity to name this, confusingly, t_ast
-typedef struct s_shlist
+typedef struct s_dlist
 {
 	t_cst			*cst;//list of commands
-	struct s_shlist	*down;
-	struct s_shlist	*across;
+	struct s_dlist	*down;
+	struct s_dlist	*across;
 	t_cmd			*redir;//each shlist will self assign redirections whose depth is lower than itself
-}					t_shlist;
+}					t_dlist;
 
 int			isbracket(int c);
 int			isop(int c);
@@ -107,7 +106,7 @@ int			iscond(int c);
 int			isenv(char c);
 int			envname(char *s);
 
-int			single(t_cmd *iter);
+int			single_cmd(t_cmd *iter);
 int			isname(t_cmd *node);
 int			isjoined(t_cmd *node);
 int			hascommand(t_cst *cst);
@@ -138,8 +137,10 @@ t_cst		*cst_complain(int *complain, t_cst *cst, char *s);
 void		merge_sort(t_shnode **head);
 
 int			isjoined(t_cmd *node);
+int			copy_cmd(t_cmd *cmd);
 int			counttype(t_cmd *node, char c);
 
+void		cmd_delone(t_cmd *cmd);
 void		clean_cmd(t_cmd **cmd);
 void		clean_shnode_dup(t_shnode **shnode);
 void		clean_shnode(t_shnode **shnode);
