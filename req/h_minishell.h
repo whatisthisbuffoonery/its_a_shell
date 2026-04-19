@@ -141,7 +141,9 @@ t_node		*parse_pipeline(t_parser *p);
 t_node		*parse_command(t_parser *p);
 t_node		*parse_group(t_parser *p);
 t_node		*parse_simple_cmd(t_parser *p);
+t_node		*parse_one_redirect(t_parser *p);
 t_node		*parse_redirects(t_parser *p);
+char		*collect_word(t_parser *p);
 void		ast_print(t_node *n, int depth);
 
 int			ft_strcmp(char *a, char *b);
