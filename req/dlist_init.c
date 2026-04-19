@@ -13,9 +13,9 @@ void	cmd_pop(t_cmd **cmd)
 	}
 }
 
-int	issubshell(t_cst **cst)
+int	issubshell(t_cst **cst, char type)
 {
-	if (*cst && (*cst)->brackets && (*cst)->brackets->type == '(')
+	if (*cst && (*cst)->brackets && (*cst)->brackets->type == type)
 	{
 		cmd_pop(&(*cst)->brackets);
 		return (1);
@@ -23,7 +23,24 @@ int	issubshell(t_cst **cst)
 	return (0);
 }
 
-t_cmd	*grab_redir(int depth, t_cmd **redir)
+t_cmd	*cmdtrim(t_cmd **list, t_cmd *head, t_cmd *tail)
+{
+	t_cmd	*prev;
+	t_cmd	*next;
+
+	prev = *list;
+	while (prev != head && prev->next != head)
+		prev = prev->next;
+	next = tail->next;
+	tail->next = NULL;
+	if (prev != head)
+		prev->next = next;
+	else
+		*list = next;
+	return (head);
+}
+
+t_cmd	*dlist_redir(int depth, t_cmd **redir)
 {
 	t_cmd	*iter;
 	t_cmd	*head;
@@ -46,19 +63,33 @@ t_cmd	*grab_redir(int depth, t_cmd **redir)
 	if (!head)
 		return (NULL);
 	else
+		return cmdtrim(redir, head, tail);
+}
 
 
 //null cst stops depth 0 from pulling extra but it does feel fragile
 //check for redir_depth == depth - 1
+		/*
 t_dlist	*dlist_redir(t_dlist *dlist, int depth, t_cmd **redir)
 {
 	t_cst	*cst;
 
 	cst = dlist->cst;
-	if (cst && cst->redir && counttype(cst->brackets, ')'))
-		*redir = cst->redir;
-	if (*redir)
-		dlist->redir = grab_redir(depth, redir);
+}
+*/
+
+int	endsubshell(t_dlist *dlist)
+{
+	int	flag;
+
+	flag = 0;
+	while (dlist)
+	{
+		if (issubshell(&dlist->cst, ')'))
+			return (1);
+		dlist = dlist->down;
+	}
+	return (0);
 }
 
 //(ls && (ls)): _ down > ls across > _ down > ls
@@ -71,15 +102,21 @@ t_dlist	*dlist_init(t_cst **cst, int *complain, int depth, t_cmd **redir)
 	dlist = ft_calloc(sizeof(t_dlist), 1);
 	if (ft_err(-!dlist, "dlist malloc"))
 		return (dlist_complain(complain, dlist, NULL));//could merge into cst complain
-	flag = issubshell(cst);
 	while (*cst && !dlist->cst && !*complain)
 	{
-		if (flag)//only check for open bracket
+		if (issubshell(cst, '('))
 			dlist->down = dlist_init(cst, complain, depth + 1, redir);
 		else
 			dlist->cst = cst_pop(cst);
 	}
-	else if (*cst && !*complain)
+	flag = endsubshell(dlist);
+	if (*cst && !flag && !*complain)
 		dlist->across = dlist_init(cst, complain);
-	return (dlist_redir(dlist, depth, redir));
+	if (*complain)
+		return (dlist);
+	else if (dlist->cst && dlist->cst->redir && flag)
+		*redir = cst->redir;
+	if (*redir)
+		dlist->redir = dlist_redir(depth, redir);
+	return (dlist);
 }

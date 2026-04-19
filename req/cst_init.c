@@ -47,7 +47,7 @@ int	redir_wrapper(t_cst *cst, t_cmd **src)
 		return (1);
 	*src = redir->next;
 	arg = subcmd(src, isjoined);
-	iter = arg;
+	iter = redir;
 	depth = check_depth(cst);
 	while (iter)
 	{
