@@ -6,7 +6,7 @@
 /*   By: dthoo <dthoo@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/22 17:14:04 by dthoo             #+#    #+#             */
-/*   Updated: 2026/01/22 17:16:22 by dthoo            ###   ########.fr       */
+/*   Updated: 2026/04/19 14:06:45 by achew            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@ int	ft_strcmp(char *a, char *b)
 	int	i;
 
 	i = 0;
-	while (a[i] && a[i] == b[i])
-		i ++;
-	return ((unsigned char) a[i] - (unsigned char) b[i]);
+	while (a[i] && b[i] && a[i] == b[i])
+		i++;
+	return ((unsigned char)a[i] - (unsigned char)b[i]);
 }
