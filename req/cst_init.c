@@ -3,11 +3,11 @@
 int	check_depth(t_cst *cst)
 {
 	int		depth;
+	int		initial;
 	t_cmd	*iter;
 
 	depth = cst->depth;
-	if (!cst->brackets)
-		return (depth);
+	initial = depth;
 	iter = cst->brackets;
 	while (iter)
 	{
@@ -18,6 +18,8 @@ int	check_depth(t_cst *cst)
 		iter = iter->next;
 	}
 	shell_assert((depth < 0), "negative depth?\n");
+//	ft_printf("||depth func||, initial: %d, return: %d\n", initial, depth);
+	(void) initial;
 	return (depth);
 }
 
@@ -55,6 +57,7 @@ int	redir_wrapper(t_cst *cst, t_cmd **src)
 		iter = iter->next;
 	}
 	cmd_node_append(&cst->redir, redir);
+	(void) arg;
 	return (0);
 }
 
@@ -100,7 +103,7 @@ t_cst	*cst_init(t_cmd **cmd, int *complain, int depth)
 	}
 	if (*cmd)
 		cst->next = cst_init(cmd, complain, check_depth(cst));
-	if (!*cmd && check_depth(cst))
+	else if (!*cmd && (check_depth(cst) || cst->op))
 		return (cst_complain(complain, cst, "\0"));
 	return (cst);
 }
