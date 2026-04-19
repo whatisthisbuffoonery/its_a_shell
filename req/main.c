@@ -57,6 +57,7 @@ int main(int c, char **v, char **e)
 	char	*buf;
 	t_env	env;
 	t_cmd	*cmd;
+	t_node	*node;
 
 	(void) c;
 	(void) v;
@@ -71,6 +72,9 @@ int main(int c, char **v, char **e)
 		shell_print(&cmd, buf, &env);
 		if (/*!muh_number &&*/ !buf)
 			return (shell_exit(&env, last));
+		node = parse(cmd);
+		ast_print(node, 0);
+		ast_free(node);
 		clean_cmd(&cmd);
 		muh_number = 0;
 	}
