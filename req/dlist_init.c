@@ -80,9 +80,6 @@ t_dlist	*dlist_redir(t_dlist *dlist, int depth, t_cmd **redir)
 
 int	endsubshell(t_dlist *dlist)
 {
-	int	flag;
-
-	flag = 0;
 	while (dlist)
 	{
 		if (issubshell(&dlist->cst, ')'))
@@ -90,6 +87,18 @@ int	endsubshell(t_dlist *dlist)
 		dlist = dlist->down;
 	}
 	return (0);
+}
+
+t_cst	*cst_pop(t_cst **cst)
+{
+	t_cst	*ret;
+
+	if (!*cst)
+		return (NULL);
+	ret = *cst;
+	*cst = ret->next;
+	ret->next = NULL;
+	return (ret);
 }
 
 //(ls && (ls)): _ down > ls across > _ down > ls
@@ -111,11 +120,11 @@ t_dlist	*dlist_init(t_cst **cst, int *complain, int depth, t_cmd **redir)
 	}
 	flag = endsubshell(dlist);
 	if (*cst && !flag && !*complain)
-		dlist->across = dlist_init(cst, complain);
+		dlist->across = dlist_init(cst, complain, depth, redir);
 	if (*complain)
 		return (dlist);
 	else if (dlist->cst && dlist->cst->redir && flag)
-		*redir = cst->redir;
+		*redir = dlist->cst->redir;
 	if (*redir)
 		dlist->redir = dlist_redir(depth, redir);
 	return (dlist);

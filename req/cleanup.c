@@ -53,3 +53,14 @@ void	clean_cmd(t_cmd **cmd)
 	}
 	*cmd = NULL;
 }
+
+void	clean_dlist(t_dlist *dlist)
+{
+	if (!dlist)
+		return ;
+	clean_cst(&dlist->cst);
+	clean_cmd(&dlist->redir);
+	clean_dlist(dlist->down);
+	clean_dlist(dlist->across);
+	free(dlist);
+}

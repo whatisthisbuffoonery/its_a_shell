@@ -129,10 +129,12 @@ int			node_init(t_cmd **dst, char *src, int *cry);
 void		env_init(t_env *dst, char **e);
 t_cst		*cst_init(t_cmd **cmd, int *complain, int depth);
 t_cmd		*subcmd(t_cmd **index, int (*f)(t_cmd *));
+t_dlist		*dlist_init(t_cst **cst, int *complain, int depth, t_cmd **redir);
 
 int			ft_err(int n, char *s);
 int			shell_assert(int cond, char *s);
 t_cst		*cst_complain(int *complain, t_cst *cst, char *s);
+t_dlist		*dlist_complain(int *complain, t_dlist *dlist, char *s);
 
 void		merge_sort(t_shnode **head);
 
@@ -144,12 +146,18 @@ void		cmd_delone(t_cmd *cmd);
 void		clean_cmd(t_cmd **cmd);
 void		clean_shnode_dup(t_shnode **shnode);
 void		clean_shnode(t_shnode **shnode);
+void		clean_cst(t_cst **cst);
+void		clean_dlist(t_dlist *dlist);
 
 int			ft_crutch(char *s, int n);
 void		env_print(t_env *env);
 void		shell_print(t_cmd **cmd, char *buf, t_env *env);
 void		print_cmd(t_cmd **cmd);
 void		print_env(t_shnode *env);
+void		print_cst(t_cst *cst, int check);
+void		print_linear_cst(t_cst *cst);
+void		print_dlist(t_dlist *dlist, int depth);
+void		print_linear_cmd(t_cmd *cmd, char *s);
 
 int			syntax_check(t_cmd **cmd, t_env *env, char *input);
 

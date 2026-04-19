@@ -58,6 +58,34 @@ void	print_more_cmd(t_cmd *cmd)
 		print_env(cmd->env);
 }
 
+void	print_linear_cmd(t_cmd *cmd, char *s)
+{
+	if (s)
+	{
+		ft_putstr(s);
+		ft_putstr(": ");
+	}
+	while (cmd)
+	{
+		ft_printf("[%s] ", cmd->str);
+		cmd = cmd->next;
+	}
+	ft_putstr("\n");
+}
+
+void	print_linear_cst(t_cst *cst)
+{
+	while (cst)
+	{
+		print_linear_cmd(cst->cmd, "cmd");
+		print_linear_cmd(cst->args, "args");
+		print_linear_cmd(cst->redir, "redir");
+		print_linear_cmd(cst->op, "op");
+		ft_putchar('\n');
+		cst = cst->next;
+	}
+}
+
 //does not handle brackets, that will be handled in shlist print instead
 void	print_cst(t_cst *cst, int check)
 {
@@ -123,22 +151,23 @@ int main(int c, char **v, char **e)
 		{
 			cmd_init(buf, &cmd);//reminder to check for parsing failure
 			//shell_print(&cmd, buf, &env);
-			print_cmd(&cmd);
+			//print_cmd(&cmd);
 			//ft_printf("is it joined: %d, what end_space: %d\n", isjoined(cmd), cmd->end_space);
 			add_history(buf);
 			cst = cst_init(&cmd, &last, 0);
 			//print_cst(cst, last);
 			if (!last)
 			{
-				dlist = dlist_init(cst, &last, 0, &redir);
-				print_dlist(dlist);
+				dlist = dlist_init(&cst, &last, 0, &redir);
+				print_dlist(dlist, 0);
 			}
 			clean_cst(&cst);
 		}
 		free(buf);
 		clean_cmd(&cmd);
 		clean_cst(&cst);
-		clean_dlist(&dlist);
+		clean_dlist(dlist);
+		dlist = NULL;
 		muh_number = 0;
 	}
 	(void) c;
