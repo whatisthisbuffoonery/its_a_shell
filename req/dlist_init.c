@@ -23,6 +23,7 @@ int	issubshell(t_cst **cst, char type)
 	return (0);
 }
 
+//would debug if we used this system
 t_cmd	*cmdtrim(t_cmd **list, t_cmd *head, t_cmd *tail)
 {
 	t_cmd	*prev;
@@ -127,5 +128,7 @@ t_dlist	*dlist_init(t_cst **cst, int *complain, int depth, t_cmd **redir)
 		*redir = dlist->cst->redir;
 	if (*redir)
 		dlist->redir = dlist_redir(depth, redir);
+	if (dlist->cst && dlist->redir == dlist->cst->redir)
+		dlist->cst->redir = NULL;
 	return (dlist);
 }
