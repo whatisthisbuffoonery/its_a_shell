@@ -9,6 +9,8 @@ void	print_dlist(t_dlist *dlist, int depth)
 		ft_printf("close %d )\n", depth);
 	}
 	print_linear_cst(dlist->cst);
+	if (dlist->redir)
+		print_linear_cmd(dlist->redir, "subshell redir");
 	if (dlist->across)
 	{
 		ft_printf("across %d\n", depth);
