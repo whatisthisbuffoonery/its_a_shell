@@ -1,6 +1,5 @@
 #include "h_minishell.h"
 
-
 void	cmd_pop(t_cmd **cmd)
 {
 	t_cmd	*next;
@@ -67,18 +66,6 @@ t_cmd	*dlist_redir(int depth, t_cmd **redir)
 		return cmdtrim(redir, head, tail);
 }
 
-
-//null cst stops depth 0 from pulling extra but it does feel fragile
-//check for redir_depth == depth - 1
-		/*
-t_dlist	*dlist_redir(t_dlist *dlist, int depth, t_cmd **redir)
-{
-	t_cst	*cst;
-
-	cst = dlist->cst;
-}
-*/
-
 int	endsubshell(t_dlist *dlist)
 {
 	while (dlist)
@@ -143,11 +130,11 @@ t_dlist	*dlist_init(t_cst **cst, int *complain, int depth, t_cmd **redir)
 		dlist->across = dlist_init(cst, complain, depth, redir);
 	if (*complain)
 		return (dlist);
-	else if (dlist->cst && dlist->cst->redir && flag)//make a wrapper
-		*redir = dlist->cst->redir;
+	else if (dlist->cst && dlist->cst->redir && flag)
+		*redir = dlist->cst->redir;//redir is local, *redir is caller scope
 	if (*redir)
 		dlist->redir = dlist_redir(depth, redir);
-	if (dlist->cst && dlist->redir == dlist->cst->redir)
+	if (dlist->cst && dlist->redir == dlist->cst->redir)//and this line pays for it
 		dlist->cst->redir = NULL;
 	return (dlist);
 }
