@@ -32,6 +32,7 @@ static int	count_fmt(const char *str, const char *array)
 		else
 			i++;
 	}
+	(void) temp;
 	return (fmt_len);
 }
 

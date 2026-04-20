@@ -4,12 +4,13 @@ int	rl_handle_signals(void)//sigaction flag interrupt, rl handler	//does nl + re
 {
 	if (muh_number == SIGINT)
 		ft_putstr("^C");
-	else if (muh_number == SIGQUIT)
-		ft_putstr("^\\");
+//	else if (muh_number == SIGQUIT)
+//		ft_putstr("^\\");
 	write(1, "\n", 1);
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();
+	muh_number = 0;//main() doesnt leave the readline func, so this is necessary
 	return (0);
 }
 
