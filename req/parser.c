@@ -297,7 +297,7 @@ t_node	*parse(t_cmd *tokens)
 	root  = parse_list(&p);
 	if (p.err)
 	{
-		// TODO: ast_free(root); 
+		ast_free(root); 
 		return (NULL);
 	}
 	if (p.cur)
@@ -305,6 +305,7 @@ t_node	*parse(t_cmd *tokens)
 		write(2, "parse error: unexpected token '", 31);
 		write(2, p.cur->str, ft_strlen(p.cur->str));
 		write(2, "'\n", 2);
+		ast_free(root);
 		return (NULL);
 	}
 	return (root);
