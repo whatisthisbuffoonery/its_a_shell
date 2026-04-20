@@ -50,6 +50,20 @@ int	shell_exit(t_env *env, int last)
 	clean_shnode(&env->export);
 	return (last);
 }
+void	print_linear_cmd(t_cmd *cmd, char *s)
+{
+	if (s)
+	{
+		ft_putstr(s);
+		ft_putstr(": ");
+	}
+	while (cmd)
+	{
+		ft_printf("[%s] ", cmd->str);
+		cmd = cmd->next;
+	}
+	ft_putstr("\n");
+}
 
 int main(int c, char **v, char **e)
 {
@@ -64,7 +78,7 @@ int main(int c, char **v, char **e)
 	signal_init();
 	cmd = NULL;
 	env_init(&env, e);
-	env_print(&env);
+//	env_print(&env);
 	last = 0;
 	while (1)
 	{
