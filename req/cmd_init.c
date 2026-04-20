@@ -60,7 +60,7 @@ int	node_init(t_cmd **dst, char *src, int *cry)
 	i = 1;//oh mah gah
 	c = src[0];
 	ft_printf("what am i: %c:%d\n", c, c);
-	while (/*!muh_number*/ && ((isop(c) && src[i] == c && i < 2)		//operator
+	while (/*!muh_number && */((isop(c) && src[i] == c && i < 2)		//operator
 		|| (iscontent(c) && iscontent(src[i]))							//operand
 			|| (ft_isquote(c) && src[i] && src[i] != c)					//quote, also operand
 				|| ((isbracket(c) || c == '*') && i < 1)))				//put brackets in their own node
