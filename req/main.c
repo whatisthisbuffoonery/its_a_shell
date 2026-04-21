@@ -70,7 +70,8 @@ void	print_linear_cmd(t_cmd *cmd, char *s)
 		ft_printf("[%s] ", cmd->str);
 		cmd = cmd->next;
 	}
-	ft_putstr("\n");
+	if (s)
+		ft_putstr("\n");
 }
 
 void	print_linear_cst(t_cst *cst)
@@ -154,12 +155,14 @@ int main(int c, char **v, char **e)
 			//print_cmd(&cmd);
 			//ft_printf("is it joined: %d, what end_space: %d\n", isjoined(cmd), cmd->end_space);
 			add_history(buf);
-			cst = cst_init(&cmd, &last, 0);
+			cst = cst_init(&cmd, &last, 0, NULL);
 			//print_cst(cst, last);
 			if (!last)
 			{
 				dlist = dlist_init(&cst, &last, 0, &redir);
 				print_dlist(dlist, 0);
+				print_dlist_digestible(dlist);
+				ft_putchar('\n');
 			}
 			clean_cst(&cst);
 		}

@@ -61,6 +61,7 @@ void	clean_dlist(t_dlist *dlist)
 	clean_cst(&dlist->cst);
 	clean_cmd(&dlist->redir);
 	clean_dlist(dlist->down);
+	clean_dlist(dlist->down_next);
 	clean_dlist(dlist->across);
 	free(dlist);
 }
