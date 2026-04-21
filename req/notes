@@ -1,0 +1,18 @@
+current problems:
+
+quote removal is ok (manually parse the str after expansion)
+
+filenames with quotes:
+	if not introduced via globs, minishell would reject it anyway
+	if introduced via globs:
+		bash would inject a backslash so that it keeps track
+		we do not do backslashes
+		...my parser keeps track of which quotes to not consider anyway, and globbing such files would work
+	we can stick quote removal with globbing as an either or action
+
+env expansion mostly ok (but I have to traverse quotes manually)
+	envs that expand into quotes will behave inconsistently, no good fix
+		export a=\"
+		./minishell
+		"$a" >> """ >> fucked
+		"b$a" >> "b"" >> fucked
