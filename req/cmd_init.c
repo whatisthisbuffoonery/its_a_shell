@@ -16,7 +16,8 @@ t_cmd	*cmd_node(char *src, int i, char c, int *cry)
 		return (NULL);
 	}
 	shell_assert(!i || !c, "zero string???? how???????\n");
-	ret->str = ft_substr(src, 0, i + (1 * ft_crutch(src, i)));//src[0] is a quote if it is a quote section, flag adds the other quote
+	ft_printf("debug: %c:%d, %c:%d\n", src[0], src[0], src[i], src[i]);
+	ret->str = ft_substr(src, ft_crutch(src, i), i - ft_crutch(src, i));//src[0] is a quote if it is a quote section, flag adds the other quote
 //	ft_printf("substr: %d, bool: %d, str: %s\n", i, ft_crutch(src, i), ret->str);
 	ret->next = NULL;
 	ret->env = NULL;
@@ -26,7 +27,7 @@ t_cmd	*cmd_node(char *src, int i, char c, int *cry)
 	ret->type = c;
 	if (ret->str && !ft_strcmp(ret->str, "&"))//single & not required
 		ret->type = "me is name node"[0];
-	ret->end_space = ft_isspace(src[i + (src[i] && ft_crutch(src, i))]);//bool
+	ret->end_space = ft_isspace(src[i + ft_crutch(src, i)]);//bool
 	return (ret);
 }
 
@@ -64,7 +65,7 @@ int	node_init(t_cmd **dst, char *src, int *cry)
 		i ++;
 	ret = cmd_node(src, i, c, cry);
 	cmd_node_append(dst, ret);
-	return (i + ft_crutch(ret->str, i));//thing //replaced c with ret str
+	return (i + ft_crutch(src, i));//thing //replaced c with ret str//WARNING//put src now
 }
 
 int	cmd_init(char *buf, t_cmd **cmd)
