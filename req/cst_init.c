@@ -81,10 +81,19 @@ int	meta_wrapper(t_cst *cst, t_cmd **index)
 	return (0);
 }
 
+void	cmd_swap(t_cmd **a, t_cmd **b)
+{
+	t_cmd	*tmp;
+
+	tmp = *a;
+	*a = *b;
+	*b = tmp;
+}
+
 //note to allow ((ls) > a) but not ( > a (ls)), which 
 //reminder to go back and undo the change to single & type
 //call this using the cmd ptr in main, we will just implement moar cleanup funcs for the new types
-t_cst	*cst_init(t_cmd **cmd, int *complain, int depth)
+t_cst	*cst_init(t_cmd **cmd, int *complain, int depth, t_cmd *op)
 {
 	t_cst	*cst;
 
@@ -101,9 +110,10 @@ t_cst	*cst_init(t_cmd **cmd, int *complain, int depth)
 		else if (ismeta(*cmd) && meta_wrapper(cst, cmd))
 			return (cst_complain(complain, cst, (*cmd)->str));
 	}
-	if (*cmd)
-		cst->next = cst_init(cmd, complain, check_depth(cst));
-	else if (!*cmd && (check_depth(cst) || cst->op))
+	if (!*cmd && (check_depth(cst) || cst->op))
 		return (cst_complain(complain, cst, "\0"));
+	cmd_swap(&op, &cst->op);
+	if (*cmd)
+		cst->next = cst_init(cmd, complain, check_depth(cst), op);
 	return (cst);
 }

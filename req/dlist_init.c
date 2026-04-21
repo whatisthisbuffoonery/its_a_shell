@@ -102,6 +102,25 @@ t_cst	*cst_pop(t_cst **cst)
 	return (ret);
 }
 
+void	dlist_append(t_dlist *dst, t_dlist *src)
+{
+	t_dlist	*iter;
+	if (!src)
+		return ;
+	if (!dst->down)
+	{
+		dst->down = src;
+		return ;
+	}
+	iter = dst->down_next;//append to parent node, not sibling node
+	while (iter && iter->down_next)
+		iter = iter->down_next;
+	if (!iter)
+		dst->down_next = src;
+	else
+		iter->down_next = src;
+}
+
 //(ls && (ls)): _ down > ls across > _ down > ls
 //(cmd) && (cmd) will not be joined by across, where (cmd && cmd) will
 t_dlist	*dlist_init(t_cst **cst, int *complain, int depth, t_cmd **redir)
@@ -115,7 +134,7 @@ t_dlist	*dlist_init(t_cst **cst, int *complain, int depth, t_cmd **redir)
 	while (*cst && !dlist->cst && !*complain)
 	{
 		if (issubshell(cst, '('))
-			dlist->down = dlist_init(cst, complain, depth + 1, redir);
+			dlist_append(dlist, dlist_init(cst, complain, depth + 1, redir));
 		else
 			dlist->cst = cst_pop(cst);
 	}
@@ -124,7 +143,7 @@ t_dlist	*dlist_init(t_cst **cst, int *complain, int depth, t_cmd **redir)
 		dlist->across = dlist_init(cst, complain, depth, redir);
 	if (*complain)
 		return (dlist);
-	else if (dlist->cst && dlist->cst->redir && flag)
+	else if (dlist->cst && dlist->cst->redir && flag)//make a wrapper
 		*redir = dlist->cst->redir;
 	if (*redir)
 		dlist->redir = dlist_redir(depth, redir);

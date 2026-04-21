@@ -93,7 +93,8 @@ typedef struct s_glob
 typedef struct s_dlist
 {
 	t_cst			*cst;//list of commands
-	struct s_dlist	*down;
+	struct s_dlist	*down;//arr? diff struct? down next?//down next.
+	struct s_dlist	*down_next;
 	struct s_dlist	*across;
 	t_cmd			*redir;//each shlist will self assign redirections whose depth is lower than itself
 }					t_dlist;
@@ -127,7 +128,7 @@ int			expand_str(t_cmd **cmd, t_shnode *env);
 int			cmd_init(char *buf, t_cmd **cmd);
 int			node_init(t_cmd **dst, char *src, int *cry);
 void		env_init(t_env *dst, char **e);
-t_cst		*cst_init(t_cmd **cmd, int *complain, int depth);
+t_cst		*cst_init(t_cmd **cmd, int *complain, int depth, t_cmd *op);
 t_cmd		*subcmd(t_cmd **index, int (*f)(t_cmd *));
 t_dlist		*dlist_init(t_cst **cst, int *complain, int depth, t_cmd **redir);
 
@@ -158,6 +159,7 @@ void		print_cst(t_cst *cst, int check);
 void		print_linear_cst(t_cst *cst);
 void		print_dlist(t_dlist *dlist, int depth);
 void		print_linear_cmd(t_cmd *cmd, char *s);
+void		print_dlist_digestible(t_dlist *dlist);
 
 int			syntax_check(t_cmd **cmd, t_env *env, char *input);
 
