@@ -1,45 +1,5 @@
 #include "h_minishell.h"
 
-void	cmd_pop(t_cmd **cmd)
-{
-	t_cmd	*next;
-
-	if (*cmd)
-	{
-		next = (*cmd)->next;
-		cmd_delone(*cmd);
-		*cmd = next;
-	}
-}
-
-int	issubshell(t_cst **cst, char type)
-{
-	if (*cst && (*cst)->brackets && (*cst)->brackets->type == type)
-	{
-		cmd_pop(&(*cst)->brackets);
-		return (1);
-	}
-	return (0);
-}
-
-//would debug if we used this system
-t_cmd	*cmdtrim(t_cmd **list, t_cmd *head, t_cmd *tail)
-{
-	t_cmd	*prev;
-	t_cmd	*next;
-
-	prev = *list;
-	while (prev != head && prev->next != head)
-		prev = prev->next;
-	next = tail->next;
-	tail->next = NULL;
-	if (prev != head)
-		prev->next = next;
-	else
-		*list = next;
-	return (head);
-}
-
 t_cmd	*dlist_redir(int depth, t_cmd **redir)
 {
 	t_cmd	*iter;
@@ -77,18 +37,15 @@ int	endsubshell(t_dlist *dlist)
 	return (0);
 }
 
-t_cst	*cst_pop(t_cst **cst)
+int	issubshell(t_cst **cst, char type)
 {
-	t_cst	*ret;
-
-	if (!*cst)
-		return (NULL);
-	ret = *cst;
-	*cst = ret->next;
-	ret->next = NULL;
-	return (ret);
+	if (*cst && (*cst)->brackets && (*cst)->brackets->type == type)
+	{
+		cmd_pop(&(*cst)->brackets);
+		return (1);
+	}
+	return (0);
 }
-
 void	dlist_append(t_dlist *dst, t_dlist *src)
 {
 	t_dlist	*iter;

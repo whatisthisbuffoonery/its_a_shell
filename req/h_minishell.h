@@ -130,7 +130,10 @@ int			node_init(t_cmd **dst, char *src, int *cry);
 void		env_init(t_env *dst, char **e);
 t_cst		*cst_init(t_cmd **cmd, int *complain, int depth, t_cmd *op);
 t_cmd		*subcmd(t_cmd **index, int (*f)(t_cmd *));
+t_cmd		*cmdtrim(t_cmd **list, t_cmd *head, t_cmd *tail);
+void		cmd_pop(t_cmd **cmd);
 t_dlist		*dlist_init(t_cst **cst, int *complain, int depth, t_cmd **redir);
+int			issubshell(t_cst **cst, char type);
 
 int			ft_err(int n, char *s);
 int			shell_assert(int cond, char *s);
@@ -142,6 +145,8 @@ void		merge_sort(t_shnode **head);
 int			isjoined(t_cmd *node);
 int			copy_cmd(t_cmd *cmd);
 int			counttype(t_cmd *node, char c);
+
+t_cst		*cst_pop(t_cst **cst);
 
 void		cmd_delone(t_cmd *cmd);
 void		clean_cmd(t_cmd **cmd);

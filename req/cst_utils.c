@@ -1,5 +1,17 @@
 #include "h_minishell.h"
 
+t_cst	*cst_pop(t_cst **cst)
+{
+	t_cst	*ret;
+
+	if (!*cst)
+		return (NULL);
+	ret = *cst;
+	*cst = ret->next;
+	ret->next = NULL;
+	return (ret);
+}
+
 //go rename single func later
 int	copy_cmd(t_cmd *cmd)
 {
