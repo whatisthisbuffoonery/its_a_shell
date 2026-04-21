@@ -6,7 +6,7 @@
 #    By: achew <achew@student.42singapore.sg>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/10/28 21:29:55 by achew             #+#    #+#              #
-#    Updated: 2026/04/19 21:25:35 by achew            ###   ########.fr        #
+#    Updated: 2026/04/22 00:38:14 by achew            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 # **************************************************************************** #
@@ -53,7 +53,8 @@ SRC         = merge_sort.c \
 			  ft_putstr.c \
 			  ft_putchar.c \
 			  parser.c \
-			  cleanup2.c
+			  cleanup2.c \
+			  expand.c
 
 SRC_BONUS   = $(SRC)
 

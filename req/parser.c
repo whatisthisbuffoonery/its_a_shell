@@ -8,7 +8,7 @@ static t_node	*node_new(t_node_kind kind)
 	if (!n)
 	{
 		perror("parser: calloc");
-		exit(1);
+		return (n);
 	}
 	n->kind = kind;
 	return (n);
@@ -63,8 +63,8 @@ static t_cmd	*expect_str(t_parser *p, const char *s)
 			parse_err((char *)s, (char *)p->cur->str);
 		else
 			parse_err((char *)s, "EOF");
-		return (NULL);
 		p->err = 1;
+		return (NULL);
 	}
 	return (advance(p));
 }
@@ -107,6 +107,11 @@ t_node	 *parse_list(t_parser *p)
 		if (!right || p->err)
 			return (left);			// let caller handle error 
 		op_node = node_new(kind);
+		if (!op_node)
+		{
+			p->err = 1;
+			return (left);
+		}
 		op_node->left = left;
 		op_node->right = right;
 		left = op_node;
@@ -132,7 +137,12 @@ t_node	 *parse_pipeline(t_parser *p)
 		if (!right || p->err)
 			return (left);
 		pipe = node_new(N_PIPE);
-		pipe->left	= left;
+		if (!pipe)
+		{
+			p->err = 1;
+			return (left);
+		}	
+		pipe->left = left;
 		pipe->right = right;
 		left = pipe;
 	}
@@ -159,13 +169,18 @@ t_node	 *parse_group(t_parser *p)
 
 	if (!expect_str(p, "("))
 		return (NULL);
-	body = parse_list(p);
-	if (p->err)
-		return (body);
-	if (!expect_str(p, ")"))
-		return (NULL);
 	g = node_new(N_GROUP);
+	if (!g)
+	{
+		p->err = 1;
+		return (g);
+	}
+	body = parse_list(p);
 	g->left = body;
+	if (p->err)
+		return (g);
+	if (!expect_str(p, ")"))
+		return (g);
 	g->redir_next = parse_redirects(p);
 	return (g);
 }
@@ -187,6 +202,11 @@ t_node	 *parse_simple_cmd(t_parser *p)
 		return (NULL);
 	}
 	cmd = node_new(N_CMD);
+	if (!cmd)
+	{
+		p->err = 1;
+		return (cmd);
+	}
 	redir_head = NULL;
 	redir_tail = NULL;
 	cmd->argv = ft_calloc(sizeof(char *), (count_words(p->cur) + 1));
@@ -198,9 +218,12 @@ t_node	 *parse_simple_cmd(t_parser *p)
 		{
 			r = parse_one_redirect(p);
 			if (p->err)
+			{
+				cmd->redir_next = redir_head;
 				return (cmd);
+			}
 			if (!redir_tail)
-				redir_head = r; // append to redir list 
+				redir_head = r; 
 			else
 				redir_tail->redir_next = r;
 			redir_tail = r;
@@ -212,36 +235,60 @@ t_node	 *parse_simple_cmd(t_parser *p)
 			else
 			{
 				cmd->argv[cmd->argc++] = ft_strdup(p->cur->str); //for easier cleanup
+				if (!cmd->argv[cmd->argc - 1])
+				{
+					perror("malloc fail in parser");
+					p->err = 1;
+				}
 				advance(p);
 			}
-			cmd->argv[cmd->argc] = NULL;
+//			cmd->argv[cmd->argc] = NULL;
+			if (p->err)
+				return (cmd);
 		}
 	}
 	cmd->redir_next = redir_head;
 	return (cmd);
 }
 
-t_node   *parse_one_redirect(t_parser *p)
+t_node	 *parse_one_redirect(t_parser *p)
 {
-    t_node  *r;
+	t_node	*r;
 
-    r = node_new(N_REDIR);
-    r->redir_op = p->cur->str;
-    advance(p);
-    if (!p->cur || !is_word(p->cur))
-    {
+	r = node_new(N_REDIR);
+	if (!r)
+	{
+		p->err = 1;
+		return (r);
+	}
+	r->redir_op = p->cur->str;
+	advance(p);
+	if (!p->cur || !is_word(p->cur))
+	{
 		write(2, "parse error: expected filename after redirect\n", 46);
 		p->err = 1;
-        return (r);
-    }
-    if (!p->cur->end_space && p->cur->next && is_word(p->cur->next))
-        r->redir_target = collect_word(p);
-    else
-    {
-        r->redir_target = ft_strdup(p->cur->str);
-        advance(p);
-    }
-    return (r);
+		free(r);
+		return (NULL);
+	}
+	if (!p->cur->end_space && p->cur->next && is_word(p->cur->next))
+	{
+		r->redir_target = collect_word(p);
+		if (p->err)
+			return (r);
+	}
+	else
+	{
+		r->redir_target = ft_strdup(p->cur->str);
+		if (!r->redir_target)
+		{
+			perror("malloc in parsing redirect target");
+			p->err = 1;
+			free(r);
+			return (NULL);
+		}
+		advance(p);
+	}
+	return (r);
 }
 
 t_node	 *parse_redirects(t_parser *p)
@@ -273,6 +320,12 @@ char	*collect_word(t_parser *p)
 	t_cmd	*prev;
 
 	result = ft_strdup(p->cur->str);
+	if (!result)
+	{
+		perror("malloc fail in parser");
+		p->err = 1;
+		return (result);
+	}
 	prev = p->cur;
 	advance(p);
 	while (p->cur && is_word(p->cur) && !prev->end_space)
@@ -280,10 +333,16 @@ char	*collect_word(t_parser *p)
 		tmp = ft_strjoin(result, p->cur->str);
 		free(result);
 		result = tmp;
+		if (!tmp)
+		{
+			perror("malloc fail in parser");
+			p->err = 1;
+			return (result);
+		}
 		prev = p->cur;
 		advance(p);
 	}
-	return result;
+	return (result);
 }
 
 // entry point ──────────────────────────────────────── 

@@ -36,7 +36,12 @@ void	shell_print(t_cmd **cmd, char *buf, t_env *env)
 	int		i = 0;
 	int		cry = 0;
 
-	while (buf && buf[i])
+	if (!buf || !buf[0])
+	{
+		free(buf);
+		return ;
+	}
+	while (buf[i])
 	{
 		while (ft_isspace(buf[i]))
 			i ++;
@@ -46,21 +51,16 @@ void	shell_print(t_cmd **cmd, char *buf, t_env *env)
 		if (cry)
 			return ;
 	}
+	print_cmd(cmd, &cry);
+	add_history(buf);
 //	if (buf)
 //		ft_printf("strlen: %d, i: %d\n", ft_strlen(buf), i);
-	if (buf && buf[0])
-	{
-		expand_str(cmd, env->env);
-		print_cmd(cmd, &cry);
-		add_history(buf);
-	}
-	else if (!buf)
-		ft_putstr("NULL");
-	ft_putchar('\n');
+	expand_str(cmd, env->env);
 //	if (buf && buf[0] == 's' && !buf[1])
 //		do_thing(buf);
 	free(buf);
 }
+
 void	env_print(t_env *env)
 {
 	t_shnode	*iter;

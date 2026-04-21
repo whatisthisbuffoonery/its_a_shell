@@ -67,6 +67,13 @@ typedef struct s_parser	//parser state
 	int		err;	// non-zero → parse failed 
 }	t_parser;
 
+//typedef struct	s_word
+//{
+//	char	*expanded_str;
+//	char	*mask; //1=was quoted or expanded so do not expand glob, 0=bare
+//	int		len;
+//}			t_word;
+
 typedef struct s_cst
 {
 	t_cmd			*cmd;	//first valid cmd string, might be a glob
@@ -146,6 +153,7 @@ t_node		*parse_redirects(t_parser *p);
 char		*collect_word(t_parser *p);
 void		ast_print(t_node *n, int depth);
 void		ast_free(t_node *n);
+int			expand_ast(t_node *n, t_shnode *env);
 
 int			ft_strcmp(char *a, char *b);
 int			ft_isquote(int c);
