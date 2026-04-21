@@ -33,6 +33,6 @@ int	envname(char *s)
 
 int	iscontent(int c)
 {
-	ft_printf("iscontent: %c:%d\n", c, c);
+//	ft_printf("iscontent: %c:%d\n", c, c);
 	return (c && c != '*' && !isop(c) && !ft_isquote(c) && !ft_isspace(c) && !isbracket(c));
 }

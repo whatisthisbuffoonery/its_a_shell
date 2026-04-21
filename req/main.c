@@ -86,10 +86,15 @@ int main(int c, char **v, char **e)
 		shell_print(&cmd, buf, &env);
 		if (/*!muh_number &&*/ !buf)
 			return (shell_exit(&env, last));
-		node = parse(cmd);
-		ast_print(node, 0);
-		ast_free(node);
-		clean_cmd(&cmd);
-		muh_number = 0;
+		if (cmd)
+		{
+			node = parse(cmd);
+			ast_print(node, 0);
+			expand_ast(node, env.env);
+			ast_print(node, 0);
+			ast_free(node);
+			clean_cmd(&cmd);
+			muh_number = 0;
+		}
 	}
 }
