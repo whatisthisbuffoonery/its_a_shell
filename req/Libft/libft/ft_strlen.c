@@ -6,7 +6,7 @@
 /*   By: achew <achew@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/12 20:04:14 by achew             #+#    #+#             */
-/*   Updated: 2025/11/30 15:32:44 by achew            ###   ########.fr       */
+/*   Updated: 2026/04/22 21:02:20 by achew            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@ size_t	ft_strlen(const char *s)
 {
 	size_t	i;
 
+	if (!s)
+		return (0);
 	i = 0;
 	while (s[i] != '\0')
 	{

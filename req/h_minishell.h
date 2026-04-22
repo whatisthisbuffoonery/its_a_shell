@@ -155,6 +155,11 @@ void		ast_print(t_node *n, int depth);
 void		ast_free(t_node *n);
 int			expand_ast(t_node *n, t_shnode *env);
 
+int			ft_export(int argc, char **argv, t_env *env);
+t_shnode	*env_init_node(char *e);
+
+int			execute(t_node *n, t_env *env, char **e);
+
 int			ft_strcmp(char *a, char *b);
 int			ft_isquote(int c);
 int			ft_isspace(int c);

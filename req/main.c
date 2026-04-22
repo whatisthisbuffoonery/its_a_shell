@@ -92,6 +92,7 @@ int main(int c, char **v, char **e)
 			ast_print(node, 0);
 			expand_ast(node, env.env);
 			ast_print(node, 0);
+			execute(node, &env, e);
 			ast_free(node);
 			clean_cmd(&cmd);
 			muh_number = 0;
