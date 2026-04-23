@@ -80,7 +80,8 @@ static char    *get_shell_var(t_env *env, const char *name)
 
 int	update_val(const char *name, const char *val, t_shnode *existing, t_env *env)
 {
-	char	*new_str;
+	char		*new_str;
+	t_shnode	*existing_env;
 
 	if (!val)
 		new_str = NULL;
@@ -90,15 +91,19 @@ int	update_val(const char *name, const char *val, t_shnode *existing, t_env *env
 		return (-1);
 	free(existing->str);
 	existing->str = new_str;
-	existing = find_env((char *)name, env->env, ft_strlen(name));
-	if (existing)
+	existing_env = find_env((char *)name, env->env, ft_strlen(name));
+	if (existing_env)
 	{
-		free(existing->str);
 		if (!val)
 			new_str = NULL;
 		else
+		{
 			new_str = ft_strdup(val);
-		existing->str = new_str;
+			if (!new_str)
+				return (free(existing->str), -1);
+		}
+		free(existing_env->str);
+		existing_env->str = new_str;
 	}
 	return (0);
 }

@@ -42,7 +42,7 @@ void	clean_cmd(t_cmd **cmd)
 	{
 		next = iter->next;
 		free(iter->str);
-		clean_shnode_dup(&iter->env);
+	//	clean_shnode_dup(&iter->env);
 		free(iter);
 		iter = next;
 	}

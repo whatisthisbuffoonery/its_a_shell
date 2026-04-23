@@ -31,7 +31,7 @@ void	print_cmd(t_cmd **cmd, int *last)
 //	ft_printf("\nexit status: %d\n", *last);
 	(void) last;
 }
-void	shell_print(t_cmd **cmd, char *buf, t_env *env)
+void	shell_print(t_cmd **cmd, char *buf)
 {
 	int		i = 0;
 	int		cry = 0;
@@ -55,7 +55,7 @@ void	shell_print(t_cmd **cmd, char *buf, t_env *env)
 	add_history(buf);
 //	if (buf)
 //		ft_printf("strlen: %d, i: %d\n", ft_strlen(buf), i);
-	expand_str(cmd, env->env);
+//	expand_str(cmd, env->env);
 //	if (buf && buf[0] == 's' && !buf[1])
 //		do_thing(buf);
 	free(buf);

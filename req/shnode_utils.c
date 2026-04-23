@@ -29,8 +29,17 @@ t_shnode	*shnode_dup(t_shnode *src)
 		ft_err(-1, "shnode dup malloc");
 		return (NULL);
 	}
-	ret->name = src->name;
-	ret->str = src->str;
+	ret->name = ft_strdup(src->name);
+	if (!ret->name)
+	{
+		ft_err(-1, "shnode dup malloc");
+		free(ret);
+		return (NULL);
+	}
+	if (src->str)
+		ret->str = ft_strdup(src->str);
+	else
+		ret->str = NULL;
 	ret->next = NULL;
 	return (ret);
 }
