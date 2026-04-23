@@ -138,7 +138,7 @@ void		clean_shnode(t_shnode **shnode);
 
 int			ft_crutch(char *s, int n);
 void		env_print(t_env *env);
-void		shell_print(t_cmd **cmd, char *buf, t_env *env);
+void		shell_print(t_cmd **cmd, char *buf);
 
 int			syntax_check(t_cmd **cmd, t_env *env, char *input);
 
