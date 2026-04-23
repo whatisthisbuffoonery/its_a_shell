@@ -6,7 +6,7 @@
 #    By: achew <achew@student.42singapore.sg>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/10/28 21:29:55 by achew             #+#    #+#              #
-#    Updated: 2026/04/22 20:11:55 by achew            ###   ########.fr        #
+#    Updated: 2026/04/23 20:03:16 by achew            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 # **************************************************************************** #
@@ -56,7 +56,9 @@ SRC         = merge_sort.c \
 			  cleanup2.c \
 			  expand.c \
 			  export.c \
-			  execute.c
+			  execute.c \
+			  free_split.c \
+			  envp.c
 
 SRC_BONUS   = $(SRC)
 

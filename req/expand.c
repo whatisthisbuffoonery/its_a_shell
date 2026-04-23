@@ -376,6 +376,8 @@ static int	expand_cmd(t_node *n, t_shnode *env)
 
 int expand_ast(t_node *n, t_shnode *env)
 {
+	t_node	*r;
+	
 	if (!n)
 		return (0);
 	if (n->kind == N_CMD)
@@ -385,7 +387,7 @@ int expand_ast(t_node *n, t_shnode *env)
 		if (expand_ast(n->left, env))
 			return (1);
 		/* expand any redirects on the group itself */
-		t_node *r = n->redir_next;
+		r = n->redir_next;
 		while (r)
 		{
 			if (expand_redir(r, env))
