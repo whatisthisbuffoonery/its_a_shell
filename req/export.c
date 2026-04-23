@@ -34,7 +34,10 @@ char	*ft_strjoin3(const char *name, const char *val)
         return (NULL);
     ft_strlcpy(entry, name, len);
     ft_strlcat(entry, "=", len);
-    ft_strlcat(entry, val ? val : "", len);
+	if (val)
+		ft_strlcat(entry, val, len);
+	else
+		ft_strlcat(entry, "", len);
     return (entry);
 }
 
@@ -60,7 +63,7 @@ void	invalid_identifier(const char *arg)
 {
 	write(2, "export: `", 9);
 	write(2, arg, ft_strlen(arg));
-	write(2, "': not a valid identifier\n", 25);
+	write(2, "': not a valid identifier\n", 27);
 }
 
 static int	  is_exported(t_env *env, const char *name)
@@ -112,6 +115,7 @@ static int	  export_set(t_env *env, const char *name, const char *val)
 {
 	t_shnode	*existing;
 	t_shnode	*node;
+	t_shnode	*node2;
 	char		*entry;
 
 	existing = find_env((char *)name, env->export, ft_strlen(name));
@@ -128,7 +132,10 @@ static int	  export_set(t_env *env, const char *name, const char *val)
 	if (!node)
 		return (-1);
 	env_add(env, node, "export");
-	env_add(env, node, "env");
+	node2 = shnode_dup(node);
+	if (!node2)
+		return (-1);
+	env_add(env, node2, "env");
 	return (0);
 }
 
@@ -136,6 +143,8 @@ static int	process_export_arg(const char *arg, t_env *env)
 {
 	char		*eq;
 	t_shnode	*node;
+//	t_shnode	*node2;
+	int			ret;
 
 	if (!arg)
 		return (1);
@@ -156,9 +165,17 @@ static int	process_export_arg(const char *arg, t_env *env)
 		invalid_identifier(arg);
 		return (shnode_free(node), 1);
 	}
-//	shnode_free(node);
-	return (export_set(env, node->name, node->str));
+	ret = export_set(env, node->name, node->str);
+	shnode_free(node);
+	return (ret);
 }
+//	env_add(env, node, "export");
+//	node2 = shnode_dup(node);
+//	if (!node2)
+//		return (-1);
+//	env_add(env, node2, "env");
+//	return (0);
+//}
 
 int    ft_export(int argc, char **argv, t_env *env)
 {

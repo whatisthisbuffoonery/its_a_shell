@@ -209,7 +209,7 @@ t_node	 *parse_simple_cmd(t_parser *p)
 	}
 	redir_head = NULL;
 	redir_tail = NULL;
-	cmd->argv = ft_calloc(sizeof(char *), (count_words(p->cur) + 1));
+	cmd->argv = ft_calloc((count_words(p->cur) + 1), sizeof(char *));
 	if (!cmd->argv)
 		return (NULL);
 	while (p->cur && !p->err && (is_word(p->cur) || is_redir(p->cur)))
@@ -261,7 +261,15 @@ t_node	 *parse_one_redirect(t_parser *p)
 		p->err = 1;
 		return (r);
 	}
-	r->redir_op = p->cur->str;
+//	r->redir_op = p->cur->str;
+	r->redir_op = ft_strdup(p->cur->str);
+	if (!r->redir_op)
+	{
+		perror("malloc in parsing redir_op");
+		p->err = 1;
+		free(r);
+		return (NULL);
+	}
 	advance(p);
 	if (!p->cur || !is_word(p->cur))
 	{

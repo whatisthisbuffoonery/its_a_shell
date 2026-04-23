@@ -19,6 +19,7 @@ static void free_redirs(t_node *r)
 	while (r)
 	{
 		next = r->redir_next;
+		free(r->redir_op);
 		free(r->redir_target);
 		free(r);
 		r = next;

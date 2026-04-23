@@ -93,6 +93,7 @@ void	env_init(t_env *dst, char **e)
 {
 	int			i;
 	t_shnode	*iter;
+	t_shnode	*iter2;
 
 	i = 0;
 	ft_memset(dst, 0, sizeof(t_env));
@@ -101,11 +102,17 @@ void	env_init(t_env *dst, char **e)
 		iter = env_init_node(e[i]);
 		if (!iter && ft_err((-!iter), "export node malloc"))
 			break ;
-		env_add(dst, iter, "env");
+		iter2 = env_init_node(e[i]);	
+		if (!iter && ft_err((-!iter2), "env node malloc"))
+		{
+			free(iter);
+			break ;
+		}
+		env_add(dst, iter2, "env");
 		env_add(dst, iter, "export");
 		i ++;
 	}
 	merge_sort(&dst->env);
-	update_shell_lvl(dst);
-	update_shell_name(dst);
+//	update_shell_lvl(dst);
+//	update_shell_name(dst);
 }

@@ -24,7 +24,7 @@ typedef struct s_shnode
 typedef struct s_cmd
 {
 	struct s_cmd	*next;
-	t_shnode		*env;		//expansion list //assert that operators are never assigned this list
+//	t_shnode		*env;		//expansion list //assert that operators are never assigned this list
 	char			*str;		//stores one word, operator, or quoted section
 	int				order;
 	int				depth;
@@ -158,7 +158,9 @@ int			expand_ast(t_node *n, t_shnode *env);
 int			ft_export(int argc, char **argv, t_env *env);
 t_shnode	*env_init_node(char *e);
 
-int			execute(t_node *n, t_env *env, char **e);
+int			execute(t_node *n, t_env *env);
+char		*ft_strjoin3(const char *name, const char *val);
+char		**env_to_envp(t_shnode *list);
 
 int			ft_strcmp(char *a, char *b);
 int			ft_isquote(int c);
@@ -167,5 +169,6 @@ char		*ft_strndup(const char *src, size_t n);
 void		*malloc_cond(void **dst, size_t size);
 void		ft_putchar(char n);
 void		ft_putstr(char *a);
+void		free_split(char **split);
 
 #endif

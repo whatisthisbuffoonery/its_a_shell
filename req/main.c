@@ -46,7 +46,8 @@ int	shell_exit(t_env *env, int last)
 {
 	ft_putstr("exiting now\n");
 	rl_clear_history();
-	clean_shnode_dup(&env->env);
+//	clean_shnode_dup(&env->env);
+	clean_shnode(&env->env);
 	clean_shnode(&env->export);
 	return (last);
 }
@@ -83,19 +84,21 @@ int main(int c, char **v, char **e)
 	while (1)
 	{
 		buf = readline("I am a shell% ");
-		shell_print(&cmd, buf, &env);
 		if (/*!muh_number &&*/ !buf)
 			return (shell_exit(&env, last));
+		shell_print(&cmd, buf);
 		if (cmd)
 		{
 			node = parse(cmd);
 			ast_print(node, 0);
+
 			expand_ast(node, env.env);
 			ast_print(node, 0);
-			execute(node, &env, e);
+
+			execute(node, &env);
 			ast_free(node);
+//			muh_number = 0;
 			clean_cmd(&cmd);
-			muh_number = 0;
 		}
 	}
 }

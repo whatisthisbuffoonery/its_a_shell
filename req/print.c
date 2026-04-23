@@ -24,8 +24,8 @@ void	print_cmd(t_cmd **cmd, int *last)
 	while (iter)
 	{
 		ft_printf("[%s]\n", iter->str);
-		if (iter->env)
-			print_env(iter->env);
+	//	if (iter->env)
+	//		print_env(iter->env);
 		iter = iter->next;
 	}
 //	ft_printf("\nexit status: %d\n", *last);
@@ -49,7 +49,10 @@ void	shell_print(t_cmd **cmd, char *buf)
 			break ;
 		i += node_init(cmd, &buf[i], &cry);
 		if (cry)
+		{
+			free(buf);
 			return ;
+		}
 	}
 	print_cmd(cmd, &cry);
 	add_history(buf);

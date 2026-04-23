@@ -37,7 +37,16 @@ t_shnode	*shnode_dup(t_shnode *src)
 		return (NULL);
 	}
 	if (src->str)
+	{
 		ret->str = ft_strdup(src->str);
+		if (!ret->str)
+		{
+			ft_err(-1, "shnode dup malloc");
+			free(ret->name);
+			free(ret);
+			return (NULL);
+		}
+	}
 	else
 		ret->str = NULL;
 	ret->next = NULL;
@@ -66,7 +75,7 @@ int	env_add(t_env *env, t_shnode *src, char *dst)
 	list = &env->export;
 	if (dst[1] == 'n')
 	{
-		ret = shnode_dup(src);
+//		ret = shnode_dup(src);
 		list = &env->env;
 	}
 	if (ret)
