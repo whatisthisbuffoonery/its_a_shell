@@ -24,6 +24,7 @@ typedef struct s_shnode
 typedef struct s_cmd
 {
 	struct s_cmd	*next;
+	struct s_cmd	*word_next;
 	t_shnode		*env;		//expansion list //assert that operators are never assigned this list
 	char			*str;		//stores one word, operator, or quoted section
 	int				depth;
@@ -98,6 +99,9 @@ typedef struct s_dlist
 	struct s_dlist	*across;
 	t_cmd			*redir;//each shlist will self assign redirections whose depth is lower than itself
 }					t_dlist;
+
+void		make_word(t_cmd *iter);
+void		print_word(t_cmd *tok);
 
 int			isbracket(int c);
 int			isop(int c);

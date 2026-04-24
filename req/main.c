@@ -151,13 +151,15 @@ int main(int c, char **v, char **e)
 		if (buf[0])
 		{
 			cmd_init(buf, &cmd);//reminder to check for parsing failure
+			make_word(cmd);
 			//shell_print(&cmd, buf, &env);
-			//print_cmd(&cmd);
+			print_cmd(&cmd);
+		//	print_word(cmd);
 			//ft_printf("is it joined: %d, what end_space: %d\n", isjoined(cmd), cmd->end_space);
 			add_history(buf);
-			cst = cst_init(&cmd, &last, 0, NULL);
+//			cst = cst_init(&cmd, &last, 0, NULL);
 			//print_cst(cst, last);
-			if (!last)
+/*			if (!last)
 			{
 				dlist = dlist_init(&cst, &last, 0, &redir);
 				print_dlist(dlist, 0);
@@ -165,7 +167,7 @@ int main(int c, char **v, char **e)
 				ft_putchar('\n');
 			}
 			clean_cst(&cst);
-		}
+*/		}
 		free(buf);
 		clean_cmd(&cmd);
 		clean_cst(&cst);
@@ -177,4 +179,5 @@ int main(int c, char **v, char **e)
 	(void) v;
 	(void) cst;
 	(void) tmp;
+	(void) redir;
 }

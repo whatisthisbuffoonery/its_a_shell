@@ -24,7 +24,8 @@ void	print_cmd(t_cmd **cmd)
 	iter = *cmd;
 	while (iter)
 	{
-		ft_printf("[%s]\n", iter->str);
+//		ft_printf("[%s]\n", iter->str);
+		print_word(iter);
 		if (iter->env)
 			print_env(iter->env);
 		iter = iter->next;

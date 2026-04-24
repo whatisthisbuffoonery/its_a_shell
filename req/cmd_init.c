@@ -9,19 +9,16 @@ t_cmd	*cmd_node(char *src, int i, char c, int *cry)
 {
 	t_cmd	*ret;
 
-	ret = malloc(sizeof(t_cmd));
+	ret = ft_calloc(sizeof(t_cmd), 1);
 	if (!ret)
 	{
 		ft_err(-1, "cmd node malloc");
 		return (NULL);
 	}
 	shell_assert(!i || !c, "zero string???? how???????\n");
-	ft_printf("debug: %c:%d, %c:%d\n", src[0], src[0], src[i], src[i]);
+	//ft_printf("debug: %c:%d, %c:%d\n", src[0], src[0], src[i], src[i]);
 	ret->str = ft_substr(src, ft_crutch(src, i), i - ft_crutch(src, i));//src[0] is a quote if it is a quote section, flag adds the other quote
 //	ft_printf("substr: %d, bool: %d, str: %s\n", i, ft_crutch(src, i), ret->str);
-	ret->next = NULL;
-	ret->env = NULL;
-	ret->type = '\0';
 	if (!ret->str)
 		*cry = (ft_err(-1, "cmd node str malloc"));
 	ret->type = c;
