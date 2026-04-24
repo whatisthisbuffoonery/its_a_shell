@@ -22,9 +22,11 @@ void	print_cmd(t_cmd **cmd)
 	t_cmd	*iter;
 
 	iter = *cmd;
+	ft_putstr("me\n");
 	while (iter)
 	{
-		ft_printf("[%s]\n", iter->str);
+//		ft_printf("[%s]\n", iter->str);
+		print_word(iter);
 		if (iter->env)
 			print_env(iter->env);
 		iter = iter->next;

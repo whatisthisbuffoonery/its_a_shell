@@ -11,7 +11,8 @@ SRC_FILE := merge_sort.c main.c err.c cleanup.c signal.c \
 			cmd_init.c cmd_utils.c checker.c \
 			muh_print.c print_dlist.c \
 			cst_init.c cst_utils.c cst_check.c \
-			dlist_init.c
+			dlist_init.c \
+			word.c
 
 OBJ := $(SRC_FILE:.c=.o)
 

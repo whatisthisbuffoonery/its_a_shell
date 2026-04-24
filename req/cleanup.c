@@ -48,6 +48,7 @@ void	clean_cmd(t_cmd **cmd)
 	while(iter)
 	{
 		next = iter->next;
+		clean_cmd(&iter->word_next);
 		cmd_delone(iter);
 		iter = next;
 	}
