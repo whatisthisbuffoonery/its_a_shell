@@ -47,7 +47,7 @@ void	cmd_node_append(t_cmd **dst, t_cmd *src)
 //but should be recombined if they were not separated by whitespace
 
 //check for ending whitespace, ls'>'wa should stay as one element
-int	node_init(t_cmd **dst, char *src, int *cry)
+int	cmd_node_init(t_cmd **dst, char *src, int *cry)
 {
 	int		i;
 	char	c;
@@ -78,7 +78,7 @@ int	cmd_init(char *buf, t_cmd **cmd)
 			i ++;
 		if (!buf[i])
 			break ;
-		i += node_init(cmd, &buf[i], &cry);
+		i += cmd_node_init(cmd, &buf[i], &cry);
 		if (cry)
 			return (1);
 	}
