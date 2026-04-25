@@ -36,14 +36,11 @@ void	print_ast(t_node *n, int depth)
 {
 	if (!n)
 		return ;
-	print_indent(depth);
-	depth ++;
+	print_indent(depth++);
 	if (n->kind == N_CMD)
 	{
 		print_cmd_node(n);
-//		ft_putchar(' ');
 		print_redirs(n->redir_next, depth);
-	//	ft_putchar('\n');
 	}
 	else if (n->kind == N_GROUP)
 	{
