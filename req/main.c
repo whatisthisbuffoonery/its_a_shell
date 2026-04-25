@@ -67,7 +67,9 @@ void	print_linear_cmd(t_cmd *cmd, char *s)
 	}
 	while (cmd)
 	{
-		ft_printf("[%s] ", cmd->str);
+	//	ft_printf("[%s] ", cmd->str);
+		print_word(cmd);
+		ft_putchar (' ');
 		cmd = cmd->next;
 	}
 	if (s)
@@ -133,6 +135,7 @@ int main(int c, char **v, char **e)
 	t_cst	*cst;
 	t_cmd	*redir;
 	t_dlist	*dlist;
+	t_node	*ast;
 
 	signal_init();
 	cmd = NULL;
@@ -140,6 +143,7 @@ int main(int c, char **v, char **e)
 	cst = NULL;
 	dlist = NULL;
 	redir = NULL;
+	ast = NULL;
 	env_init(&env, e);
 	//env_print(&env);
 	while (1)
@@ -152,8 +156,13 @@ int main(int c, char **v, char **e)
 		{
 			cmd_init(buf, &cmd);//reminder to check for parsing failure
 			make_word(cmd);
+			ast = parse(&cmd);
+			if (ast)
+				print_ast(ast, 0);
+			clean_ast(ast);
+			ast = NULL;
 			//shell_print(&cmd, buf, &env);
-			print_cmd(&cmd);
+			print_linear_cmd(cmd, "thing");
 		//	print_word(cmd);
 			//ft_printf("is it joined: %d, what end_space: %d\n", isjoined(cmd), cmd->end_space);
 			add_history(buf);

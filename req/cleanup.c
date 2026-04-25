@@ -55,6 +55,19 @@ void	clean_cmd(t_cmd **cmd)
 	*cmd = NULL;
 }
 
+void	clean_ast(t_node *node)
+{
+	if (!node)
+		return ;
+	clean_cmd(&node->argv);
+	clean_cmd(&node->redir_op);
+	clean_cmd(&node->redir_target);
+	clean_ast(node->redir_next);
+	clean_ast(node->left);
+	clean_ast(node->right);
+	free(node);
+}
+
 void	clean_dlist(t_dlist *dlist)
 {
 	if (!dlist)

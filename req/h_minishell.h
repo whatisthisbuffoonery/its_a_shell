@@ -47,8 +47,9 @@ typedef enum e_node_kind
 	N_OR,		//left || right
 	N_GROUP,	//( inner )	  
 	N_REDIR,	//redirection
+	N_ILLEGAL,
 }	t_node_kind;
-
+/*
 typedef struct s_node
 {
 	t_node_kind		kind;
@@ -58,6 +59,19 @@ typedef struct s_node
 	char			*redir_target;
 	struct s_node	*redir_next;	// linked list of redirects on one cmd 
 	struct s_node	*left;			// N_PIPE / N_AND / N_OR / N_GROUP 
+	struct s_node	*right;			// unused for N_GROUP 
+}					t_node;
+*/
+
+typedef struct s_node
+{
+	t_node_kind		kind;
+	t_cmd			*argv; // N_CMD  – argv array (NULL-terminated) //cmd name is first item
+	int				argc; //figure out later
+	t_cmd			*redir_op;		// mutually exclusive with argv
+	t_cmd			*redir_target;	//this too
+	struct s_node	*redir_next;	// linked list of redirects on one cmd // again DO NOT FILL THE OTHER TWO FIELDS DIRECTLY
+	struct s_node	*left;			// N_PIPE / N_AND / N_OR / N_GROUP //
 	struct s_node	*right;			// unused for N_GROUP 
 }					t_node;
 
@@ -158,6 +172,7 @@ void		clean_shnode_dup(t_shnode **shnode);
 void		clean_shnode(t_shnode **shnode);
 void		clean_cst(t_cst **cst);
 void		clean_dlist(t_dlist *dlist);
+void		clean_ast(t_node *node);
 
 int			ft_crutch(char *s, int n);
 void		env_print(t_env *env);
@@ -172,14 +187,14 @@ void		print_dlist_digestible(t_dlist *dlist);
 
 int			syntax_check(t_cmd **cmd, t_env *env, char *input);
 
-t_node		*parse(t_cmd *tokens);
-t_node		*parse_list(t_parser *p);
-t_node		*parse_pipeline(t_parser *p);
-t_node		*parse_command(t_parser *p);
-t_node		*parse_group(t_parser *p);
-t_node		*parse_simple_cmd(t_parser *p);
-t_node		*parse_redirects(t_parser *p);
-void		ast_print(t_node *n, int depth);
+t_node		*parse(t_cmd **tokens);
+t_node		*parse_list(t_cmd **tok, int *stop);
+t_node		*parse_pipeline(t_cmd **tok, int *stop);
+t_node		*parse_command(t_cmd **tok, int *stop);
+t_node		*parse_group(t_cmd **tok, int *stop);
+t_node		*parse_simple_cmd(t_cmd **tok, int *stop);
+t_node		*parse_redirects(t_cmd **tok, int *stop);
+void		print_ast(t_node *n, int depth);
 
 int			ft_strcmp(char *a, char *b);
 int			ft_isquote(int c);
