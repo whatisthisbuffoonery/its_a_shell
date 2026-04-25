@@ -29,6 +29,7 @@ void	print_cmd(t_cmd **cmd)
 		if (iter->env)
 			print_env(iter->env);
 		iter = iter->next;
+		ft_putchar('\n');
 	}
 }
 /*

@@ -9,10 +9,9 @@ INCLUDES := -I$(LIBFT_DIR)
 SRC_FILE := merge_sort.c main.c err.c cleanup.c signal.c \
 			env_init.c env_utils.c shnode_utils.c \
 			cmd_init.c cmd_utils.c checker.c \
-			muh_print.c print_dlist.c \
-			cst_init.c cst_utils.c cst_check.c \
-			dlist_init.c \
-			word.c
+			muh_print.c \
+			ast_check.c \
+			word.c parse.c \
 
 OBJ := $(SRC_FILE:.c=.o)
 

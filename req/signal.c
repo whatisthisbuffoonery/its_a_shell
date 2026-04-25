@@ -29,8 +29,8 @@ void	signal_init(void)
 	rl_catch_signals = 0;
 	rl_catch_sigwinch = 0;
 	rl_signal_event_hook = rl_handle_signals;
-	if (ft_err((sigemptyset(&mask) || sigaddset(&mask, SIGTERM)
-		|| sigaddset(&mask, SIGQUIT)), "signal mask error"))//these return -1
+	if (ft_err(-(sigemptyset(&mask) || sigaddset(&mask, SIGTERM)
+		|| sigaddset(&mask, SIGQUIT)), "signal mask error"))
 		return ;
 	ft_memset(&hands, 0, sizeof(struct sigaction));
 	hands = (struct sigaction){.sa_mask = mask, .sa_handler = sighands};//, .sa_flags = SA_RESTART;//exclude restart flag

@@ -17,11 +17,6 @@ int	isjoined(t_cmd *node)
 	return (isname(node) && isname(node->next) && !node->end_space);
 }
 
-int	hascommand(t_cst *cst)
-{
-	return (cst->cmd || cst->redir);
-}
-
 int	ismeta(t_cmd *cmd)
 {
 	return (cmd && (iscond(cmd->type) || isbracket(cmd->type)));

@@ -10,7 +10,7 @@ void	make_word(t_cmd *iter)
 		{
 			iter->word_next = subcmd(&iter->next, isjoined);//append and update
 			next = iter->word_next;
-			while (next->next != iter->next)
+			while (next)
 			{
 				next->word_next = next->next;
 				next->next = NULL;
@@ -27,12 +27,10 @@ void	print_word(t_cmd *tok)
 		return ;
 	ft_putstr("[");
 	ft_putstr(tok->str);
-	if (!tok->word_next)
-		ft_putstr("<where>");
 	while (tok->word_next)
 	{
 		tok = tok->word_next;
 		ft_putstr(tok->str);
 	}
-	ft_putstr("]\n");
+	ft_putstr("]");
 }
