@@ -12,26 +12,26 @@ int	shell_exit(t_env *env, int last)
 	return (last);
 }
 
-void	print_more_cmd(t_cmd *cmd)
+void	print_more_tok(t_tok *tok)
 {
-	print_cmd(&cmd);
-	if (cmd)
-		print_env(cmd->env);
+	print_tok(&tok);
+	if (tok)
+		print_env(tok->env);
 }
 
-void	print_linear_cmd(t_cmd *cmd, char *s)
+void	print_linear_tok(t_tok *tok, char *s)
 {
 	if (s)
 	{
 		ft_putstr(s);
 		ft_putstr(": ");
 	}
-	while (cmd)
+	while (tok)
 	{
-	//	ft_printf("[%s] ", cmd->str);
-		print_word(cmd);
+	//	ft_printf("[%s] ", tok->str);
+		print_word(tok);
 		ft_putchar (' ');
-		cmd = cmd->next;
+		tok = tok->next;
 	}
 	if (s)
 		ft_putstr("\n");
@@ -42,11 +42,11 @@ int main(int c, char **v, char **e)
 	int		last;//put inside env
 	char	*buf;//put inside env...?
 	t_env	env;
-	t_cmd	*cmd;
+	t_tok	*tok;
 	t_node	*ast;
 
 	signal_init();
-	cmd = NULL;
+	tok = NULL;
 	env_init(&env, e);
 	//env_print(&env);
 	while (1)
@@ -58,17 +58,17 @@ int main(int c, char **v, char **e)
 			return (shell_exit(&env, last));
 		if (buf[0])
 		{
-			cmd_init(buf, &cmd);//reminder to check for parsing failure
-			make_word(cmd);
-			ast = parse(&cmd);
+			tok_init(buf, &tok);//reminder to check for parsing failure
+			make_word(tok);
+			ast = parse(&tok);
 			if (ast)
 				print_ast(ast, 0);
 			clean_ast(ast);
-			print_linear_cmd(cmd, "thing");
+			print_linear_tok(tok, "thing");
 			add_history(buf);
 		}
 		free(buf);
-		clean_cmd(&cmd);
+		clean_tok(&tok);
 		muh_number = 0;
 	}
 	(void) c;

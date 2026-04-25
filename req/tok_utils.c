@@ -1,22 +1,22 @@
 # include "h_minishell.h"
 
-void	cmd_pop(t_cmd **cmd)
+void	tok_pop(t_tok **tok)
 {
-	t_cmd	*next;
+	t_tok	*next;
 
-	if (*cmd)
+	if (*tok)
 	{
-		next = (*cmd)->next;
-		cmd_delone(*cmd);
-		*cmd = next;
+		next = (*tok)->next;
+		tok_delone(*tok);
+		*tok = next;
 	}
 }
 
 //would debug if we used this system
-t_cmd	*cmdtrim(t_cmd **list, t_cmd *head, t_cmd *tail)
+t_tok	*toktrim(t_tok **list, t_tok *head, t_tok *tail)
 {
-	t_cmd	*prev;
-	t_cmd	*next;
+	t_tok	*prev;
+	t_tok	*next;
 
 	prev = *list;
 	while (prev != head && prev->next != head)
@@ -31,12 +31,12 @@ t_cmd	*cmdtrim(t_cmd **list, t_cmd *head, t_cmd *tail)
 }
 
 //go rename single func later
-int	copy_cmd(t_cmd *cmd)
+int	copy_tok(t_tok *tok)
 {
-	return (cmd != NULL);
+	return (tok != NULL);
 }
 
-int	counttype(t_cmd *node, char c)
+int	counttype(t_tok *node, char c)
 {
 	int	i;
 
@@ -50,12 +50,12 @@ int	counttype(t_cmd *node, char c)
 }
 
 //does not support rejoining of prior listnorminette
-//usage pattern: arg = thisfunc, redir = subcmd('>'->next, isjoined)
-t_cmd	*subcmd(t_cmd **index, int (*f)(t_cmd *))
+//usage pattern: arg = thisfunc, redir = subtok('>'->next, isjoined)
+t_tok	*subtok(t_tok **index, int (*f)(t_tok *))
 {
-	t_cmd	*iter;
-	t_cmd	*next;
-	t_cmd	*ret;
+	t_tok	*iter;
+	t_tok	*next;
+	t_tok	*ret;
 
 	iter = *index;//start from node 1
 	ret = *index;//remember node 1

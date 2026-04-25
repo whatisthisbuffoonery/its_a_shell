@@ -1,23 +1,23 @@
 #include "h_minishell.h"
 
-int	single_cmd(t_cmd *iter)
+int	single_tok(t_tok *iter)
 {
 	(void) iter;
 	return (0);
 }
 
-int	isname(t_cmd *node)
+int	isname(t_tok *node)
 {
 	return (node && (iscontent(node->type) || ft_isquote(node->type)
 			|| node->type == '*'));
 }
 
-int	isjoined(t_cmd *node)
+int	isjoined(t_tok *node)
 {
 	return (isname(node) && isname(node->next) && !node->end_space);
 }
 
-int	ismeta(t_cmd *cmd)
+int	ismeta(t_tok *tok)
 {
-	return (cmd && (iscond(cmd->type) || isbracket(cmd->type)));
+	return (tok && (iscond(tok->type) || isbracket(tok->type)));
 }

@@ -1,6 +1,6 @@
 #include "h_minishell.h"
 
-int add_expansion(t_cmd *dst, t_shnode *env, int *index)
+int add_expansion(t_tok *dst, t_shnode *env, int *index)
 {
 	t_shnode	*ret;
 	char		*str;
@@ -30,7 +30,7 @@ void	copy_wrapper(char *src, char *dst, int *i, int *len)
 	*len += 1;
 }
 
-void	concat_wrapper(t_cmd *dst, char *ret, int *i, int *len)
+void	concat_wrapper(t_tok *dst, char *ret, int *i, int *len)
 {
 	t_shnode	*iter;
 	char		*str;
@@ -53,7 +53,7 @@ void	concat_wrapper(t_cmd *dst, char *ret, int *i, int *len)
 //	ft_printf("\n\nk: %d, tmp_len: %d\n\n", k, tmp_len);
 }
 
-int	use_expansion(t_cmd *dst, char *ret)
+int	use_expansion(t_tok *dst, char *ret)
 {
 	int		i;
 	int		len;
@@ -81,13 +81,13 @@ int	use_expansion(t_cmd *dst, char *ret)
 	return (0);
 }
 
-int	expand_str(t_cmd **cmd, t_shnode *env)
+int	expand_str(t_tok **tok, t_shnode *env)
 {
-	t_cmd	*iter;
+	t_tok	*iter;
 	int		i;
 	int		flag;
 
-	iter = *cmd;
+	iter = *tok;
 	while(iter)
 	{
 		i = 0;
@@ -102,7 +102,7 @@ int	expand_str(t_cmd **cmd, t_shnode *env)
 		}
 		iter = iter->next;
 	}
-	iter = *cmd;
+	iter = *tok;
 	while (iter)//move this over to command forking side, expand envs before each command, not before *all* commands
 	{
 		if (iter->type != '\'' && iter->env && use_expansion(iter, NULL))

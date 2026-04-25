@@ -19,15 +19,15 @@ typedef struct s_shnode
 }					t_shnode;
 
 
-typedef struct s_cmd
+typedef struct s_tok
 {
-	struct s_cmd	*next;
-	struct s_cmd	*word_next;
+	struct s_tok	*next;
+	struct s_tok	*word_next;
 	t_shnode		*env;		//expansion list //assert that operators are never assigned this list
 	char			*str;		//stores one word, operator, or quoted section
 	char			type;		//stores just first char of pre parsed string, which might be a dquote excluded from str field
 	char			end_space;	//bool for whether the char after the token was whitespace
-}					t_cmd;
+}					t_tok;
 
 //t_list? //t_shnode? (just has str field) //self reallocing char **?
 typedef struct	s_env
@@ -46,34 +46,29 @@ typedef enum e_node_kind
 	N_REDIR,	//redirection
 	N_ILLEGAL,
 }	t_node_kind;
-/*
-typedef struct s_node
-{
-	t_node_kind		kind;
-	char			**argv; // N_CMD  – argv array (NULL-terminated) 
-	int				argc;
-	char			*redir_op;		// N_REDIR – attached to the cmd or group it belongs to 
-	char			*redir_target;
-	struct s_node	*redir_next;	// linked list of redirects on one cmd 
-	struct s_node	*left;			// N_PIPE / N_AND / N_OR / N_GROUP 
-	struct s_node	*right;			// unused for N_GROUP 
-}					t_node;
-*/
 
 typedef struct s_node
 {
 	t_node_kind		kind;
-	t_cmd			*argv; // N_CMD  – argv array (NULL-terminated) //cmd name is first item
+	t_tok			*argv; // N_CMD  – argv array (NULL-terminated) //cmd name is first item
 	int				argc; //figure out later
-	t_cmd			*redir_op;		// mutually exclusive with argv
-	t_cmd			*redir_target;	//this too
+	t_tok			*redir_op;		// mutually exclusive with argv
+	t_tok			*redir_target;	//this too
 	struct s_node	*redir_next;	// linked list of redirects on one cmd // again DO NOT FILL THE OTHER TWO FIELDS DIRECTLY
 	struct s_node	*left;			// N_PIPE / N_AND / N_OR / N_GROUP //
 	struct s_node	*right;			// unused for N_GROUP 
 }					t_node;
 
-void		make_word(t_cmd *iter);
-void		print_word(t_cmd *tok);
+void		signal_init(void);
+int			rl_handle_signals(void);
+
+void		make_word(t_tok *iter);
+void		print_word(t_tok *tok);
+
+int			ft_err(int n, char *s);
+int			shell_assert(int cond, char *s);
+
+void		merge_sort(t_shnode **head);
 
 int			isbracket(int c);
 int			isop(int c);
@@ -83,61 +78,56 @@ int			iscond(int c);
 int			isenv(char c);
 int			envname(char *s);
 
-int			single_cmd(t_cmd *iter);
-int			isname(t_cmd *node);
-int			isjoined(t_cmd *node);
-int			ismeta(t_cmd *cmd);
-
-void		signal_init(void);
-int			rl_handle_signals(void);
+int			single_tok(t_tok *iter);
+int			isname(t_tok *node);
+int			isjoined(t_tok *node);
+int			ismeta(t_tok *tok);
 
 void		shnode_append(t_shnode **dst, t_shnode *src);
 t_shnode	*shnode_dup(t_shnode *src);
 t_shnode	*find_env(char *str, t_shnode *list, int n);
 
-void		cmd_node_append(t_cmd **dst, t_cmd *src);
-
 int			env_add(t_env *env, t_shnode *src, char *dst);
-int			expand_str(t_cmd **cmd, t_shnode *env);
+int			expand_str(t_tok **tok, t_shnode *env);
 
-int			cmd_init(char *buf, t_cmd **cmd);
-int			node_init(t_cmd **dst, char *src, int *cry);
+int			tok_init(char *buf, t_tok **tok);
+int			node_init(t_tok **dst, char *src, int *cry);
 void		env_init(t_env *dst, char **e);
-t_cmd		*subcmd(t_cmd **index, int (*f)(t_cmd *));
-t_cmd		*cmdtrim(t_cmd **list, t_cmd *head, t_cmd *tail);
-void		cmd_pop(t_cmd **cmd);
+t_tok		*subtok(t_tok **index, int (*f)(t_tok *));
+t_tok		*toktrim(t_tok **list, t_tok *head, t_tok *tail);
+void		tok_pop(t_tok **tok);
+void		tok_node_append(t_tok **dst, t_tok *src);
 
-int			ft_err(int n, char *s);
-int			shell_assert(int cond, char *s);
+int			copy_tok(t_tok *tok);
+int			counttype(t_tok *node, char c);
 
-void		merge_sort(t_shnode **head);
-
-int			isjoined(t_cmd *node);
-int			copy_cmd(t_cmd *cmd);
-int			counttype(t_cmd *node, char c);
-
-void		cmd_delone(t_cmd *cmd);
-void		clean_cmd(t_cmd **cmd);
+void		tok_delone(t_tok *tok);
+void		clean_tok(t_tok **tok);
 void		clean_shnode_dup(t_shnode **shnode);
 void		clean_shnode(t_shnode **shnode);
 void		clean_ast(t_node *node);
 
-int			ft_crutch(char *s, int n);
 void		env_print(t_env *env);
-void		shell_print(t_cmd **cmd, char *buf, t_env *env);
-void		print_cmd(t_cmd **cmd);
+void		shell_print(t_tok **tok, char *buf, t_env *env);
+void		print_tok(t_tok **tok);
 void		print_env(t_shnode *env);
-void		print_linear_cmd(t_cmd *cmd, char *s);
-
-int			syntax_check(t_cmd **cmd, t_env *env, char *input);
-
-t_node		*parse(t_cmd **tokens);
-t_node		*parse_list(t_cmd **tok, int *stop);
-t_node		*parse_pipeline(t_cmd **tok, int *stop);
-t_node		*parse_command(t_cmd **tok, int *stop);
-t_node		*parse_group(t_cmd **tok, int *stop);
-t_node		*parse_simple_cmd(t_cmd **tok, int *stop);
-t_node		*parse_redirects(t_cmd **tok, int *stop);
+void		print_linear_tok(t_tok *tok, char *s);
 void		print_ast(t_node *n, int depth);
+
+t_node		*parse(t_tok **tokens);
+t_node		*parse_list(t_tok **tok, int *stop);
+t_node		*parse_pipeline(t_tok **tok, int *stop);
+t_node		*parse_command(t_tok **tok, int *stop);
+t_node		*parse_group(t_tok **tok, int *stop);
+t_node		*parse_simple_cmd(t_tok **tok, int *stop);
+
+t_node		*parse_redir_group(t_tok **tok, int *stop);
+t_node		*parse_one_redir(t_tok **tok, int *stop);
+void		redir_append(t_node *dst, t_node *src);
+
+int			isarg(char c);
+t_node_kind	find_kind_op(t_tok *tok);
+int			ast_iscond(t_tok *tok);
+t_node		*node_new(t_node_kind kind, int *complain);
 
 #endif
