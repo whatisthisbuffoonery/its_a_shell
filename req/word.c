@@ -1,14 +1,14 @@
 #include "h_minishell.h"
 
-void	make_word(t_cmd *iter)
+void	make_word(t_tok *iter)
 {
-	t_cmd	*next;
+	t_tok	*next;
 
 	while (iter)
 	{
 		if (isjoined(iter))
 		{
-			iter->word_next = subcmd(&iter->next, isjoined);//append and update
+			iter->word_next = subtok(&iter->next, isjoined);//append and update
 			next = iter->word_next;
 			while (next)
 			{
@@ -21,7 +21,7 @@ void	make_word(t_cmd *iter)
 	}
 }
 
-void	print_word(t_cmd *tok)
+void	print_word(t_tok *tok)
 {
 	if (!tok)
 		return ;

@@ -17,11 +17,11 @@ void	print_env(t_shnode *env)
 	ft_putstr("\n\n");
 }
 
-void	print_cmd(t_cmd **cmd)
+void	print_tok(t_tok **tok)
 {
-	t_cmd	*iter;
+	t_tok	*iter;
 
-	iter = *cmd;
+	iter = *tok;
 	while (iter)
 	{
 //		ft_printf("[%s]\n", iter->str);
@@ -33,7 +33,7 @@ void	print_cmd(t_cmd **cmd)
 	}
 }
 /*
-void	shell_print(t_cmd **cmd, char *buf, t_env *env)
+void	shell_print(t_tok **tok, char *buf, t_env *env)
 {
 	int		i = 0;
 	int		cry = 0;
@@ -41,11 +41,11 @@ void	shell_print(t_cmd **cmd, char *buf, t_env *env)
 
 	if (buf && buf[0])
 	{
-		expand_str(cmd, env->env);
-		print_cmd(cmd, &cry);
-		node = parse(*cmd);
-		expand_str(cmd, env->env);//note to move this step after cst init for semantics
-//		print_cmd(cmd, &cry);
+		expand_str(tok, env->env);
+		print_tok(tok, &cry);
+		node = parse(*tok);
+		expand_str(tok, env->env);//note to move this step after cst init for semantics
+//		print_tok(tok, &cry);
 		add_history(buf);
 	}
 	else if (!buf)

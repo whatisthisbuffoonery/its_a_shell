@@ -32,36 +32,36 @@ void	clean_shnode_dup(t_shnode **shnode)
 	*shnode = NULL;
 }
 
-void	cmd_delone(t_cmd *cmd)
+void	tok_delone(t_tok *tok)
 {
-	free(cmd->str);
-	clean_shnode_dup(&cmd->env);
-	free(cmd);
+	free(tok->str);
+	clean_shnode_dup(&tok->env);
+	free(tok);
 }
 
-void	clean_cmd(t_cmd **cmd)
+void	clean_tok(t_tok **tok)
 {
-	t_cmd	*iter;
-	t_cmd	*next;
+	t_tok	*iter;
+	t_tok	*next;
 
-	iter = *cmd;
+	iter = *tok;
 	while(iter)
 	{
 		next = iter->next;
-		clean_cmd(&iter->word_next);
-		cmd_delone(iter);
+		clean_tok(&iter->word_next);
+		tok_delone(iter);
 		iter = next;
 	}
-	*cmd = NULL;
+	*tok = NULL;
 }
 
 void	clean_ast(t_node *node)
 {
 	if (!node)
 		return ;
-	clean_cmd(&node->argv);
-	clean_cmd(&node->redir_op);
-	clean_cmd(&node->redir_target);
+	clean_tok(&node->argv);
+	clean_tok(&node->redir_op);
+	clean_tok(&node->redir_target);
 	clean_ast(node->redir_next);
 	clean_ast(node->left);
 	clean_ast(node->right);
