@@ -14,17 +14,17 @@ static void print_indent(int d)
 
 static void print_redirs(t_node *r, int depth)
 {
-	if (r)
-		print_indent(depth);
+	if (!r)
+		return ;
+	print_indent(depth);
+	ft_putstr("redirect{");
 	while (r)
 	{
-		ft_putstr("redirect{  ");
 		ft_putstr(r->redir_op->str);
-		ft_putstr("  ");
 		print_word(r->redir_target);
-		ft_putchar('}');
 		r = r->redir_next;
 	}
+	ft_putstr("}\n");
 }
 
 void	print_cmd_node(t_node *n)
