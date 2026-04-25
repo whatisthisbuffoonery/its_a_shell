@@ -7,9 +7,7 @@
 # include <readline/history.h>
 # include <sys/wait.h>
 # include <errno.h>
-# include "Libft/libft/libft.h"
-# include "Libft/printf/ft_printf.h"
-# include "Libft/gnl/get_next_line_bonus.h"
+# include "libft.h"
 
 extern volatile sig_atomic_t	muh_number;
 
@@ -27,7 +25,6 @@ typedef struct s_cmd
 	struct s_cmd	*word_next;
 	t_shnode		*env;		//expansion list //assert that operators are never assigned this list
 	char			*str;		//stores one word, operator, or quoted section
-	int				depth;
 	char			type;		//stores just first char of pre parsed string, which might be a dquote excluded from str field
 	char			end_space;	//bool for whether the char after the token was whitespace
 }					t_cmd;
@@ -75,45 +72,6 @@ typedef struct s_node
 	struct s_node	*right;			// unused for N_GROUP 
 }					t_node;
 
-typedef struct s_parser	//parser state
-{
-	t_cmd	*cur;	// current token 
-	int		err;	// non-zero → parse failed 
-}	t_parser;
-
-typedef struct s_cst
-{
-	t_cmd			*cmd;	//first valid cmd string, might be a glob
-	t_cmd			*args;
-	t_cmd			*op;	//nearest operator to the right of cmd, really should be an enum
-	t_cmd			*redir;
-	t_cmd			*brackets;//just for cleanup convenience
-	struct s_cst	*next;	//points to next cmd after op, take note of depth
-	int				depth;
-}					t_cst;
-
-//how does this make globbing less painful than before? moar norminette space is how
-//advise separating strcmp and opendir operations
-//I do realise interpreting '/' is outside the subject (chdir automatically handles this)
-//how we 
-typedef struct s_glob
-{
-	t_cmd		*cmd;//for cleanup convenience
-	char		*str;//the str field from cmd //use this if glob comes up with nothing
-	t_shnode	*results;
-	int			index;
-}				t_glob;
-
-//there was the opportunity to name this, confusingly, t_ast
-typedef struct s_dlist
-{
-	t_cst			*cst;//list of commands
-	struct s_dlist	*down;//arr? diff struct? down next?//down next.
-	struct s_dlist	*down_next;
-	struct s_dlist	*across;
-	t_cmd			*redir;//each shlist will self assign redirections whose depth is lower than itself
-}					t_dlist;
-
 void		make_word(t_cmd *iter);
 void		print_word(t_cmd *tok);
 
@@ -128,7 +86,6 @@ int			envname(char *s);
 int			single_cmd(t_cmd *iter);
 int			isname(t_cmd *node);
 int			isjoined(t_cmd *node);
-int			hascommand(t_cst *cst);
 int			ismeta(t_cmd *cmd);
 
 void		signal_init(void);
@@ -146,17 +103,12 @@ int			expand_str(t_cmd **cmd, t_shnode *env);
 int			cmd_init(char *buf, t_cmd **cmd);
 int			node_init(t_cmd **dst, char *src, int *cry);
 void		env_init(t_env *dst, char **e);
-t_cst		*cst_init(t_cmd **cmd, int *complain, int depth, t_cmd *op);
 t_cmd		*subcmd(t_cmd **index, int (*f)(t_cmd *));
 t_cmd		*cmdtrim(t_cmd **list, t_cmd *head, t_cmd *tail);
 void		cmd_pop(t_cmd **cmd);
-t_dlist		*dlist_init(t_cst **cst, int *complain, int depth, t_cmd **redir);
-int			issubshell(t_cst **cst, char type);
 
 int			ft_err(int n, char *s);
 int			shell_assert(int cond, char *s);
-t_cst		*cst_complain(int *complain, t_cst *cst, char *s);
-t_dlist		*dlist_complain(int *complain, t_dlist *dlist, char *s);
 
 void		merge_sort(t_shnode **head);
 
@@ -164,14 +116,10 @@ int			isjoined(t_cmd *node);
 int			copy_cmd(t_cmd *cmd);
 int			counttype(t_cmd *node, char c);
 
-t_cst		*cst_pop(t_cst **cst);
-
 void		cmd_delone(t_cmd *cmd);
 void		clean_cmd(t_cmd **cmd);
 void		clean_shnode_dup(t_shnode **shnode);
 void		clean_shnode(t_shnode **shnode);
-void		clean_cst(t_cst **cst);
-void		clean_dlist(t_dlist *dlist);
 void		clean_ast(t_node *node);
 
 int			ft_crutch(char *s, int n);
@@ -179,11 +127,7 @@ void		env_print(t_env *env);
 void		shell_print(t_cmd **cmd, char *buf, t_env *env);
 void		print_cmd(t_cmd **cmd);
 void		print_env(t_shnode *env);
-void		print_cst(t_cst *cst, int check);
-void		print_linear_cst(t_cst *cst);
-void		print_dlist(t_dlist *dlist, int depth);
 void		print_linear_cmd(t_cmd *cmd, char *s);
-void		print_dlist_digestible(t_dlist *dlist);
 
 int			syntax_check(t_cmd **cmd, t_env *env, char *input);
 
@@ -195,13 +139,5 @@ t_node		*parse_group(t_cmd **tok, int *stop);
 t_node		*parse_simple_cmd(t_cmd **tok, int *stop);
 t_node		*parse_redirects(t_cmd **tok, int *stop);
 void		print_ast(t_node *n, int depth);
-
-int			ft_strcmp(char *a, char *b);
-int			ft_isquote(int c);
-int			ft_isspace(int c);
-char		*ft_strndup(const char *src, size_t n);
-void		*malloc_cond(void **dst, size_t size);
-void		ft_putchar(char n);
-void		ft_putstr(char *a);
 
 #endif

@@ -67,15 +67,3 @@ void	clean_ast(t_node *node)
 	clean_ast(node->right);
 	free(node);
 }
-
-void	clean_dlist(t_dlist *dlist)
-{
-	if (!dlist)
-		return ;
-	clean_cst(&dlist->cst);
-	clean_cmd(&dlist->redir);
-	clean_dlist(dlist->down);
-	clean_dlist(dlist->down_next);
-	clean_dlist(dlist->across);
-	free(dlist);
-}

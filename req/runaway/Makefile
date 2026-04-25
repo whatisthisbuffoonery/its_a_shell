@@ -4,8 +4,8 @@ LIBFT_DIR := libft
 SRC_DIR := ..
 NAME := minishell
 
-LIBS := -L$(LIBFT_DIR) -lreadline -lhistory -lft
-INCLUDES := -I$(LIBFT_DIR)
+LIBS := $(LIBFT_DIR) -lreadline -lhistory -lft
+INCLUDES := $(LIBFT_DIR)/includes
 SRC_FILE := merge_sort.c main.c err.c cleanup.c signal.c \
 			env_init.c env_utils.c shnode_utils.c \
 			cmd_init.c cmd_utils.c checker.c \
@@ -19,10 +19,10 @@ all: $(NAME)
 
 $(NAME): $(OBJ)
 	$(MAKE) -C $(LIBFT_DIR)
-	$(CC) $(CC_FLAGS) $(OBJ) $(LIBS) $(INCLUDES) -o $(NAME)
+	$(CC) $(CC_FLAGS) $(OBJ) -L$(LIBS) -I$(INCLUDES) -o $(NAME)
 
-$(OBJ): %.o: $(SRC_DIR)/%.c
-	$(CC) $(CC_FLAGS) -c $< $(INCLUDES) -o $@
+$(OBJ): %.o: $(SRC_DIR)/%.c $(INCLUDES)/libft.h
+	$(CC) $(CC_FLAGS) -c $< -I$(INCLUDES) -o $@
 
 #exclude libs here
 
