@@ -18,7 +18,6 @@ typedef struct s_shnode
 	char			*str;
 }					t_shnode;
 
-
 typedef struct s_tok
 {
 	struct s_tok	*next;
@@ -29,13 +28,20 @@ typedef struct s_tok
 	char			end_space;	//bool for whether the char after the token was whitespace
 }					t_tok;
 
-//t_list? //t_shnode? (just has str field) //self reallocing char **?
+typedef struct s_pidnode
+{
+	pid_t				pid;
+	struct s_pidnode	*next;
+}						t_pidnode;
+
 typedef struct	s_env
 {
-	t_shnode	*export;		//env vars corresponding to export builtin	//export list stores env variables in no particular order, but can contain items with empty strings
-	t_shnode	*env;			//env vars corresponding to env builtin		//env list stores env variables in alphabet order, items with empty strings as values are never added to this list
+	t_shnode	*export;	//sorted
+	t_shnode	*env;		//not sorted
+	t_node		*tree;
+	t_pidnode	*pids;
 }				t_env;			//PSA empty strings can be in env list, null strings cannot
-								//
+
 typedef enum e_node_kind
 {
 	N_CMD,		//simple command		  
@@ -58,6 +64,8 @@ typedef struct s_node
 	struct s_node	*left;			// N_PIPE / N_AND / N_OR / N_GROUP //
 	struct s_node	*right;			// unused for N_GROUP 
 }					t_node;
+
+typedef int	t_pipeset[2];
 
 /*misc*/
 void		signal_init(void);

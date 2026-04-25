@@ -1,6 +1,5 @@
 #include "h_minishell.h"
 
-//cmd word idea: start is head, word_next = subcmd(&head->next, isjoined)
 t_node	*parse_simple(t_tok **tok, int *stop)
 {
 	t_node	*new_cmd;
