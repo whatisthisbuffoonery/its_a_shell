@@ -9,7 +9,7 @@ int	single_tok(t_tok *iter)
 int	isname(t_tok *node)
 {
 	return (node && (iscontent(node->type) || ft_isquote(node->type)
-			|| node->type == '*'));
+			|| node->type == '*' || node->type == '='));
 }
 
 int	isjoined(t_tok *node)
