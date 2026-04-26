@@ -96,6 +96,11 @@ void	env_init(t_env *dst, char **e)
 
 	i = 0;
 	ft_memset(dst, 0, sizeof(t_env));
+	if (!e || !*e)
+	{
+		ft_putstr_fd("minishell: null envp at init\n", 2);//test program on null envp
+		return ;
+	}
 	while (e[i])
 	{
 		iter = env_init_node(e[i]);

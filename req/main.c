@@ -55,6 +55,9 @@ void	init(t_env *env, char **e, t_tok **tok)
 	env_init(env, e);
 	env->ast = NULL;
 	env->last = 0;
+	env->do_not_subshell = 0;
+	env->duped_fd[0] = 0;
+	env->duped_fd[1] = 0;
 }
 
 //need to update last in execution
