@@ -51,14 +51,6 @@ typedef struct s_node
 	struct s_node	*right;			// unused for N_GROUP 
 }					t_node;
 
-typedef struct	s_env
-{
-	t_shnode	*export;	//sorted
-	t_shnode	*env;		//not sorted
-	t_node		*ast;
-	int			last;
-}				t_env;			//PSA empty strings can be in env list, null strings cannot
-
 typedef int	t_pipeset[2];
 
 typedef struct s_pidnode
@@ -69,9 +61,21 @@ typedef struct s_pidnode
 
 typedef struct s_pipemanager
 {
-	t_pidnode	*pids;
-	t_pipeset	*pipes;
-}				t_pipemanager;
+	t_pidnode				*pids;
+	t_pipeset				*pipes;
+	struct s_pipemanager	*next;
+}							t_pipemanager;
+
+typedef struct	s_env
+{
+	t_pipemanager	*p;
+	t_shnode		*export;	//sorted
+	t_shnode		*env;		//not sorted
+	t_node			*ast;
+	int				last;
+	int				do_not_subshell;
+	int				duped_fd[2];
+}					t_env;			//PSA empty strings can be in env list, null strings cannot
 
 /*misc*/
 void		signal_init(void);
