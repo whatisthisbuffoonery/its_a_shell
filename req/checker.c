@@ -33,5 +33,6 @@ int	envname(char *s)
 
 int	iscontent(int c)
 {
-	return (c && c != '*' && !isop(c) && !ft_isquote(c) && !ft_isspace(c) && !isbracket(c));
+	return (c && c != '*' && c != '='
+		&& !isop(c) && !ft_isquote(c) && !ft_isspace(c) && !isbracket(c));
 }

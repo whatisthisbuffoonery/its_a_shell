@@ -44,12 +44,26 @@ int	do_group(t_node *node, t_env *env, int *fd)
 {
 	if (node->kind != N_GROUP)
 		return (do_simple(node, env, fd));
-
+	subshell();
+	do_list();
 }
 
-int	do_pipe_command(t_node *node, t_env *env, t_pipeset *p, int p_index)
+int	do_pipe_command(t_node *node, t_env *env, t_pipeset **p, int p_index)
 {
-	int	fd[2];
+	int		fd[2];
+	pid_t	pid;
+
+	pid = fork();
+	if (pid)
+	{
+		pid_append(&env->pids, pid);
+		return (0);
+	}
+	fd[0] = (*p)[p_index][0];
+	fd[1] = 1;
+	if (p_index)
+		fd[1] = (*p)[p_index - 1][1];
+	
 }
 
 //i.e. a | b | c : c index 0, b index 1 : p malloc 1 + 1 + 1 = 3 :
@@ -82,10 +96,11 @@ int	do_pipe(t_node *node, t_env *env, t_pipeset **p, int p_index)
 //entry point
 int	do_list(t_node *node, t_env *env)
 {
-	int			status;
-	t_pipeset	*p;
+	int				status;
+	t_pipemanager	p;
 
-	p = NULL;
+	p.pids = NULL;
+	p.pipes = NULL;
 	status = 0;
 	if (node->kind != N_AND && node->kind != N_OR)
 		return (do_pipe(node, env, &p, 0));
