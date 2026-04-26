@@ -28,20 +28,6 @@ typedef struct s_tok
 	char			end_space;	//bool for whether the char after the token was whitespace
 }					t_tok;
 
-typedef struct s_pidnode
-{
-	pid_t				pid;
-	struct s_pidnode	*next;
-}						t_pidnode;
-
-typedef struct	s_env
-{
-	t_shnode	*export;	//sorted
-	t_shnode	*env;		//not sorted
-	t_node		*tree;
-	t_pidnode	*pids;
-}				t_env;			//PSA empty strings can be in env list, null strings cannot
-
 typedef enum e_node_kind
 {
 	N_CMD,		//simple command		  
@@ -65,7 +51,27 @@ typedef struct s_node
 	struct s_node	*right;			// unused for N_GROUP 
 }					t_node;
 
+typedef struct	s_env
+{
+	t_shnode	*export;	//sorted
+	t_shnode	*env;		//not sorted
+	t_node		*ast;
+	int			last;
+}				t_env;			//PSA empty strings can be in env list, null strings cannot
+
 typedef int	t_pipeset[2];
+
+typedef struct s_pidnode
+{
+	pid_t				pid;
+	struct s_pidnode	*next;
+}						t_pidnode;
+
+typedef struct s_pipemanager
+{
+	t_pidnode	*pids;
+	t_pipeset	*pipes;
+}				t_pipemanager;
 
 /*misc*/
 void		signal_init(void);
