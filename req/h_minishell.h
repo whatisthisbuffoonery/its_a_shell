@@ -53,15 +53,19 @@ typedef struct s_node
 
 typedef int	t_pipeset[2];
 
+/*
 typedef struct s_pidnode
 {
 	pid_t				pid;
 	struct s_pidnode	*next;
 }						t_pidnode;
+*/ //VETO
 
 typedef struct s_pipemanager
 {
-	t_pidnode				*pids;
+	size_t					pipe_count;
+	size_t					pid_count;
+	pid_t					*pids;
 	t_pipeset				*pipes;
 	struct s_pipemanager	*next;
 }							t_pipemanager;
@@ -100,12 +104,14 @@ int			envname(char *s);
 
 /*node checking, can be used with subtok*/
 int			single_tok(t_tok *iter);
-int			isname(t_tok *node);
 int			isjoined(t_tok *node);
 int			copy_tok(t_tok *tok);
 
 /*checks for iscond or isbracket, do not use with subtok*/
 int			ismeta(t_tok *tok);
+
+/*also do not use with subtok*/
+int			isname(t_tok *node);
 
 /*env utils*/
 void		shnode_append(t_shnode **dst, t_shnode *src);

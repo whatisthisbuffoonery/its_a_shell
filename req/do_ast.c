@@ -7,25 +7,70 @@ pid_t	subshell_fork(t_env *env)
 	pid = fork();
 	if (!pid)
 		env_import(env);
-	return (pid);
+	return (ft_err(pid, "shell fork"));
 }
 
-t_pipeset	*pipeset_init(int p_index)
+void	unset(int *fd)
 {
-	t_pipeset	*ret;
+	if (*fd > 2)
+	{
+		close(*fd);
+		*fd = -1;
+	}
+}
+
+void	pipeset_cleanup(t_pipeset *set size_t n)
+{
+	size_t	i;
+
+	if (!set)
+		return ;
+	i = 0;
+	while (i < n)
+	{
+		unset(&set[i][0]);
+		unset(&set[i][1]);
+		i ++;
+	}
+	free(set);
+}
+
+void	pipemanager_init(t_pipemanager *dst, int p_index)
+{
+	t_pipeset	*set;
+	pid_t		*pids;
 	int			i;
 
 	i = 0;
-	ret = ft_calloc(sizeof(t_pipeset), p_index + 1 + 1);
-	while (ret && i <= p_index)
+	pids = malloc(sizeof(pid_t) * (p_index + 1 + 1));
+	if (pids)
+		set = ft_calloc(sizeof(t_pipeset), p_index + 1 + 1);
+	while (i <= p_index)
 	{
-		if (ft_err(pipe(ret[i]), "pipe error"))
-			return (pipeset_cleanup(ret, i));
-		i ++;
+		if (ft_err(-(!pids || !set), "pipemanager malloc")
+			|| ft_err(pipe(set[i]), "pipe error"))
+		{
+			pipeset_cleanup(set, i);
+			free(pids);
+			return ;
+		}
+		pids[i++] = -1;
 	}
-	ret[i][0] = 0;
-	ret[i][1] = 1;
-	return (ret);
+	set[i][0] = -1;
+	dst->pipes = set;
+	dst->pids = pids;
+	dst->pipe_count = p_index + 1;
+}
+
+void	pid_append(t_pipemanager *p, pid_t src)
+{
+	if (p->pid_count > p->pipe_count)
+	{
+		ft_putstr_fd("\n\n============== ya done cooked the process management ===============\n\n");
+		exit(1);
+	}
+	p->pids[p->pid_count] = src;
+	p->pid_count += 1;
 }
 
 int	exec_simple(int argc, char **argv, t_env *env, int *fd)
@@ -36,30 +81,30 @@ int	exec_simple(int argc, char **argv, t_env *env, int *fd)
 	oldfd[0] = -1;
 	oldfd[1] = -1;
 	//if builtin with redir, set oldfd and restore before returning
-	//if binary, build envp, dup2 fd, then check do_not_subshell
+	//if binary, check do_not_subshell, build envp, dup2 fd
 }
 
 //check subshell flag//will wait for its own children
 int	do_simple(t_node *node, t_env *env, int *redir_fd, int *pfd)
 {
 	char	**argv;
-//	char	**envp;
 	char	*cmd;
 	int		fd[2];
 	int		status;
 
 	argv = NULL;
+	if (!node->argv)//redir only path
+		return (0);
 	set_fd(fd, redir_fd, pfd);//no dup here
 	cmd = make_command(node, env);//account for redir as command//expand + glob here
 	if (cmd)
-		argv = argv_init(cmd, node, env);//argv pop first ig //free cmd on error internally//expand + glob here
-	if (argv)// && !envp_init(&envp, env))
+		argv = argv_init(cmd, node, env); //free cmd on error internally//expand + glob here
+	if (argv)// will create argv even if no args
 		status = exec_simple(count_argv(argv), argv, env, fd);
 	else
 		status = 1;
 	simple_nuke(argv, env, redir_fd);
 	return (status);
-	//dup redir if set. if not, dup pfd if set. set env->duped_fd when using dup to close 0 and 1 later
 	//maybe dont dup if duped_fd set//VETO : cmd might have redir set
 }
 
@@ -70,7 +115,7 @@ int	do_group(t_node *node, t_env *env, int *pfd)
 	int		redir_fd[2];
 	pid_t	pid;
 
-	if(redir_to_fd(node, redir_fd))// //expand + glob here
+	if(redir_to_fd(node, redir_fd))//open files //expand + glob here
 		return (1);
 	if (node->kind != N_GROUP)
 		return (do_simple(node, env, redir_fd, pfd));//not do list
@@ -82,7 +127,9 @@ int	do_group(t_node *node, t_env *env, int *pfd)
 	else
 	{
 		pid = shell_fork(env);//clean blanks
-		if (!pid)
+		if (pid < 0)
+			return (1);
+		else if (!pid)
 			do_list_and_die(node->left, env, redir_fd, pfd);
 		else
 			return (child_wait_single(pid));
@@ -92,19 +139,23 @@ int	do_group(t_node *node, t_env *env, int *pfd)
 
 int	do_pipe_command(t_node *node, t_env *env, t_pipemanager *p, int p_index)
 {
-	int		status;
-	int		fd[2];
-	pid_t	pid;
+	int			status;
+	int			fd[2];
+	pid_t		pid;
 
 	pid = shell_fork(env);//clean blanks
-	if (pid)
+	if (pid < 0)
+		return (1);
+	else if (pid)
 	{
-		pid_append(&p->pids, pid);
+		pid_append(p, pid);
 		return (0);
 	}
 	//child only
 	env->do_not_subshell = 1;
 	fd[0] = p->pipes[p_index][0];
+	if (fd[0] < 0)
+		fd[0] = 0;
 	fd[1] = 1;
 	if (p_index)
 		fd[1] = p->pipes[p_index - 1][1];
@@ -130,7 +181,7 @@ int	do_pipe(t_node *node, t_env *env, t_pipemanager *p, int p_index)
 		do_pipe(node->left, env, p, p_index + 1);
 	else
 	{
-		p->pipes = pipeset_init(p_index);
+		pipemanager_init(p, p_index);
 		if (p->pipes)
 			do_pipe_command(node->left, env, p, p_index + 1);//make subshell
 	}
@@ -138,12 +189,13 @@ int	do_pipe(t_node *node, t_env *env, t_pipemanager *p, int p_index)
 		return (1);
 	do_pipe_command(node->right, env, p, p_index);
 	if (!p_index)
-		return (child_wait_list(p->pids));//rmb to free
+		return (child_wait_list(p->pids));//do_list parent will cleanup
 	return (0);
 }
 
 //entry point
 //the alternative to forking is keeping depth counters on blank env vars
+//and redir/pipe fds. hell no.
 int	do_list(t_node *node, t_env *env)
 {
 	int				status;
@@ -164,4 +216,21 @@ int	do_list(t_node *node, t_env *env)
 		|| (node->kind == N_OR && status))
 		status = do_list(node->right, env);
 	return (status);
+}
+
+int	pipemanager_append(t_env *env, t_pipemanager **new)
+{
+	t_pipemanager	*iter;
+
+	*new = ft_calloc(sizeof(t_pipemanager), 1);
+	if (!*new)
+		return (1);
+	iter = env->p;
+	while (iter && iter->next)
+		iter = iter->next;
+	if (iter)
+		iter->next = *new;
+	else
+		env->p = *new;
+	return (0);
 }
