@@ -206,7 +206,7 @@ int	do_list(t_node *node, t_env *env)
 	{
 		if (node->kind == N_PIPE && pipemanager_append(env, &p))//I hate myself//append new item and set p to that item
 			return (1);
-		status = do_pipe(node, env, &p, 0);
+		status = do_pipe(node, env, p, 0);
 		if (node->kind == N_PIPE)
 			pipemanager_pop(env);
 		return (status);
