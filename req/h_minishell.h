@@ -18,11 +18,12 @@ typedef struct s_shnode
 	char			*str;
 }					t_shnode;
 
+//aa=cc dd
+
 typedef struct s_tok
 {
 	struct s_tok	*next;
 	struct s_tok	*word_next;
-	t_shnode		*env;		//expansion list //assert that operators are never assigned this list
 	char			*str;		//stores one word, operator, or quoted section
 	char			type;		//stores just first char of pre parsed string, which might be a dquote excluded from str field
 	char			end_space;	//bool for whether the char after the token was whitespace
@@ -65,7 +66,7 @@ typedef struct s_pipemanager
 {
 	size_t					pipe_count;
 	size_t					pid_count;
-	pid_t					*pids;
+	pid_t					pid;//just store the last child
 	t_pipeset				*pipes;
 	struct s_pipemanager	*next;
 }							t_pipemanager;

@@ -68,46 +68,46 @@ t_node	*parse_command(t_tok **tok, int *stop)
 //execution idea: recursive pipe manager increments count
 t_node	*parse_pipeline(t_tok **tok, int *stop)
 {
-	t_node	*L;
-	t_node	*R;
+	t_node	*left;
+	t_node	*right;
 	t_node	*new_pipe;
 
-	L = parse_command(tok, stop);
-	if (!L || *stop)
-		return (L);
+	left = parse_command(tok, stop);
+	if (!left || *stop)
+		return (left);
 	while (*tok && !*stop && !ft_strcmp((*tok)->str, "|"))
 	{
 		new_pipe = node_new(N_PIPE, stop);
 		if (!new_pipe)
-			return (L);
+			return (left);
 		tok_pop(tok);
-		R = parse_command(tok, stop);//veto failure catch
-		new_pipe->left = L;
-		new_pipe->right = R;
-		L = new_pipe;
+		right = parse_command(tok, stop);//veto failure catch
+		new_pipe->left = left;
+		new_pipe->right = right;
+		left = new_pipe;
 	}
-	return (L);
+	return (left);
 }
 
 t_node	*parse_list(t_tok **tok, int *stop)
 {
-	t_node	*L;
-	t_node	*R;
+	t_node	*left;
+	t_node	*right;
 	t_node	*new_op;
 
-	L = parse_pipeline(tok, stop);
-	if (!L || *stop)
-		return (L);
+	left = parse_pipeline(tok, stop);
+	if (!left || *stop)
+		return (left);
 	while (*tok && !*stop && ast_iscond(*tok))
 	{
 		new_op = node_new(find_kind_op(*tok), stop);
 		if (!new_op)
-			return (L);
+			return (left);
 		tok_pop(tok);
-		R = parse_pipeline(tok, stop);//veto failure catch
-		new_op->left = L;
-		new_op->right = R;
-		L = new_op;
+		right = parse_pipeline(tok, stop);//veto failure catch
+		new_op->left = left;
+		new_op->right = right;
+		left = new_op;
 	}
-	return (L);
+	return (left);
 }

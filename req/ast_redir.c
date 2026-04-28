@@ -27,7 +27,7 @@ t_node	*parse_one_redir(t_tok **tok, int *stop)
 t_node	*parse_redir_group(t_tok **tok, int *stop)
 {
 	t_node	*head;
-	t_node	*tail;//eh
+	t_node	*tail;
 	t_node	*r;
 
 	head = NULL;

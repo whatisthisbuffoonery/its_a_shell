@@ -67,3 +67,14 @@ void	clean_ast(t_node *node)
 	clean_ast(node->right);
 	free(node);
 }
+
+void	shell_cleanup(t_env *env, int *fd)
+{
+	close(fd[0]);
+	close(fd[1]);
+	clean_ast(env->ast);
+	env->ast = NULL;
+	clean_shnode(&env->export);
+	clean_shnode_dup(&env->env);
+	rl_clear_history();
+}
