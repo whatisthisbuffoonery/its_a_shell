@@ -67,7 +67,7 @@ void	clean_ast(t_node *node)
 	clean_ast(node->right);
 	free(node);
 }
-
+/*
 //heavily debating removing the next ptr altogether, subshell should discard all prior fds anyway
 void	clean_pipemanager(t_pipemanager *p)
 {
@@ -83,3 +83,4 @@ void	shell_cleanup(t_env *env)
 	clean_shnode_dup(&env->env);
 	rl_clear_history();
 }
+*/
