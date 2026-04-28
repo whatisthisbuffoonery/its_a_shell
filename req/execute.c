@@ -6,7 +6,7 @@
 /*   By: achew <achew@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 20:04:09 by achew             #+#    #+#             */
-/*   Updated: 2026/04/23 19:46:52 by achew            ###   ########.fr       */
+/*   Updated: 2026/04/28 18:27:33 by achew            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,12 +28,12 @@ static t_builtin_entry  g_builtins[] = {
 //    {"pwd",     ft_pwd},
     {"export",  ft_export},
 //    {"unset",   ft_unset},
-//    {"env",     ft_env},
+    {"env",     ft_env},
 //    {"exit",    ft_exit},
 //    {NULL,      NULL}
 };
 
-static t_builtin    get_builtin(char *name)
+static t_builtin	get_builtin(char *name)
 {
     int i;
 
@@ -98,18 +98,18 @@ int execute(t_node *n, t_env *env)
         return (exec_cmd(n, env));
 //    if (n->kind == N_PIPE)
 //        return (exec_pipe(n, env));
-//    if (n->kind == N_AND)
-//    {
-//        if (execute(n->left, env) == 0)
-//            return (execute(n->right, env));
-//        return (1);
-//    }
-//    if (n->kind == N_OR)
-//    {
-//        if (execute(n->left, env) != 0)
-//            return (execute(n->right, env));
-//        return (0);
-//    }
+    if (n->kind == N_AND)
+    {
+        if (execute(n->left, env) == 0)
+            return (execute(n->right, env));
+        return (1);
+    }
+    if (n->kind == N_OR)
+    {
+        if (execute(n->left, env) != 0)
+            return (execute(n->right, env));
+        return (0);
+    }
 //    if (n->kind == N_GROUP)
 //        return (exec_group(n, env));
     return (0);

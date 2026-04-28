@@ -157,6 +157,10 @@ int			expand_ast(t_node *n, t_shnode *env);
 
 int			ft_export(int argc, char **argv, t_env *env);
 t_shnode	*env_init_node(char *e);
+void		print_export(t_shnode *export);
+
+int			ft_env(int argc, char **argv, t_env *env);
+void		print_env(t_shnode *env);
 
 int			execute(t_node *n, t_env *env);
 char		*ft_strjoin3(const char *name, const char *val);

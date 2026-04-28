@@ -6,14 +6,23 @@ char	*env_safe(char *s, char *n)
 		return (n);
 	return (s);
 }
+
 void	print_env(t_shnode *env)
 {
 	while (env)
 	{
-		ft_printf("<%s, %s> ", env->name, env_safe(env->str, "NULL"));
+		ft_printf("%s=%s\n", env->name, env_safe(env->str, "NULL"));
 		env = env->next;
 	}
-	ft_putstr("\n\n");
+}
+
+void	print_export(t_shnode *export)
+{
+	while (export)
+	{
+		ft_printf("declare -x %s=\"%s\"\n", export->name, env_safe(export->str, "NULL"));
+		export = export->next;
+	}
 }
 
 void	print_cmd(t_cmd **cmd, int *last)

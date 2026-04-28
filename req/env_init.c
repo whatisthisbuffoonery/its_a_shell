@@ -112,7 +112,7 @@ void	env_init(t_env *dst, char **e)
 		env_add(dst, iter, "export");
 		i ++;
 	}
-	merge_sort(&dst->env);
+	merge_sort(&dst->export);
 //	update_shell_lvl(dst);
 //	update_shell_name(dst);
 }

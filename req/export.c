@@ -184,7 +184,7 @@ int    ft_export(int argc, char **argv, t_env *env)
 
 	if (argc < 2)
 	{
-		ft_printf("export without args technically not specified\n");
+		print_export(env->export);
 		return (0);
 	}
 	status = 0;
