@@ -6,7 +6,7 @@
 /*   By: achew <achew@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 20:04:09 by achew             #+#    #+#             */
-/*   Updated: 2026/04/28 18:27:33 by achew            ###   ########.fr       */
+/*   Updated: 2026/04/28 18:45:45 by achew            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ typedef struct s_builtin_entry
 }   t_builtin_entry;
 
 static t_builtin_entry  g_builtins[] = {
-//    {"echo",    ft_echo},
+    {"echo",    ft_echo},
 //    {"cd",      ft_cd},
 //    {"pwd",     ft_pwd},
     {"export",  ft_export},
