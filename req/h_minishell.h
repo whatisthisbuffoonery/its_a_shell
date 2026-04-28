@@ -20,6 +20,12 @@ typedef struct s_shnode
 
 //aa=cc dd
 
+typedef struct s_arg
+{
+	char			*str;
+	struct s_arg	*next;
+}					t_arg;
+
 typedef struct s_tok
 {
 	struct s_tok	*next;
@@ -68,12 +74,12 @@ typedef struct s_pipemanager
 	size_t					pid_count;
 	pid_t					pid;//just store the last child
 	t_pipeset				*pipes;
-	struct s_pipemanager	*next;
+//	struct s_pipemanager	*next;// VETO
 }							t_pipemanager;
 
 typedef struct	s_env
 {
-	t_pipemanager	*p;
+//	t_pipemanager	*p; //VETO
 	t_shnode		*export;	//sorted
 	t_shnode		*env;		//not sorted
 	t_node			*ast;

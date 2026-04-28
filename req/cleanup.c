@@ -35,7 +35,7 @@ void	clean_shnode_dup(t_shnode **shnode)
 void	tok_delone(t_tok *tok)
 {
 	free(tok->str);
-	clean_shnode_dup(&tok->env);
+	//clean_shnode_dup(&tok->env);
 	free(tok);
 }
 
@@ -68,10 +68,15 @@ void	clean_ast(t_node *node)
 	free(node);
 }
 
-void	shell_cleanup(t_env *env, int *fd)
+//heavily debating removing the next ptr altogether, subshell should discard all prior fds anyway
+void	clean_pipemanager(t_pipemanager *p)
 {
-	close(fd[0]);
-	close(fd[1]);
+	pipeset_cleanup(p->pipes, p->pipe_count);
+	free(p);
+}
+
+void	shell_cleanup(t_env *env)
+{
 	clean_ast(env->ast);
 	env->ast = NULL;
 	clean_shnode(&env->export);

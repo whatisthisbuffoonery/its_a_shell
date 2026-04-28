@@ -9,19 +9,17 @@ void	unset(int *fd)
 	}
 }
 
-int	set_fd(int *fd, int *pfd)
+//refactor
+void	set_fd(int *fd, int *pfd)
 {
-	if (fd[0] <= 2)
-		fd[0] = ft_err(dup(pfd[0]), "dup error");
-	if (fd[1] <= 2)
-		fd[1] = ft_err(dup(pfd[1]), "dup error");
-	if (fd[0] < 0 || fd[1] < 0)
-	{
-		unset(&fd[0]);
-		unset(&fd[1]);
-		return (1);
-	}
-	return (0);
+	if (fd[0] < 2)
+		fd[0] = pfd[0];
+	else
+		unset(&pfd[0]);
+	if (fd[1] < 2)
+		fd[1] = pfd[1];
+	else
+		unset(&pfd[1]);
 }
 
 void	pipeset_cleanup(t_pipeset *set, size_t n)
@@ -65,19 +63,16 @@ void	pipemanager_init(t_pipemanager *dst, int p_index)
 	dst->pipe_count = p_index;
 }
 
-int	pipemanager_append(t_env *env, t_pipemanager **new)
+int	pipe_dup(int *fd)
 {
-	t_pipemanager	*iter;
-
-	*new = ft_calloc(1, sizeof(t_pipemanager));
-	if (!*new)
+	fd[0] = ft_err(dup(fd[0]), "dup error");
+	if (fd[0] < 0)
 		return (1);
-	iter = env->p;
-	while (iter && iter->next)
-		iter = iter->next;
-	if (iter)
-		iter->next = *new;
-	else
-		env->p = *new;
+	fd[1] = ft_err(dup(fd[1]), "dup error");
+	if (fd[1] < 0)
+	{
+		unset(&fd[0]);
+		return (1);
+	}
 	return (0);
 }

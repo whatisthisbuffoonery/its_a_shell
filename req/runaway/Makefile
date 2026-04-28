@@ -7,7 +7,7 @@ NAME := minishell
 LIBS := $(LIBFT_DIR) -lreadline -lhistory -lft
 INCLUDES := $(LIBFT_DIR)/includes
 SRC_FILE := merge_sort.c main.c err.c cleanup.c signal.c \
-			env_init.c env_utils.c shnode_utils.c \
+			env_init.c shnode_utils.c \
 			tok_init.c tok_utils.c checker.c \
 			muh_print.c \
 			ast_check.c ast_init.c ast_logic.c ast_redir.c ast_print.c \

@@ -13,13 +13,6 @@ int	shell_exit(t_env *env)
 	return (env->last);
 }
 
-void	print_more_tok(t_tok *tok)
-{
-	print_tok(&tok);
-	if (tok)
-		print_env(tok->env);
-}
-
 void	print_linear_tok(t_tok *tok, char *s)
 {
 	if (s)
@@ -43,9 +36,9 @@ int	isempty(char *buf)
 	int	i;
 
 	i = 0;
-	while (buf[i] && ft_isspace(buf[i]))
+	while (buf && buf[i] && ft_isspace(buf[i]))
 		i ++;
-	return (!buf[i]);
+	return (!buf || !buf[i]);
 }
 
 void	init(t_env *env, char **e, t_tok **tok)
@@ -84,10 +77,11 @@ int loop(char **e)
 		buf = readline("I am a shell% ");
 		if (!buf)
 			return (shell_exit(&env));
-		else if (!isempty(buf))
+		if (buf[0])
+			add_history(buf);//different rule
+		if (!isempty(buf))
 		{
 			env.last = tok_init(buf, &tok);
-			add_history(buf);
 			free(buf);
 			buf = NULL;
 			if (!env.last)

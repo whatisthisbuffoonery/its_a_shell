@@ -26,8 +26,8 @@ void	print_tok(t_tok **tok)
 	{
 //		ft_printf("[%s]\n", iter->str);
 		print_word(iter);
-		if (iter->env)
-			print_env(iter->env);
+	//	if (iter->env)
+	//		print_env(iter->env);
 		iter = iter->next;
 		ft_putchar('\n');
 	}

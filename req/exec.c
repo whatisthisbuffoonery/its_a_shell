@@ -37,19 +37,20 @@ int	do_simple(t_node *node, t_env *env, int *fd)
 int	do_list_subshell(t_node *node, t_env *env, int *fd)
 {
 	int	status;
-	int	flag;
+	int	flag[2];
 
 	status = 1;
-	flag = 0;
-	if (!ast_dup(env, fd))
-	{
-		if (fd[0] > 2)
-			env->duped_fd[0] = 1;
-		if (fd[1] > 2)
-			env->duped_fd[1] = 1;
+	flag[0] = ft_err(dup2(fd[0], 0), "dup error");
+	flag[1] = ft_err(dup2(fd[1], 1), "dup error");
+	unset(&fd[0]);
+	unset(&fd[1]);
+	if (fd[0] > 2 && !flag[0])
+		env->duped_fd[0] = 1;
+	if (fd[1] > 2 && !flag[1])
+		env->duped_fd[1] = 1;
+	if (!flag[0] && !flag[1])
 		status = do_list(node, env);
-	}
-	shell_cleanup(env, fd);
+	shell_cleanup(env);//needed, do_list, do_pipe and do_group never clean up
 	return (status);
 }
 
@@ -60,8 +61,9 @@ int	do_group(t_node *node, t_env *env, int *pfd)
 	int		fd[2];
 	pid_t	pid;
 
-	if(redir_to_fd(node, fd) || set_fd(fd, pfd))//init fd to 0, 1 //open files //expand + glob here
+	if(redir_to_fd(node, fd, pfd))//init fd to 0, 1 //open files //expand + glob here //call set_fd
 		return (1);
+	//set_fd(fd, pfd);
 	if (node->kind != N_GROUP)
 		return (do_simple(node, env, fd));//not do list
 	if (env->do_not_subshell)//need to handle redir//just dup2 here, no need to restore
@@ -82,31 +84,28 @@ int	do_group(t_node *node, t_env *env, int *pfd)
 	return (0);
 }
 
-int	do_pipe_command(t_node *node, t_env *env, t_pipemanager *p, int p_index)
+void	do_pipe_command(t_node *node, t_env *env, t_pipemanager *p, int p_index)
 {
 	int			status;
 	int			fd[2];
 	pid_t		pid;
 
 	pid = shell_fork(env);//clean blanks
-	if (pid < 0)
-		return (1);
-	else if (pid)
-	{
-		pid_bump(p, pid);
-		return (0);
-	}
-	//child only
-	env->do_not_subshell = 1;
+	pid_bump(p, pid);//take negative pid wait as failure return status
+	if (pid < 1)
+		return ;
+	env->do_not_subshell = 1;//child only route
 	fd[0] = p->pipes[p_index][0];
 	if (fd[0] < 0)
 		fd[0] = 0;
 	fd[1] = 1;
 	if (p_index)
 		fd[1] = p->pipes[p_index - 1][1];
-	status = do_group(node, env, fd);//assumption : child is not a cond //child needs cleanup
+	status = pipe_dup(fd);
+	clean_pipemanager(p);
+	if (!status)
+		status = do_group(node, env, fd);//assumption : child is not a cond //child needs cleanup
 	exit(status);
-	return (status);
 }
 
 //i.e. a | b | c : c index 0, b index 1, a index 2 : p malloc 2 + 1 = 3 :
@@ -133,7 +132,10 @@ int	do_pipe(t_node *node, t_env *env, t_pipemanager *p, int p_index)
 		return (1);
 	do_pipe_command(node->right, env, p, p_index);
 	if (!p_index)
-		return (child_wait(p->pid));//do_list parent will cleanup //waitpid for the pid, then wait until it returns -1 and not for sigint
+	{
+		clean_pipemanager(p);
+		return (child_wait(p->pid));
+	}
 	return (0);
 }
 
@@ -146,13 +148,16 @@ int	do_list(t_node *node, t_env *env)
 	t_pipemanager	*p;
 
 	status = 0;
+	p = NULL;
 	if (node->kind != N_AND && node->kind != N_OR)
 	{
-		if (node->kind == N_PIPE && pipemanager_append(env, &p))//I hate myself//append new item and set p to that item
-			return (1);
-		status = do_pipe(node, env, p, 0);
 		if (node->kind == N_PIPE)
-			pipemanager_pop(env);
+		{
+			p = ft_calloc(1, sizeof(t_pipemanager));
+			if (!p)
+				return (1);
+		}
+		status = do_pipe(node, env, p, 0);
 		return (status);
 	}
 	status = do_list(node->left, env);
