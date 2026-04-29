@@ -35,7 +35,6 @@ void	clean_shnode_dup(t_shnode **shnode)
 void	tok_delone(t_tok *tok)
 {
 	free(tok->str);
-	//clean_shnode_dup(&tok->env);
 	free(tok);
 }
 

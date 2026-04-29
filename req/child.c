@@ -22,6 +22,7 @@ void	pid_bump(t_pipemanager *p, pid_t src)
 	p->pid_count += 1;
 }
 
+//check for negative pid and set status to 1
 int	child_wait(pid_t pid)
 {
 	int	status;

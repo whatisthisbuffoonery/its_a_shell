@@ -85,8 +85,8 @@ typedef struct	s_env
 	t_shnode		*env;		//not sorted
 	t_node			*ast;
 	char			last_string[4];
-	int				duped_fd[2];
-	int				do_not_subshell;
+	int				duped_fd[2];		// reset this too
+	int				do_not_subshell;	//PSA reset on each loop plz
 	char			last;
 }					t_env;			//PSA empty strings can be in env list, null strings cannot
 

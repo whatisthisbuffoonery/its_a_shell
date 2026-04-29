@@ -1,14 +1,69 @@
 #include "h_minishell.h"
 
-int	exec_simple(int argc, char **argv, t_env *env, int *fd)
+int	do_binary(char **argv, t_env *env, int *fd)
+{
+	char	**envp;
+	int		status;
+
+	envp = make_envp(env);
+	status = !envp;
+	if (!status)
+		status = ft_err(-(dup2(fd[0], 0) || dup2(fd[1], 1)), "dup error");\
+	if (!status)
+		status = ft_err(execve(*argv, argv, envp), *argv);
+	clean_subshell(env);
+	split_cleanup(argv);
+	split_cleanup(envp);
+	unset(&fd[0]);
+	unset(&fd[1]);
+	return (status);
+}
+
+//where tf are the dups for this one
+int	do_builtin(int argc, char **argv, t_env *env, int *fd)
 {
 	int		oldfd[2];
-	char	**envp;//binary might be a c program that asks for envp
+	int		status;
 
-	oldfd[0] = -1;
-	oldfd[1] = -1;
-	//if builtin with redir, set oldfd and restore before returning
-	//if binary, check do_not_subshell, build envp, dup2 fd
+	oldfd[0] = dup(0);
+	oldfd[1] = dup(1);
+	if (oldfd[0] < 0 || oldfd[1] < 0)
+		status = 1;
+	else if (!ft_err(dup2(fd[0], 0), "dup error"))
+	{
+		if (ft_err(dup2(fd[1], 1), "dup error"))
+			ft_err(dup2(oldfd[0], 0), "restore error");
+		else
+		{
+			status = do_builtin_match(argc, argv, env, fd);//do the actual builtin
+			ft_err(dup2(oldfd[0], 0), "restore error");
+			ft_err(dup2(oldfd[1], 1), "restore error");
+		}
+	}
+	split_cleanup(argv);
+	unset(&oldfd[0]);
+	unset(&oldfd[1]);
+	unset(&fd[0]);
+	unset(&fd[1]);
+	return (status);
+}
+
+int	exec_simple(int argc, char **argv, t_env *env, int *fd)
+{
+	pid_t	pid;
+
+	if (isbuiltin(*argv))
+		return (do_builtin(argc, argv, env, fd));
+	pid = 0;
+	if (!env->do_not_subshell)
+		pid = shell_fork(env);
+	if (pid < 0)
+		return (1);
+	env->do_not_subshell = 0;
+	if (!pid)
+		exit(do_binary(argv, env, fd));//also cleans env
+	else
+		return (child_wait(pid));
 }
 
 //check subshell flag//will wait for its own children
@@ -21,16 +76,17 @@ int	do_simple(t_node *node, t_env *env, int *fd)
 	argv = NULL;
 	if (!node->argv)//redir only path
 		return (0);
-	cmd = make_command(node, env);//account for redir as command//expand + glob here
+	cmd = make_command(node, env);//account for redir as command//expand + glob here //must return unmodified string if no match
+	//should blend cmd and argv due to multiple results
 	if (cmd)
 		argv = make_argv(cmd, node, env); //free cmd on error internally//expand + glob here
 	if (argv)// will create argv even if no args
 		status = exec_simple(count_argv(argv), argv, env, fd);
 	else
 		status = 1;
-	split_cleanup(argv);
-	unset(&fd[0]);//pass cleanup to exec_simple
-	unset(&fd[1]);
+//	split_cleanup(argv);//cannot hand off to exec_simple
+//	unset(&fd[0]);//pass cleanup to exec_simple
+//	unset(&fd[1]);
 	return (status);
 }
 
@@ -42,12 +98,12 @@ int	do_list_subshell(t_node *node, t_env *env, int *fd)
 	status = 1;
 	flag[0] = ft_err(dup2(fd[0], 0), "dup error");
 	flag[1] = ft_err(dup2(fd[1], 1), "dup error");
-	unset(&fd[0]);
-	unset(&fd[1]);
 	if (fd[0] > 2 && !flag[0])
 		env->duped_fd[0] = 1;
 	if (fd[1] > 2 && !flag[1])
 		env->duped_fd[1] = 1;
+	unset(&fd[0]);
+	unset(&fd[1]);
 	if (!flag[0] && !flag[1])
 		status = do_list(node, env);
 	shell_cleanup(env);//needed, do_list, do_pipe and do_group never clean up
@@ -55,6 +111,8 @@ int	do_list_subshell(t_node *node, t_env *env, int *fd)
 }
 
 //check subshell flag //move all the redir stuff to handle_redir//maybe export redir_fd to simple
+// do_list_subshell cleans out env, do_simple from the pipe child path executing a builtin wont.
+//define double env cleanup by setting elements to null
 int	do_group(t_node *node, t_env *env, int *pfd)
 {
 	int		status;
@@ -92,7 +150,7 @@ void	do_pipe_command(t_node *node, t_env *env, t_pipemanager *p, int p_index)
 
 	pid = shell_fork(env);//clean blanks
 	pid_bump(p, pid);//take negative pid wait as failure return status
-	if (pid < 1)
+	if (pid)
 		return ;
 	env->do_not_subshell = 1;//child only route
 	fd[0] = p->pipes[p_index][0];
@@ -105,6 +163,7 @@ void	do_pipe_command(t_node *node, t_env *env, t_pipemanager *p, int p_index)
 	clean_pipemanager(p);
 	if (!status)
 		status = do_group(node, env, fd);//assumption : child is not a cond //child needs cleanup
+	shell_cleanup(env);//child->builtin path
 	exit(status);
 }
 

@@ -9,7 +9,6 @@ void	unset(int *fd)
 	}
 }
 
-//refactor
 void	set_fd(int *fd, int *pfd)
 {
 	if (fd[0] < 2)
