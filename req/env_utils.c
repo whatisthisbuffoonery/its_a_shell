@@ -129,13 +129,45 @@ int	split_expand(t_arg **dst, t_tok *src)
 	return (ft_err(-!*dst, "expansion splitting malloc"));
 }
 
+
+void	fake_token(void)
+{
+	int	i;
+	int	len;
+	t_arg   *arg;
+	t_tok   fake;
+
+	fake.type = 'h';
+	fake.str = ft_strdup("hello world");
+	fake.word_next = NULL;
+	fake.next = NULL;
+	split_expand(&arg, &fake);
+	ft_printf("arg->str: %s\n", arg->str);
+	len = ft_strlen(arg->str);
+	ft_printf("arg->mas: ", arg->mask);
+	i = 0;
+	while (i < len)
+	{
+		if (arg->mask[i])
+			ft_putchar('1');
+		else
+			ft_putchar('0');
+		i ++;
+	}
+	ft_putchar('\n');
+	free(arg->mask);
+	free(arg->str);
+	free(arg);
+}
+
 int	expand_all_debug(t_tok **tok, t_env *env)
 {
 	t_tok	*iter;
 	t_arg	*arg;
 	int		i;
 	int		len;
-
+	
+	fake_token();
 	iter = *tok;
 	while (iter)
 	{
@@ -146,10 +178,11 @@ int	expand_all_debug(t_tok **tok, t_env *env)
 	iter = *tok;
 	while (iter)
 	{
-		ft_printf("%s\n", iter->str);
+		ft_printf("tkn(->next)->str: %s\n", iter->str);
 		split_expand(&arg, iter);
-		ft_printf("%s\n", arg->str);
+		ft_printf("arg->str: %s\n", arg->str);
 		len = ft_strlen(arg->str);
+		ft_printf("arg->mas: ", arg->mask);
 		i = 0;
 		while (i < len)
 		{
@@ -168,45 +201,45 @@ int	expand_all_debug(t_tok **tok, t_env *env)
 	return (0);//malloc check later
 }
 
-void	expand_debug_2(t_tok **tok, t_env *env)
-{
-	char	**argv;
-	t_tok	*iter;
-	t_arg	*arg;
-	int		i;
-	int		k;
-	int		len;
-
-	iter = *tok;
-	while (iter)
-	{
-		if (expand_word(&iter, env))
-			return (1);
-		iter = iter->next;
-	}
-	iter = *tok;
-	while (iter)
-	{
-		split_expand(&arg, iter);
-		k = 0;
-		i = 0;
-		len = 0;
-		while (arg->str[i])
-		{
-			if (!i && !arg->mask[i])
-				k ++;
-			else if (!arg->mask[i] && arg->str[i + 1] && arg->mask[i + 1])
-				k ++;
-			else if (arg->mask[i] && arg->str[i] == '*')
-				k ++;
-			i ++;
-		}
-		argv = ft_calloc(k + 1, sizeof(char *));
-		i = 0;
-		while (arg->str[i])
-		{
-			len = 0;
-			if (arg)
-		}
-	}
-}
+//void	expand_debug_2(t_tok **tok, t_env *env)
+//{
+//	char	**argv;
+//	t_tok	*iter;
+//	t_arg	*arg;
+//	int		i;
+//	int		k;
+//	int		len;
+//
+//	iter = *tok;
+//	while (iter)
+//	{
+//		if (expand_word(&iter, env))
+//			return (1);
+//		iter = iter->next;
+//	}
+//	iter = *tok;
+//	while (iter)
+//	{
+//		split_expand(&arg, iter);
+//		k = 0;
+//		i = 0;
+//		len = 0;
+//		while (arg->str[i])
+//		{
+//			if (!i && !arg->mask[i])
+//				k ++;
+//			else if (!arg->mask[i] && arg->str[i + 1] && arg->mask[i + 1])
+//				k ++;
+//			else if (arg->mask[i] && arg->str[i] == '*')
+//				k ++;
+//			i ++;
+//		}
+//		argv = ft_calloc(k + 1, sizeof(char *));
+//		i = 0;
+//		while (arg->str[i])
+//		{
+//			len = 0;
+//			if (arg)
+//		}
+//	}
+//}

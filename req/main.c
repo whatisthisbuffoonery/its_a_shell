@@ -55,10 +55,63 @@ void	init(t_env *env, char **e, t_tok **tok)
 	env->last_string[0] = '0';
 }
 
+void	print_word_next(t_tok *tok)
+{
+	int	i;
+	int	end_space;
+
+	printf("tok->word_next list:\n");
+	i = 0;
+	while (tok)
+	{
+		printf("  %d. str: %s\n", i, tok->str);
+		printf("  %d. type: %c\n", i, tok->type);
+		end_space = 0;
+		if (tok->end_space == 1)
+			end_space = 1;
+		printf("  %d. end_space: %d\n", i, end_space);
+		if (tok->next)
+			printf("  %d. next: %s\n", i, tok->next->str);
+		else
+			printf("  %d. next: null\n", i);
+		printf("\n");
+		tok = tok->word_next;
+		i++;
+	}
+}
+void	print_next(t_tok *tok)
+{
+	int	i;
+	int	end_space;
+
+	printf("tok->next list:\n");
+	i = 0;
+	while (tok)
+	{
+		printf("%d. str: %s\n", i, tok->str);
+		printf("%d. type: %c\n", i, tok->type);
+		end_space = 0;
+		if (tok->end_space == 1)
+			end_space = 1;
+		printf("%d. end_space: %d\n", i, end_space);
+		if (tok->word_next)
+		{
+			printf("%d. word_next: not null\n", i);
+			print_word_next(tok->word_next);
+		}
+		else
+			printf("%d. word_next: null\n", i);
+		printf("\n");
+		tok = tok->next;
+		i++;
+	}
+}
+
 //need to update last in execution
 int	execute_buffer(t_env *env, t_tok **tok)
 {
 	make_word(*tok);
+	print_next(*tok);
 	expand_all_debug(tok, env);
 /*	env->ast = parse(tok);
 	if (env->ast)
