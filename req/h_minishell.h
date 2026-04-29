@@ -148,12 +148,17 @@ t_tok		*toktrim(t_tok **list, t_tok *head, t_tok *tail);
 /*idrk*/
 int			counttype(t_tok *node, char c);
 
+/*execution entry point*/
+int			do_list(t_node *node, t_env *env);
+
 /*cleanup*/
 void		tok_delone(t_tok *tok);
 void		clean_tok(t_tok **tok);
 void		clean_shnode_dup(t_shnode **shnode);
 void		clean_shnode(t_shnode **shnode);
 void		clean_ast(t_node *node);
+void		clean_pipemanager(t_pipemanager *p);
+void		shell_cleanup(t_env *env);
 
 /*print funcs*/
 void		env_print(t_env *env);

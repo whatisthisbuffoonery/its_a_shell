@@ -198,6 +198,29 @@ int	do_pipe(t_node *node, t_env *env, t_pipemanager *p, int p_index)
 	return (0);
 }
 
+void	update_last(t_env *env, int n)
+{
+	int	i;
+	int	t;
+
+	if (n > 255 || n < 0)
+		n = 1;
+	if (env->last != n)
+	{
+		i = 0;
+		t = 1;
+		while (n / t > 9)
+			t *= 10;
+		while (t)
+		{
+			env->last_string[i++] = ((n / t) % 10) + '0';
+			t /= 10;
+		}
+		env->last_string[i] = '\0';
+		env->last = n;
+	}
+}
+
 //entry point
 //the alternative to forking is keeping depth counters on blank env vars
 //and redir/pipe fds. hell no.
@@ -220,6 +243,7 @@ int	do_list(t_node *node, t_env *env)
 		return (status);
 	}
 	status = do_list(node->left, env);
+	update_last(env, status);//propose only having this here
 	if ((node->kind == N_AND && !status)
 		|| (node->kind == N_OR && status))
 		status = do_list(node->right, env);
