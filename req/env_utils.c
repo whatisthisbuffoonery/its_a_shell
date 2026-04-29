@@ -1,27 +1,5 @@
 #include "h_minishell.h"
 
-int add_expansion(t_tok *dst, t_shnode *env, int *index)
-{
-	t_shnode	*ret;
-	char		*str;
-	int			i;
-
-	i = 0;
-	str = &dst->str[*index + 1];//dollar offset
-	while (isenv(str[i]))
-		i ++;
-//	ft_printf("adding... index: %d, i: %d\n", *index, i);
-	*index += i + 1;//use env name len plus dollar
-	env = find_env(str, env, i);
-	if (find_env(str, dst->env, i) || !env)
-		return (0);
-	ret = shnode_dup(env);//mallocs a node, does not malloc the strings so dont free those
-	if (!ret)
-		return (1);
-	shnode_append(&dst->env, ret);
-	return (0);
-}
-
 void	copy_wrapper(char *src, char *dst, int *i, int *len)
 {
 	if (dst)
@@ -30,30 +8,28 @@ void	copy_wrapper(char *src, char *dst, int *i, int *len)
 	*len += 1;
 }
 
-void	concat_wrapper(t_tok *dst, char *ret, int *i, int *len)
+int	concat_wrapper(t_tok *dst, t_env *env, char *ret, int *i)
 {
-	t_shnode	*iter;
-	char		*str;
-	int			k;
-	int			tmp_len;
+	char	*src;
+	char	*str;
+	int		k;
+	int		tmp_len;
 
 	k = 0;
-	iter = dst->env;
 	str = &dst->str[*i + 1];
 	tmp_len = 0;
 	while (isenv(str[k]))//huh
 		k ++;
-	iter = find_env(str, dst->env, k);
-	if (ret && iter)
-		ft_strlcat(ret, iter->str, -1);
-	if (iter)
-		tmp_len += ft_strlen(iter->str);
-	*i += k + 1;
-	*len += tmp_len;
-//	ft_printf("\n\nk: %d, tmp_len: %d\n\n", k, tmp_len);
+	src = find_env_str(str, env, k);
+	if (ret && src)
+		ft_strlcat(ret, src, -1);
+	if (src)
+		tmp_len += ft_strlen(src);
+	*i += k + (str[0] == '?') + 1;
+	return (tmp_len);
 }
 
-int	use_expansion(t_tok *dst, char *ret)
+int	use_expansion(t_tok *dst, t_env *env, char *ret)
 {
 	int		i;
 	int		len;
@@ -65,15 +41,13 @@ int	use_expansion(t_tok *dst, char *ret)
 	while (dst->str[i])
 	{
 		if (envname(&dst->str[i]))
-			concat_wrapper(dst, ret, &i, &len);//either strlen or strlcat
-		else if (dst->str[i]
-			&& !envname(&dst->str[i]))
+			len += concat_wrapper(dst, env, ret, &i);//either strlen or strlcat
+		else
 			copy_wrapper(dst->str, ret, &i, &len);//copy one char//yes we copy dollar sign if env name is invalid
 	}
-//	ft_printf("\nis null: %d, len: %d\n", !ret, len);
 	if (!ret
-		&& (!ft_err(-!malloc_cond((void **) &ret, len + 1), "expansion result malloc")))
-		return (use_expansion(dst, ret));
+		&& (!ft_err(-!malloc_cond((void **) &ret, len + 1), "expansion")))
+		return (use_expansion(dst, env, ret));
 	else if (!ret)
 		return (1);
 	free(dst->str);
@@ -81,33 +55,158 @@ int	use_expansion(t_tok *dst, char *ret)
 	return (0);
 }
 
-int	expand_str(t_tok **tok, t_shnode *env)
+//todo: mask delim/special, then strjoin, then re tokenise
+int	expand_word(t_tok **tok, t_env *env)
 {
 	t_tok	*iter;
-	int		i;
-	int		flag;
 
 	iter = *tok;
-	while(iter)
+	while (iter)
+	{
+		if (iter->type != '\'' && use_expansion(iter, env, NULL))
+			return (1);
+		iter = iter->word_next;
+	}
+	return (0);
+}
+
+t_arg	*arg_init(t_tok *iter)
+{
+	int		i;
+	t_arg	*ret;
+
+	i = 0;
+	while (iter)
+	{
+		i += ft_strlen(iter->str);
+		iter = iter->word_next;
+	}
+	ret = ft_calloc(1, sizeof(t_arg));
+	if (ret)
+	{
+		ret->mask = malloc(i + 1);
+		ret->str = malloc(i + 1);
+		if (!ret->mask || !ret->str)
+		{
+			free(ret->mask);
+			free(ret->str);
+			free(ret);
+			ret = NULL;
+		}
+		else
+			ret->str[0] = '\0';
+	}
+	return (ret);
+}
+		
+
+//check null token in parent
+int	split_expand(t_arg **dst, t_tok *src)
+{
+	int		i;
+	int		len;
+	t_tok	*iter;
+
+	*dst = arg_init(src);
+	len = 0;
+	iter = src;
+	while (*dst && iter)
 	{
 		i = 0;
-		while (iter->str[i] && iter->type != '\'')
+		while (iter->str && iter->str[i])
 		{
-			//ft_printf("i here: %d\n", i);
-			if (envname(&iter->str[i]) && add_expansion(iter, env, &i))
-				return (1);
-			flag = (iter->str[i] && !envname(&iter->str[i]));
-			//ft_printf("i: %d, flag: %d\n", i, flag);
-			i += flag;
+			if (!ft_isquote(iter->type)
+				&& (ft_isspace(iter->str[i]) || iter->str[i] == '*'))
+				(*dst)->mask[len + i] = 1;
+			else
+				(*dst)->mask[len + i] = 0;
+			i ++;
 		}
-		iter = iter->next;
+		len += i;
+		ft_strlcat((*dst)->str, iter->str, -1);
+		iter = iter->word_next;
 	}
+	return (ft_err(-!*dst, "expansion splitting malloc"));
+}
+
+int	expand_all_debug(t_tok **tok, t_env *env)
+{
+	t_tok	*iter;
+	t_arg	*arg;
+	int		i;
+	int		len;
+
 	iter = *tok;
-	while (iter)//move this over to command forking side, expand envs before each command, not before *all* commands
+	while (iter)
 	{
-		if (iter->type != '\'' && iter->env && use_expansion(iter, NULL))
+		if (expand_word(&iter, env))
 			return (1);
 		iter = iter->next;
 	}
-	return (0);
+	iter = *tok;
+	while (iter)
+	{
+		ft_printf("%s\n", iter->str);
+		split_expand(&arg, iter);
+		ft_printf("%s\n", arg->str);
+		len = ft_strlen(arg->str);
+		i = 0;
+		while (i < len)
+		{
+			if (arg->mask[i])
+				ft_putchar('1');
+			else
+				ft_putchar('0');
+			i ++;
+		}
+		ft_putchar('\n');
+		free(arg->mask);
+		free(arg->str);
+		free(arg);
+		iter = iter->next;
+	}
+	return (0);//malloc check later
+}
+
+void	expand_debug_2(t_tok **tok, t_env *env)
+{
+	char	**argv;
+	t_tok	*iter;
+	t_arg	*arg;
+	int		i;
+	int		k;
+	int		len;
+
+	iter = *tok;
+	while (iter)
+	{
+		if (expand_word(&iter, env))
+			return (1);
+		iter = iter->next;
+	}
+	iter = *tok;
+	while (iter)
+	{
+		split_expand(&arg, iter);
+		k = 0;
+		i = 0;
+		len = 0;
+		while (arg->str[i])
+		{
+			if (!i && !arg->mask[i])
+				k ++;
+			else if (!arg->mask[i] && arg->str[i + 1] && arg->mask[i + 1])
+				k ++;
+			else if (arg->mask[i] && arg->str[i] == '*')
+				k ++;
+			i ++;
+		}
+		argv = ft_calloc(k + 1, sizeof(char *));
+		i = 0;
+		while (arg->str[i])
+		{
+			len = 0;
+			if (arg)
+		}
+	}
 }

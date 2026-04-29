@@ -7,14 +7,30 @@ int	shnode_strlen(t_shnode *env)
 	return (0);
 }
 
-t_shnode	*find_env(char *str, t_shnode *list, int len)
+t_shnode	*find_env(char *str, t_shnode *list, unsigned int n)
 {
-	unsigned int	n;
-
-	n = (unsigned int) len;
 	while (list && (ft_strlen(list->name) != n || ft_strncmp(str, list->name, n)))
 		list = list->next;
 	return (list);
+}
+
+//turn status assignment into a func ig
+char	*find_env_str(char *name, t_env *env, unsigned int len)
+{
+	t_shnode	*ret;
+
+	if (!name || !name[0])
+		return (NULL);
+	if (name[0] == '?')
+		return (env->last_string);
+	else
+	{
+		ret = find_env(name, env->env, len);
+		if (ret)
+			return (ret->str);
+		else
+			return ("");
+	}
 }
 
 t_shnode	*shnode_dup(t_shnode *src)

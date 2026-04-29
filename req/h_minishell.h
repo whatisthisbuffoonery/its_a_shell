@@ -23,6 +23,7 @@ typedef struct s_shnode
 typedef struct s_arg
 {
 	char			*str;
+	char			*mask;
 	struct s_arg	*next;
 }					t_arg;
 
@@ -83,9 +84,10 @@ typedef struct	s_env
 	t_shnode		*export;	//sorted
 	t_shnode		*env;		//not sorted
 	t_node			*ast;
-	int				last;
-	int				do_not_subshell;
+	char			last_string[4];
 	int				duped_fd[2];
+	int				do_not_subshell;
+	char			last;
 }					t_env;			//PSA empty strings can be in env list, null strings cannot
 
 /*misc*/
@@ -120,11 +122,16 @@ int			ismeta(t_tok *tok);
 /*also do not use with subtok*/
 int			isname(t_tok *node);
 
+/*expansion things*/
+char		*find_env_str(char *name, t_env *env, unsigned int len);
+int			expand_all_debug(t_tok **tok, t_env *env);
+
 /*env utils*/
 void		shnode_append(t_shnode **dst, t_shnode *src);
 t_shnode	*shnode_dup(t_shnode *src);
-t_shnode	*find_env(char *str, t_shnode *list, int n);
+t_shnode	*find_env(char *str, t_shnode *list, unsigned int n);
 int			env_add(t_env *env, t_shnode *src, char *dst);
+int			use_expansion(t_tok *dst, t_env *env, char *ret);
 int			expand_str(t_tok **tok, t_shnode *env);
 
 /*init funcs*/

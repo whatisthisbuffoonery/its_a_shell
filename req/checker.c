@@ -28,11 +28,11 @@ int	isenv(char c)
 
 int	envname(char *s)
 {
-	return (s[0] == '$' && isenv(s[1]));
+	return (s[0] == '$' && (isenv(s[1]) || s[1] == '?'));
 }
 
 int	iscontent(int c)
 {
-	return (c && c != '*' && c != '='
+	return (c && c != '*' /*&& c != '='  do not consider */
 		&& !isop(c) && !ft_isquote(c) && !ft_isspace(c) && !isbracket(c));
 }

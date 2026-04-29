@@ -51,17 +51,20 @@ void	init(t_env *env, char **e, t_tok **tok)
 	env->do_not_subshell = 0;
 	env->duped_fd[0] = 0;
 	env->duped_fd[1] = 0;
+	ft_memset(env->last_string, 0, 4);
+	env->last_string[0] = '0';
 }
 
 //need to update last in execution
 int	execute_buffer(t_env *env, t_tok **tok)
 {
 	make_word(*tok);
-	env->ast = parse(tok);
+	expand_all_debug(tok, env);
+/*	env->ast = parse(tok);
 	if (env->ast)
 		print_ast(env->ast, 0);
 	clean_ast(env->ast);
-	env->ast = NULL;
+	env->ast = NULL;*/
 	return (env->last);
 }
 
@@ -86,7 +89,7 @@ int loop(char **e)
 			buf = NULL;
 			if (!env.last)
 				execute_buffer(&env, &tok);
-			print_linear_tok(tok, "thing");
+		//	print_linear_tok(tok, "tok chain: ");
 		}
 		free(buf);
 		clean_tok(&tok);

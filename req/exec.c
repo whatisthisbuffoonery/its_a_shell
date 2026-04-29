@@ -23,7 +23,7 @@ int	do_simple(t_node *node, t_env *env, int *fd)
 		return (0);
 	cmd = make_command(node, env);//account for redir as command//expand + glob here
 	if (cmd)
-		argv = argv_init(cmd, node, env); //free cmd on error internally//expand + glob here
+		argv = make_argv(cmd, node, env); //free cmd on error internally//expand + glob here
 	if (argv)// will create argv even if no args
 		status = exec_simple(count_argv(argv), argv, env, fd);
 	else

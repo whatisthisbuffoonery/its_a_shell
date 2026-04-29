@@ -12,6 +12,7 @@ SRC_FILE := merge_sort.c main.c err.c cleanup.c signal.c \
 			muh_print.c \
 			ast_check.c ast_init.c ast_logic.c ast_redir.c ast_print.c \
 			word.c \
+			env_utils.c
 
 OBJ := $(SRC_FILE:.c=.o)
 
