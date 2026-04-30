@@ -133,6 +133,7 @@ t_shnode	*find_env(char *str, t_shnode *list, unsigned int n);
 int			env_add(t_env *env, t_shnode *src, char *dst);
 int			use_expansion(t_tok *dst, t_env *env, char *ret);
 int			expand_str(t_tok **tok, t_shnode *env);
+void		fake_token(void);
 
 /*init funcs*/
 int			tok_init(char *buf, t_tok **tok);

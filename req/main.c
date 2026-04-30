@@ -113,6 +113,7 @@ int	execute_buffer(t_env *env, t_tok **tok)
 	make_word(*tok);
 	print_next(*tok);
 	expand_all_debug(tok, env);
+	fake_token();
 /*	env->ast = parse(tok);
 	if (env->ast)
 		print_ast(env->ast, 0);
