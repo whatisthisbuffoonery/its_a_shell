@@ -9,17 +9,6 @@ void	unset(int *fd)
 	}
 }
 
-void	set_fd(int *fd, int *pfd)
-{
-	if (fd[0] < 2)
-		fd[0] = pfd[0];
-	else
-		unset(&pfd[0]);
-	if (fd[1] < 2)
-		fd[1] = pfd[1];
-	else
-		unset(&pfd[1]);
-}
 
 void	pipeset_cleanup(t_pipeset *set, size_t n)
 {
