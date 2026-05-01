@@ -128,7 +128,7 @@ int	do_group(t_node *node, t_env *env, int *pfd)
 
 	if(redir_to_fd(node, fd, pfd))//init fd to 0, 1 //open files //expand + glob here //call set_fd
 		return (1);
-	//set_fd(fd, pfd);
+//	set_fd(fd, pfd);
 	if (node->kind != N_GROUP)
 		return (do_simple(node, env, fd));//not do list
 	if (env->do_not_subshell)//need to handle redir//just dup2 here, no need to restore

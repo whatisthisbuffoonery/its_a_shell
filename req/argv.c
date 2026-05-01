@@ -80,7 +80,7 @@ char    **make_argv(t_tok *src, t_env *env)
 	char		*cmd;
 	t_shnode	*path;
 
-	argv = expand_env(src);//no need double ptr//uhh... she handles glob? half half lah hor
+	argv = expand_env(src->argv);//no need double ptr//uhh... she handles glob? half half lah hor//take tok for arg
 	if (!argv)
 		return (NULL);
 	path = find_env("PATH", env->env, ft_strlen("PATH"));

@@ -18,8 +18,6 @@ typedef struct s_shnode
 	char			*str;
 }					t_shnode;
 
-//aa=cc dd
-
 typedef struct s_arg
 {
 	char			*str;
@@ -68,6 +66,12 @@ typedef struct s_pidnode
 	struct s_pidnode	*next;
 }						t_pidnode;
 */ //VETO
+
+typedef struct	s_glob
+{
+	char			**glob_arr;
+	struct s_glob	*next;
+}					t_glob;
 
 typedef struct s_pipemanager
 {
