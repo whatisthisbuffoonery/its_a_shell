@@ -1,0 +1,52 @@
+#include "h_minishell.h"
+
+char	**count_envp(t_env *env, int *complain)
+{
+	char		**ret;
+	t_shnode	*iter;
+	int			i;
+
+	i = 0;
+	iter = env->env;
+	if (!iter)
+		return (NULL);
+	while (iter)
+	{
+		if (iter->name && iter->str)//I should really account for this by cleaning out malloc fails
+			i ++;
+		iter = iter->next;
+	}
+	ret = NULL;
+	if (i)
+	{
+		ret = ft_calloc(i + 1, sizeof(char *));
+		*complain = !ret;
+	}
+	return (ret);
+}
+
+//would have been simpler if I managed using string array
+char	**make_envp(t_env *env, int *complain)
+{
+	char		**ret;
+	int			k;
+	t_shnode	*iter;
+
+	ret = count_envp(env, complain);
+	if (!ret)
+		return (NULL);
+	iter = env->env;
+	k = 0;
+	while (iter)
+	{
+		ret[k] = malloc(ft_strlen(iter->name) + ft_strlen(iter->str) + 1 + 1);//really have to clean out errors
+		if (!ret[k])
+			return (split_cleanup(ret));
+		ft_strlcpy(ret[k], iter->name, -1);
+		ft_strlcat(ret[k], "=", -1);
+		ft_strlcat(ret[k], iter->str, -1);
+		iter = iter->next;
+		k ++;
+	}
+	return (ret);
+}

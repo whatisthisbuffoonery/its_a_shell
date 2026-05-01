@@ -5,10 +5,10 @@ int	do_binary(char **argv, t_env *env, int *fd)
 	char	**envp;
 	int		status;
 
-	envp = make_envp(env);
-	status = !envp;
+	status = 0;
+	envp = make_envp(env, &status);//!envp is not the fail condition
 	if (!status)
-		status = ft_err(-(dup2(fd[0], 0) || dup2(fd[1], 1)), "dup error");\
+		status = ft_err(-(dup2(fd[0], 0) || dup2(fd[1], 1)), "dup error");
 	if (!status)
 		status = ft_err(execve(*argv, argv, envp), *argv);
 	clean_subshell(env);
@@ -25,17 +25,17 @@ int	do_builtin(int argc, char **argv, t_env *env, int *fd)
 	int		oldfd[2];
 	int		status;
 
-	oldfd[0] = dup(0);
-	oldfd[1] = dup(1);
-	if (oldfd[0] < 0 || oldfd[1] < 0)
-		status = 1;
-	else if (!ft_err(dup2(fd[0], 0), "dup error"))
+	oldfd[0] = ft_err(dup(0), "dup error");
+	oldfd[1] = ft_err(dup(1), "dup error");
+	status = 1;
+	if (oldfd[0] > 0 && oldfd[1] > 0
+		&& !ft_err(dup2(fd[0], 0), "dup error"))
 	{
 		if (ft_err(dup2(fd[1], 1), "dup error"))
 			ft_err(dup2(oldfd[0], 0), "restore error");
 		else
 		{
-			status = do_builtin_match(argc, argv, env, fd);//do the actual builtin
+			status = do_builtin_match(argc, argv, env);//do the actual builtin
 			ft_err(dup2(oldfd[0], 0), "restore error");
 			ft_err(dup2(oldfd[1], 1), "restore error");
 		}
@@ -59,11 +59,18 @@ int	exec_simple(int argc, char **argv, t_env *env, int *fd)
 		pid = shell_fork(env);
 	if (pid < 0)
 		return (1);
-	env->do_not_subshell = 0;
+	env->do_not_subshell = 0;//slightly useless now that I look at it
 	if (!pid)
 		exit(do_binary(argv, env, fd));//also cleans env
 	else
 		return (child_wait(pid));
+}
+
+int	do_redir(int *fd)
+{
+	unset(&fd[0]);
+	unset(&fd[1]);
+	return (0);
 }
 
 //check subshell flag//will wait for its own children
@@ -75,7 +82,7 @@ int	do_simple(t_node *node, t_env *env, int *fd)
 
 	argv = NULL;
 	if (!node->argv)//redir only path
-		return (0);
+		return (do_redir(fd));
 	cmd = make_command(node, env);//account for redir as command//expand + glob here //must return unmodified string if no match
 	//should blend cmd and argv due to multiple results
 	if (cmd)
