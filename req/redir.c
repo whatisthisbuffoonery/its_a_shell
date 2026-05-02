@@ -116,7 +116,7 @@ int	redir_to_fd(t_node *node, int *fd, int *pfd)
 	flag = 0;
 	while (iter && !flag)
 	{
-		file = expand_env(iter->redir_target);
+		file = expand_all(iter->redir_target);
 		if (!file || shell_assert((file[1] != NULL), "ambiguous redirect"))
 			return (1);
 		flag = update_redir_fd(fd, file, iter->redir_op->str);

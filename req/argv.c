@@ -72,15 +72,14 @@ void	find_path(char *path, char **dst, char *new)
 	free(new);
 }
 
-//recontruct
-//will ironically be called from redir_to_fd
-char    **make_argv(t_tok *src, t_env *env)
+//contructs args consuming one word at a time, should call multiple times and factor out cmd string
+char    **make_one_argv(t_tok *src, t_env *env)
 {
     char		**argv;
 	char		*cmd;
 	t_shnode	*path;
 
-	argv = expand_env(src->argv);//no need double ptr//uhh... she handles glob? half half lah hor//take tok for arg
+	argv = expand_all(src->argv);//no need double ptr//uhh... she handles glob? half half lah hor//take tok for arg
 	if (!argv)
 		return (NULL);
 	path = find_env("PATH", env->env, ft_strlen("PATH"));
