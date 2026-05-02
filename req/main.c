@@ -107,13 +107,46 @@ void	print_next(t_tok *tok)
 	}
 }
 
+void	print_fields(t_arg *arg)
+{
+	int	i;
+	int	len;
+	int	j;
+
+	j = 0;
+	while (arg)
+	{
+		ft_printf("%d: arg->str: %s\n", j, arg->str);
+		ft_printf("%d: arg->mas: ", j);
+		len = ft_strlen(arg->str);
+		i = 0;
+        while (i < len)
+        {
+            if (arg->mask[i])
+                ft_putchar('1');
+            else
+                ft_putchar('0');
+            i ++;
+        }
+		ft_printf("\n");
+		j++;
+		arg = arg->next;
+	}
+	ft_printf("\n");
+}
+
 //need to update last in execution
 int	execute_buffer(t_env *env, t_tok **tok)
 {
+	t_arg	*arg;
+	t_arg	*fields;
+
 	make_word(*tok);
 	print_next(*tok);
-	expand_all_debug(tok, env);
-	fake_token();
+	//expand_all_debug(tok, env);
+	arg = fake_token();
+	fields = field_split(arg);
+	print_fields(fields);
 /*	env->ast = parse(tok);
 	if (env->ast)
 		print_ast(env->ast, 0);
