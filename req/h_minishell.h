@@ -6,6 +6,8 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <sys/wait.h>
+# include <sys/types.h>
+# include <dirent.h>
 # include <errno.h>
 # include "libft.h"
 
@@ -139,6 +141,9 @@ int			use_expansion(t_tok *dst, t_env *env, char *ret);
 int			expand_str(t_tok **tok, t_shnode *env);
 t_arg		*fake_token(void);
 t_arg	*field_split(t_arg *src);
+void	free_arg(t_arg *arg);
+t_arg	*free_arg_list(t_arg *head);
+t_arg	*expand_globs(t_arg *fields);
 
 /*init funcs*/
 int			tok_init(char *buf, t_tok **tok);

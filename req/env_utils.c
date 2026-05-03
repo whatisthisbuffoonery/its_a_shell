@@ -157,11 +157,8 @@ t_arg	*fake_token(void)
 		i ++;
 	}
 	ft_putstr("\n\n");
+	free(fake.str);
 	return (arg);
-//	free(arg->mask);
-//	free(arg->str);
-//	free(arg);
-//	free(fake.str);
 }
 
 int	expand_all_debug(t_tok **tok, t_env *env)
@@ -224,7 +221,7 @@ t_arg	*free_arg_list(t_arg *head)
 	return (NULL);
 }
 
-t_arg	*new_field(char *str, int start, int end)
+t_arg	*new_field(t_arg *src, int start, int end)
 {
 	t_arg	*node;
 	int		len;
@@ -242,7 +239,8 @@ t_arg	*new_field(char *str, int start, int end)
 		free(node);
 		return (NULL);
 	}
-	ft_strlcpy(node->str, &str[start], len + 1);
+	ft_strlcpy(node->str, &src->str[start], len + 1);
+	ft_strlcpy(node->mask, &src->mask[start], len + 1);
 	return (node);
 }
 
@@ -274,20 +272,170 @@ t_arg	*field_split(t_arg *src)
 	while (src->str[i])
 	{
 		if (src->mask[i] && ft_isspace(src->str[i]) && !next_to_1 && i > start)
-			if (!(append_new_field(new_field(src->str, start, i), &head, &cur)))
+			if (!(append_new_field(new_field(src, start, i), &head, &cur)))
 				return (free_arg_list(head));
 		next_to_1 = src->mask[i] && ft_isspace(src->str[i]);
 		if (next_to_1)
 			start = i + 1;
 		i++;
 	}
-	if (i > start && !(append_new_field(new_field(src->str, start, i), &head, &cur)))
+	if (i > start && !(append_new_field(new_field(src, start, i), &head, &cur)))
 		return (free_arg_list(head));
 	if (!head) //if src->str was empty
 		return (src);
 	return (head);
 }
 
+int	glob_match(char *pattern, char *name)
+{
+	if (!*pattern && !*name)
+		return (1);
+	if (*pattern == '*')
+		return (glob_match(pattern + 1, name)
+			|| (*name && glob_match(pattern, name + 1)));
+	if (*pattern != *name)
+		return (0);
+	return (glob_match(pattern + 1, name + 1));
+}
+
+int	glob_append(t_arg **head, t_arg **cur, char *name)
+{
+	t_arg	*node;
+
+	node = ft_calloc(1, sizeof(t_arg));
+	if (!node)
+		return (0);
+	node->str = ft_strdup(name);
+	node->mask = ft_calloc(ft_strlen(name), sizeof(char));
+	if (!node->str || !node->mask)
+	{
+		free_arg(node);
+		return (0);
+	}
+	if (!*head)
+		*head = node;
+	else
+		(*cur)->next = node;
+	*cur = node;
+	return (1);
+}
+
+t_arg	*glob_expand(t_arg *fields)
+{
+	DIR				*dir;
+	struct dirent	*entry;
+	t_arg			*head;
+	t_arg			*cur;
+
+	head = NULL;
+	cur = NULL;
+	dir = opendir("./");
+	if (!dir)
+	{
+		ft_err(-1, "opendir");
+		return (fields);
+	}
+	entry = readdir(dir);
+	while (entry)
+	{
+		if (entry->d_name[0] != '.'
+			&& glob_match(fields->str, entry->d_name))
+			if (!glob_append(&head, &cur, entry->d_name))
+				return (free_arg_list(head));
+		entry = readdir(dir);
+	}
+	closedir(dir);
+	if (!head)
+		return (fields);
+	return (head);
+}
+
+int	has_glob(t_arg *field)
+{
+	int	i;
+
+	if (!field || !field->str)
+		return (0);
+	i = 0;
+	while (field->str[i])
+	{
+		if (field->mask[i] && field->str[i] == '*')
+			return (1);
+		i++;
+	}
+	return (0);
+}
+t_arg	*expand_globs(t_arg *fields)
+{
+	t_arg	*iter;
+	t_arg	*next;
+	t_arg	*expanded;
+	t_arg	*prev;
+	t_arg	*head;
+
+	head = fields;
+	iter = fields;
+	prev = NULL;
+	while (iter)
+	{
+		next = iter->next;
+		if (has_glob(iter))
+		{
+			expanded = glob_expand(iter);
+			if (expanded == iter)
+			{
+				prev = iter;
+				iter = next;
+				continue ;
+			}
+			if (!prev)
+				head = expanded;
+			else
+				prev->next = expanded;
+			prev = expanded;
+			while (prev->next)
+				prev = prev->next;
+			prev->next = next;
+			free_arg(iter);
+		}
+		else
+			prev = iter;
+		iter = next;
+	}
+	return (head);
+}
+//t_arg	*expand_globs(t_arg *fields)
+//{
+//	t_arg	*iter;
+//	t_arg	*next;
+//	t_arg	*expanded;
+//	t_arg	*tail;
+//	t_arg	*head;
+//
+//	head = fields;
+//	iter = fields;
+//	while (iter)
+//	{
+//		next = iter->next;
+//		if (has_glob(iter))
+//		{
+//			expanded = glob_expand(iter);
+//			tail = expanded;
+//			while (tail->next)
+//				tail = tail->next;
+//			tail->next = next;
+//			if (!tail || iter == head)
+//				head = expanded;
+//			else
+//				tail->next = expanded;
+//			free_arg(iter);
+//		}
+//		else
+//			tail = iter;
+//		iter = next;
+//	}
+//	return (head);
+//}
 //void	expand_debug_2(t_tok **tok, t_env *env)
 //{
 //	char	**argv;
