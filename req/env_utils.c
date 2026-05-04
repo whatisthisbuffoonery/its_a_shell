@@ -55,7 +55,6 @@ int	use_expansion(t_tok *dst, t_env *env, char *ret)
 	return (0);
 }
 
-//todo: mask delim/special, then strjoin, then re tokenise
 int	expand_word(t_tok **tok, t_env *env)
 {
 	t_tok	*iter;
@@ -69,6 +68,22 @@ int	expand_word(t_tok **tok, t_env *env)
 	}
 	return (0);
 }
+
+//wont really be used outside of debug
+int	expand_str(t_tok **tok, t_env *env)
+{
+	t_tok	*iter;
+	iter = *tok;
+	while (iter)
+	{
+		if (expand_word(&iter, env))
+			return (1);
+		iter = iter->next;
+	}
+	return (0);
+}
+
+//--------------------------------------------------------------------------------
 
 t_arg	*arg_init(t_tok *iter)
 {
@@ -99,7 +114,6 @@ t_arg	*arg_init(t_tok *iter)
 	return (ret);
 }
 		
-
 //check null token in parent
 int	split_expand(t_arg **dst, t_tok *src)
 {
@@ -129,98 +143,6 @@ int	split_expand(t_arg **dst, t_tok *src)
 	return (ft_err(-!*dst, "expansion splitting malloc"));
 }
 
-
-t_arg	*fake_token(void)
-{
-	int		i;
-	int		len;
-	t_arg   *arg;
-	t_tok   fake;
-
-	ft_printf("\nfake token testing:\n");
-	fake.type = '$';
-	fake.str = ft_strdup("  hello world  *.c   **.o  hi   ");
-	fake.word_next = NULL;
-	fake.next = NULL;
-	ft_printf("tkn(->next)->str: %s\n", fake.str);
-	split_expand(&arg, &fake);
-	ft_printf("arg->str: %s\n", arg->str);
-	len = ft_strlen(arg->str);
-	ft_printf("arg->mas: ", arg->mask);
-	i = 0;
-	while (i < len)
-	{
-		if (arg->mask[i])
-			ft_putchar('1');
-		else
-			ft_putchar('0');
-		i ++;
-	}
-	ft_putstr("\n\n");
-	free(fake.str);
-	return (arg);
-}
-
-int	expand_all_debug(t_tok **tok, t_env *env)
-{
-	t_tok	*iter;
-	t_arg	*arg;
-	int		i;
-	int		len;
-	
-	iter = *tok;
-	while (iter)
-	{
-		if (expand_word(&iter, env))
-			return (1);
-		iter = iter->next;
-	}
-	iter = *tok;
-	while (iter)
-	{
-		ft_printf("tkn(->next)->str: %s\n", iter->str);
-		split_expand(&arg, iter);
-		ft_printf("arg->str: %s\n", arg->str);
-		len = ft_strlen(arg->str);
-		ft_printf("arg->mas: ", arg->mask);
-		i = 0;
-		while (i < len)
-		{
-			if (arg->mask[i])
-				ft_putchar('1');
-			else
-				ft_putchar('0');
-			i ++;
-		}
-		ft_putchar('\n');
-		free(arg->mask);
-		free(arg->str);
-		free(arg);
-		iter = iter->next;
-	}
-	return (0);//malloc check later
-}
-
-void	free_arg(t_arg *arg)
-{
-	free(arg->str);
-	free(arg->mask);
-	free(arg);
-}
-
-t_arg	*free_arg_list(t_arg *head)
-{
-	t_arg	*next;
-	
-	while (head)
-	{
-		next = head->next;
-		free_arg(head);
-		head = next;
-	}
-	return (NULL);
-}
-
 t_arg	*new_field(t_arg *src, int start, int end)
 {
 	t_arg	*node;
@@ -240,7 +162,7 @@ t_arg	*new_field(t_arg *src, int start, int end)
 		return (NULL);
 	}
 	ft_strlcpy(node->str, &src->str[start], len + 1);
-	ft_strlcpy(node->mask, &src->mask[start], len + 1);
+	ft_memcpy(node->mask, &src->mask[start], len);
 	return (node);
 }
 
@@ -256,6 +178,7 @@ t_arg	*append_new_field(t_arg *new, t_arg **head, t_arg **cur)
 	return (new);
 }
 
+//for empty word i.e. $c="     " unquoted, this returns src
 t_arg	*field_split(t_arg *src)
 {
 	t_arg	*head;
@@ -271,9 +194,9 @@ t_arg	*field_split(t_arg *src)
 	start = 0;
 	while (src->str[i])
 	{
-		if (src->mask[i] && ft_isspace(src->str[i]) && !next_to_1 && i > start)
-			if (!(append_new_field(new_field(src, start, i), &head, &cur)))
-				return (free_arg_list(head));
+		if (src->mask[i] && ft_isspace(src->str[i]) && !next_to_1 && i > start
+			&& !append_new_field(new_field(src, start, i), &head, &cur))
+			return (free_arg_list(head));
 		next_to_1 = src->mask[i] && ft_isspace(src->str[i]);
 		if (next_to_1)
 			start = i + 1;
@@ -285,6 +208,8 @@ t_arg	*field_split(t_arg *src)
 		return (src);
 	return (head);
 }
+
+//------------------------------------------------------------------------------------------
 
 int	glob_match(char *pattern, char *name)
 {
@@ -306,7 +231,7 @@ int	glob_append(t_arg **head, t_arg **cur, char *name)
 	if (!node)
 		return (0);
 	node->str = ft_strdup(name);
-	node->mask = ft_calloc(ft_strlen(name), sizeof(char));
+	node->mask = ft_calloc(ft_strlen(name), sizeof(char));//I would set to null
 	if (!node->str || !node->mask)
 	{
 		free_arg(node);
@@ -330,18 +255,17 @@ t_arg	*glob_expand(t_arg *fields)
 	head = NULL;
 	cur = NULL;
 	dir = opendir("./");
-	if (!dir)
-	{
-		ft_err(-1, "opendir");
+	if (ft_err(-!dir, "opendir error"))
 		return (fields);
-	}
 	entry = readdir(dir);
 	while (entry)
 	{
-		if (entry->d_name[0] != '.'
-			&& glob_match(fields->str, entry->d_name))
-			if (!glob_append(&head, &cur, entry->d_name))
-				return (free_arg_list(head));
+		if (entry->d_name[0] != '.' && glob_match(fields->str, entry->d_name)
+			&& !glob_append(&head, &cur, entry->d_name))
+		{
+			closedir(dir);
+			return (free_arg_list(head));
+		}
 		entry = readdir(dir);
 	}
 	closedir(dir);
@@ -365,11 +289,37 @@ int	has_glob(t_arg *field)
 	}
 	return (0);
 }
+
+int	do_glob(t_arg **prev, t_arg **iter, t_arg **next, t_arg **head)
+{
+	t_arg	*ex;
+
+	ex = glob_expand(*iter);//returns iter on no result, so NULL is an error
+	if (!ex)
+		return (1);
+	if (ex == *iter)
+		*prev = *iter;
+	else
+	{
+		if (!*prev)
+			*head = ex;
+		else
+			(*prev)->next = ex;
+		*prev = ex;
+		while ((*prev)->next)
+			*prev = (*prev)->next;
+		(*prev)->next = *next;
+
+		free_arg(*iter);
+	}
+	return (0);
+}
+
+//src destroyed on failure
 t_arg	*expand_globs(t_arg *fields)
 {
 	t_arg	*iter;
 	t_arg	*next;
-	t_arg	*expanded;
 	t_arg	*prev;
 	t_arg	*head;
 
@@ -381,22 +331,8 @@ t_arg	*expand_globs(t_arg *fields)
 		next = iter->next;
 		if (has_glob(iter))
 		{
-			expanded = glob_expand(iter);
-			if (expanded == iter)
-			{
-				prev = iter;
-				iter = next;
-				continue ;
-			}
-			if (!prev)
-				head = expanded;
-			else
-				prev->next = expanded;
-			prev = expanded;
-			while (prev->next)
-				prev = prev->next;
-			prev->next = next;
-			free_arg(iter);
+			if (do_glob(&prev, &iter, &next, &head))
+				return (free_arg_list(head));
 		}
 		else
 			prev = iter;
@@ -404,77 +340,36 @@ t_arg	*expand_globs(t_arg *fields)
 	}
 	return (head);
 }
-//t_arg	*expand_globs(t_arg *fields)
-//{
-//	t_arg	*iter;
-//	t_arg	*next;
-//	t_arg	*expanded;
-//	t_arg	*tail;
-//	t_arg	*head;
-//
-//	head = fields;
-//	iter = fields;
-//	while (iter)
-//	{
-//		next = iter->next;
-//		if (has_glob(iter))
-//		{
-//			expanded = glob_expand(iter);
-//			tail = expanded;
-//			while (tail->next)
-//				tail = tail->next;
-//			tail->next = next;
-//			if (!tail || iter == head)
-//				head = expanded;
-//			else
-//				tail->next = expanded;
-//			free_arg(iter);
-//		}
-//		else
-//			tail = iter;
-//		iter = next;
-//	}
-//	return (head);
-//}
-//void	expand_debug_2(t_tok **tok, t_env *env)
-//{
-//	char	**argv;
-//	t_tok	*iter;
-//	t_arg	*arg;
-//	int		i;
-//	int		k;
-//	int		len;
-//
-//	iter = *tok;
-//	while (iter)
-//	{
-//		if (expand_word(&iter, env))
-//			return (1);
-//		iter = iter->next;
-//	}
-//	iter = *tok;
-//	while (iter)
-//	{
-//		split_expand(&arg, iter);
-//		k = 0;
-//		i = 0;
-//		len = 0;
-//		while (arg->str[i])
-//		{
-//			if (!i && !arg->mask[i])
-//				k ++;
-//			else if (!arg->mask[i] && arg->str[i + 1] && arg->mask[i + 1])
-//				k ++;
-//			else if (arg->mask[i] && arg->str[i] == '*')
-//				k ++;
-//			i ++;
-//		}
-//		argv = ft_calloc(k + 1, sizeof(char *));
-//		i = 0;
-//		while (arg->str[i])
-//		{
-//			len = 0;
-//			if (arg)
-//		}
-//	}
-//}
+
+//-----------------------------------------------------------------------
+
+t_arg	*fake_token(void)
+{
+	int		i;
+	int		len;
+	t_arg   *arg;
+	t_tok   fake;
+
+	ft_printf("\nfake token testing:\n");
+	fake.type = '$';
+	fake.str = ft_strdup("  $a$b-hello world  *.c* env*_init*  hi   ");
+	fake.word_next = NULL;
+	fake.next = NULL;
+	ft_printf("tkn(->next)->str: %s\n", fake.str);
+	split_expand(&arg, &fake);
+	ft_printf("arg->str: %s\n", arg->str);
+	len = ft_strlen(arg->str);
+	ft_printf("arg->mas: ", arg->mask);
+	i = 0;
+	while (i < len)
+	{
+		if (arg->mask[i])
+			ft_putchar('1');
+		else
+			ft_putchar('0');
+		i ++;
+	}
+	ft_putstr("\n\n");
+	free(fake.str);
+	return (arg);
+}

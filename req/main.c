@@ -143,13 +143,17 @@ int	execute_buffer(t_env *env, t_tok **tok)
 	t_arg	*globbed;
 
 	make_word(*tok);
-	print_next(*tok);
+	//print_next(*tok);
 	//expand_all_debug(tok, env);
-	arg = fake_token();
+	//arg = fake_token();
+	expand_str(tok, env);
+	split_expand(&arg, *tok);
 	fields = field_split(arg);
-	free_arg(arg);
+	if (fields != arg)
+		free_arg(arg);
 	print_fields(fields);
 	globbed = expand_globs(fields);
+	ft_putstr("\n===final===\n");
 	print_fields(globbed);
 	free_arg_list(globbed);
 /*	env->ast = parse(tok);

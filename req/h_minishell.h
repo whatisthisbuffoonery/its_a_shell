@@ -108,6 +108,8 @@ int			shell_assert(int cond, char *s);
 
 void		merge_sort(t_shnode **head);
 
+int			isempty(char *buf);
+
 /*basic type checking*/
 int			isbracket(int c);
 int			isop(int c);
@@ -138,12 +140,14 @@ t_shnode	*shnode_dup(t_shnode *src);
 t_shnode	*find_env(char *str, t_shnode *list, unsigned int n);
 int			env_add(t_env *env, t_shnode *src, char *dst);
 int			use_expansion(t_tok *dst, t_env *env, char *ret);
-int			expand_str(t_tok **tok, t_shnode *env);
+int			split_expand(t_arg **dst, t_tok *src);
 t_arg		*fake_token(void);
 t_arg	*field_split(t_arg *src);
 void	free_arg(t_arg *arg);
 t_arg	*free_arg_list(t_arg *head);
 t_arg	*expand_globs(t_arg *fields);
+
+int			expand_str(t_tok **tok, t_env *env);
 
 /*init funcs*/
 int			tok_init(char *buf, t_tok **tok);
