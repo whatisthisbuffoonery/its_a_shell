@@ -94,7 +94,7 @@ int	collect_redir(t_arg **dst, t_tok *src)
 }
 
 //to do: verify malloc failure detection and find somewhere to stick err msg
-char	**expand_all(t_tok *src, t_env *env)
+char	**expand_all(t_tok *src, t_env *env, int (*f)(t_arg **, t_tok *))
 {
 	t_arg	*globbed;
 	char	**ret;
