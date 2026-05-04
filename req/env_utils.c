@@ -46,7 +46,7 @@ int	use_expansion(t_tok *dst, t_env *env, char *ret)
 			copy_wrapper(dst->str, ret, &i, &len);//copy one char//yes we copy dollar sign if env name is invalid
 	}
 	if (!ret
-		&& (!ft_err(-!malloc_cond((void **) &ret, len + 1), "expansion")))
+		&& (!ft_err(-!malloc_cond((void **) &ret, len + 1), "env var malloc")))
 		return (use_expansion(dst, env, ret));
 	else if (!ret)
 		return (1);
@@ -55,14 +55,12 @@ int	use_expansion(t_tok *dst, t_env *env, char *ret)
 	return (0);
 }
 
-int	expand_word(t_tok **tok, t_env *env)
+int	expand_word(t_tok *iter, t_env *env)
 {
-	t_tok	*iter;
-
-	iter = *tok;
 	while (iter)
 	{
-		if (iter->type != '\'' && use_expansion(iter, env, NULL))
+		if (iter->type != '\'' && ft_strchr(iter->str, '$')
+			&& use_expansion(iter, env, NULL))
 			return (1);
 		iter = iter->word_next;
 	}
@@ -70,13 +68,11 @@ int	expand_word(t_tok **tok, t_env *env)
 }
 
 //wont really be used outside of debug
-int	expand_str(t_tok **tok, t_env *env)
+int	expand_str(t_tok *iter, t_env *env)
 {
-	t_tok	*iter;
-	iter = *tok;
 	while (iter)
 	{
-		if (expand_word(&iter, env))
+		if (expand_word(iter, env))
 			return (1);
 		iter = iter->next;
 	}
@@ -143,6 +139,7 @@ int	split_expand(t_arg **dst, t_tok *src)
 	return (ft_err(-!*dst, "expansion splitting malloc"));
 }
 
+
 t_arg	*new_field(t_arg *src, int start, int end)
 {
 	t_arg	*node;
@@ -179,6 +176,7 @@ t_arg	*append_new_field(t_arg *new, t_arg **head, t_arg **cur)
 }
 
 //for empty word i.e. $c="     " unquoted, this returns src
+//caller of this has to weed out completely empty entries
 t_arg	*field_split(t_arg *src)
 {
 	t_arg	*head;
@@ -309,7 +307,6 @@ int	do_glob(t_arg **prev, t_arg **iter, t_arg **next, t_arg **head)
 		while ((*prev)->next)
 			*prev = (*prev)->next;
 		(*prev)->next = *next;
-
 		free_arg(*iter);
 	}
 	return (0);

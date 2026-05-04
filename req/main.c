@@ -146,6 +146,14 @@ int	execute_buffer(t_env *env, t_tok **tok)
 	//print_next(*tok);
 	//expand_all_debug(tok, env);
 	//arg = fake_token();
+	env->ast = parse(tok);
+	//execution here
+	if (env->ast)
+		print_ast(env->ast, 0);
+	clean_ast(env->ast);
+	env->ast = NULL;
+
+	/*
 	expand_str(tok, env);
 	split_expand(&arg, *tok);
 	fields = field_split(arg);
@@ -156,11 +164,7 @@ int	execute_buffer(t_env *env, t_tok **tok)
 	ft_putstr("\n===final===\n");
 	print_fields(globbed);
 	free_arg_list(globbed);
-/*	env->ast = parse(tok);
-	if (env->ast)
-		print_ast(env->ast, 0);
-	clean_ast(env->ast);
-	env->ast = NULL;*/
+	*/
 	return (env->last);
 }
 

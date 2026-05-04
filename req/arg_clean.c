@@ -2,6 +2,8 @@
 
 void	free_arg(t_arg *arg)
 {
+	if (!arg)
+		return ;
 	free(arg->str);
 	free(arg->mask);
 	free(arg);
