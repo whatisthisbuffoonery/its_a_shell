@@ -1,7 +1,6 @@
 #include "h_minishell.h"
 
 //guaranteed non null
-
 char	**count_str(t_arg *globbed)
 {
 	int		i;

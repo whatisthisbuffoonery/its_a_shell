@@ -11,7 +11,7 @@ int	do_binary(char **argv, t_env *env, int *fd)
 		status = ft_err(-(dup2(fd[0], 0) || dup2(fd[1], 1)), "dup error");
 	if (!status)
 		status = ft_err(execve(*argv, argv, envp), *argv);
-	clean_subshell(env);
+	subshell_cleanup(env);
 	split_cleanup(argv);
 	split_cleanup(envp);
 	unset(&fd[0]);
@@ -126,9 +126,8 @@ int	do_group(t_node *node, t_env *env, int *pfd)
 	int		fd[2];
 	pid_t	pid;
 
-	if(redir_to_fd(node, fd, pfd))//init fd to 0, 1 //open files //expand + glob here //call set_fd
+	if(redir_to_fd(node, env, fd, pfd))//init fd to 0, 1 //open files //expand + glob here //call set_fd
 		return (1);
-//	set_fd(fd, pfd);
 	if (node->kind != N_GROUP)
 		return (do_simple(node, env, fd));//not do list
 	if (env->do_not_subshell)//need to handle redir//just dup2 here, no need to restore
@@ -234,19 +233,16 @@ void	update_last(t_env *env, int n)
 int	do_list(t_node *node, t_env *env)
 {
 	int				status;
-	t_pipemanager	*p;
+	t_pipemanager	p;
 
 	status = 0;
-	p = NULL;
+	p.pipes = NULL;
+	p.pipe_count = 0;
+	p.pid_count = 0;
+	p.pid = 0;
 	if (node->kind != N_AND && node->kind != N_OR)
 	{
-		if (node->kind == N_PIPE)
-		{
-			p = ft_calloc(1, sizeof(t_pipemanager));
-			if (!p)
-				return (1);
-		}
-		status = do_pipe(node, env, p, 0);
+		status = do_pipe(node, env, &p, 0);
 		return (status);
 	}
 	status = do_list(node->left, env);

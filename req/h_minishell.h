@@ -124,15 +124,37 @@ int			single_tok(t_tok *iter);
 int			isjoined(t_tok *node);
 int			copy_tok(t_tok *tok);
 
+/*builtin stuff*/
+int			do_builtin_match(int argc, char **argv, t_env *env);
+int			echo(int argc, char **argv);
+int			cd(int argc, char **argv, t_env *env);
+int			pwd(void);
+int			env(int argc, t_env *env);
+int			export(int argc, char **argv, t_env *env);
+int			exit_builtin(int argc, char **argv, t_env *env);
+int			unset_builtin(int argc, char **argv, t_env *env);
+
 /*checks for iscond or isbracket, do not use with subtok*/
 int			ismeta(t_tok *tok);
 
-/*also do not use with subtok*/
+/*other checkers*/
+int			isbuiltin(char *s);
 int			isname(t_tok *node);
 
 /*expansion things*/
 char		*find_env_str(char *name, t_env *env, unsigned int len);
 int			expand_all_debug(t_tok **tok, t_env *env);
+int			expand_str(t_tok *tok, t_env *env);
+
+char		**expand_all(t_tok *src, t_env *env, int (*f)(t_arg **, t_tok *));
+
+/*iterators for expand_all*/
+int			collect_argv(t_arg **dst, t_tok *src);
+int			collect_redir(t_arg **dst, t_tok *src);
+
+/*expand_all callers*/
+char		**make_envp(t_env *env, int *complain);
+char    	**make_argv(t_tok *src, t_env *env);
 
 /*env utils*/
 void		shnode_append(t_shnode **dst, t_shnode *src);
@@ -141,18 +163,19 @@ t_shnode	*find_env(char *str, t_shnode *list, unsigned int n);
 int			env_add(t_env *env, t_shnode *src, char *dst);
 int			use_expansion(t_tok *dst, t_env *env, char *ret);
 int			split_expand(t_arg **dst, t_tok *src);
-t_arg		*fake_token(void);
-t_arg	*field_split(t_arg *src);
-void	free_arg(t_arg *arg);
-t_arg	*free_arg_list(t_arg *head);
-t_arg	*expand_globs(t_arg *fields);
 
-int			expand_str(t_tok **tok, t_env *env);
+t_arg		*fake_token(void);
+
+t_arg		*field_split(t_arg *src);
+void		free_arg(t_arg *arg);
+t_arg		*free_arg_list(t_arg *head);
+t_arg		*expand_globs(t_arg *fields);
 
 /*init funcs*/
 int			tok_init(char *buf, t_tok **tok);
 int			node_init(t_tok **dst, char *src, int *cry);
 void		env_init(t_env *dst, char **e);
+void		pipemanager_init(t_pipemanager *dst, int p_index);
 
 /*token utils*/
 void		tok_pop(t_tok **tok);
@@ -174,6 +197,7 @@ void		clean_shnode(t_shnode **shnode);
 void		clean_ast(t_node *node);
 void		clean_pipemanager(t_pipemanager *p);
 void		shell_cleanup(t_env *env);
+void		unset(int *fd);
 
 /*print funcs*/
 void		env_print(t_env *env);

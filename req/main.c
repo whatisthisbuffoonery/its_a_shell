@@ -138,22 +138,26 @@ void	print_fields(t_arg *arg)
 //need to update last in execution
 int	execute_buffer(t_env *env, t_tok **tok)
 {
-	t_arg	*arg;
-	t_arg	*fields;
-	t_arg	*globbed;
+//	t_arg	*arg;
+//	t_arg	*fields;
+//	t_arg	*globbed;
 
+	env->duped_fd[0] = 0;//should not be needed in main process
+	env->duped_fd[1] = 0;
+	env->do_not_subshell = 0;//also should not be needed
 	make_word(*tok);
-	//print_next(*tok);
-	//expand_all_debug(tok, env);
-	//arg = fake_token();
 	env->ast = parse(tok);
 	//execution here
 	if (env->ast)
-		print_ast(env->ast, 0);
+		do_list(env->ast, env);
+	//	print_ast(env->ast, 0);
 	clean_ast(env->ast);
 	env->ast = NULL;
 
 	/*
+	//print_next(*tok);
+	//expand_all_debug(tok, env);
+	//arg = fake_token();
 	expand_str(tok, env);
 	split_expand(&arg, *tok);
 	fields = field_split(arg);

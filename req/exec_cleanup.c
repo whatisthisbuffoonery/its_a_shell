@@ -3,7 +3,7 @@
 void	clean_pipemanager(t_pipemanager *p)
 {
 	pipeset_cleanup(p->pipes, p->pipe_count);
-	free(p);
+//	free(p);
 }
 
 void	shell_cleanup(t_env *env)

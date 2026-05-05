@@ -32,6 +32,8 @@ int	pipex_cmp(char *line, char *v, int v_len)
 {
 	int	line_len;
 
+	if (!line)
+		return (0);
 	line_len = ft_strlen(line);
 	if (line_len != v_len + 1 || line[v_len] != '\n')
 		return (1);
@@ -61,17 +63,18 @@ int	do_heredoc(char *file)
 	v_len = ft_strlen(file);
 	if (ft_err(pipe(fd), "pipe error"))
 		return (-1);
-	while (!muh_number)//need to test
+	while (!muh_number)
 	{
-		buf = gnl_b(0);
+		buf = gnl_hd(0);//need to undo EINTR handling
 		if(!pipex_cmp(buf, file, v_len))
 			break ;
 		heredoc_write(fd[1], buf);
 	}
+	free(buf);
 	close(fd[1]);
 	if (muh_number)
 		unset(&fd[0]);
-	return (fd[0]);//i guess...?
+	return (fd[0]);
 }
 
 //no need to iterate here
@@ -96,7 +99,7 @@ int	update_redir_fd(int *fd, char **file, char *op)
 			flag = O_WRONLY | O_CREAT | O_APPEND;
 		else
 			flag = O_WRONLY | O_CREAT | O_TRUNC;
-		fd = ft_err(open(*file, flag, 0666), "open error");
+		fd = ft_err(open(*file, flag, 0644), "open error");
 		id = 1;
 	}
 	unset(&fd[id]);
@@ -104,7 +107,7 @@ int	update_redir_fd(int *fd, char **file, char *op)
 	return (fd < 0);
 }
 
-int	redir_to_fd(t_node *node, int *fd, int *pfd)
+int	redir_to_fd(t_node *node, t_env *env, int *fd, int *pfd)
 {
 	char	**file;
 	t_node	*iter;
@@ -116,9 +119,12 @@ int	redir_to_fd(t_node *node, int *fd, int *pfd)
 	flag = 0;
 	while (iter && !flag)
 	{
-		file = expand_all(iter->redir_target);
-		if (!file || shell_assert((file[1] != NULL), "ambiguous redirect"))
+		file = expand_all(iter->redir_target, env, collect_redir);
+		if (!file || shell_assert((!file[0] || file[1]), "ambiguous redirect"))
+		{
+			split_cleanup(file);
 			return (1);
+		}
 		flag = update_redir_fd(fd, file, iter->redir_op->str);
 		split_cleanup(file);
 		iter = iter->redir_next;

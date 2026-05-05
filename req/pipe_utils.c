@@ -9,7 +9,6 @@ void	unset(int *fd)
 	}
 }
 
-
 void	pipeset_cleanup(t_pipeset *set, size_t n)
 {
 	size_t	i;

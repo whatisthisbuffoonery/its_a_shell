@@ -9,20 +9,25 @@ int	isbuiltin(char *s)
 
 int	do_builtin_match(int argc, char **argv, t_env *env)
 {
+	int	status;
+
+	status = 0;
 	if ((*argv)[0] == 'c')//cd
-		;
+		status = cd(argc, argv, env);
 	else if ((*argv)[0] == 'u')//unset
-		;
+		status = unset_builtin(argc, argv, env);
 	else if ((*argv)[0] == 'p')//pwd
-		;
+		status = pwd();
 	else if ((*argv)[1] == 'n')//env
-		;
+		status = env(argc, env);
 	else if ((*argv)[1] == 'c')//echo
-		;
+		status = echo(argc, argv);
 	else if ((*argv)[2] == 'p')//export
-		;
+		status = export(argc, argv, env);
 	else if ((*argv)[2] == 'i')//exit
-		;
+		status = exit_builtin(argc, argv, env);
+	split_cleanup(argv);//did i put this in exec.c?
+	return (status);//handles blank cmd string...?
 }
 
 char	*longest_argv(char *path, char *src)
@@ -73,13 +78,13 @@ void	find_path(char *path, char **dst, char *new)
 }
 
 //contructs args consuming one word at a time, should call multiple times and factor out cmd string
-char    **make_one_argv(t_tok *src, t_env *env)
+char    **make_argv(t_tok *src, t_env *env)
 {
     char		**argv;
 	char		*cmd;
 	t_shnode	*path;
 
-	argv = expand_all(src->argv);//no need double ptr//uhh... she handles glob? half half lah hor//take tok for arg
+	argv = expand_all(src, env, collect_argv);//no need double ptr//uhh... she handles glob? half half lah hor//take tok for arg
 	if (!argv)
 		return (NULL);
 	path = find_env("PATH", env->env, ft_strlen("PATH"));
