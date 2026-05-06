@@ -12,6 +12,8 @@ void	set_fd(int *fd, int *pfd)
 		unset(&pfd[1]);
 }
 
+//if flag, close all fds
+//else, set_fd
 int	select_fd(int *fd, int *pfd, int flag)
 {
 	if (flag)
@@ -24,11 +26,9 @@ int	select_fd(int *fd, int *pfd, int flag)
 	else
 		set_fd(fd, pfd);
 	return (flag);
-	//if flag, close all fds
-	//else, set_fd
 }
 
-int	pipex_cmp(char *line, char *v, int v_len)
+int	heredoc_cmp(char *line, char *v, int v_len)
 {
 	int	line_len;
 
@@ -66,7 +66,7 @@ int	do_heredoc(char *file)
 	while (!muh_number)
 	{
 		buf = gnl_hd(0);//need to undo EINTR handling
-		if(!pipex_cmp(buf, file, v_len))
+		if(!heredoc_cmp(buf, file, v_len))
 			break ;
 		heredoc_write(fd[1], buf);
 	}

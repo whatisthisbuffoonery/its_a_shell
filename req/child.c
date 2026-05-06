@@ -10,7 +10,6 @@ pid_t	shell_fork(t_env *env)
 	return (ft_err(pid, "shell fork"));
 }
 
-
 void	pid_bump(t_pipemanager *p, pid_t src)
 {
 	if (p->pid_count > p->pipe_count)

@@ -11,7 +11,7 @@ int	do_binary(char **argv, t_env *env, int *fd)
 		status = ft_err(-(dup2(fd[0], 0) || dup2(fd[1], 1)), "dup error");
 	if (!status)
 		status = ft_err(execve(*argv, argv, envp), *argv);
-	subshell_cleanup(env);
+	shell_cleanup(env);
 	split_cleanup(argv);
 	split_cleanup(envp);
 	unset(&fd[0]);

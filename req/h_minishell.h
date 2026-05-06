@@ -141,6 +141,9 @@ int			ismeta(t_tok *tok);
 int			isbuiltin(char *s);
 int			isname(t_tok *node);
 
+/*process helpers*/
+pid_t		shell_fork(t_env *env);
+
 /*expansion things*/
 char		*find_env_str(char *name, t_env *env, unsigned int len);
 int			expand_all_debug(t_tok **tok, t_env *env);
