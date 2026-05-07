@@ -1,0 +1,3 @@
+pwd and old pwd both have their own structures (so that unsetting them doesnt do much)
+
+path does not. oh well.
