@@ -1,5 +1,34 @@
 #include "h_minishell.h"
 
+void	env_import(t_env *env)
+{
+	t_shnode	*iter;
+	t_shnode	*prev;
+
+	prev = NULL;
+	iter = env->export;
+	while (iter)
+	{
+		if (!iter->str)
+		{
+			if (prev)
+				prev->next = iter->next;
+			else
+				env->export = iter->next;
+			clean_shnode(&iter);
+			if (prev)
+				iter = prev->next;
+			else
+				iter = env->export;
+		}
+		else
+		{
+			prev = iter;
+			iter = iter->next;
+		}
+	}
+}
+
 pid_t	shell_fork(t_env *env)
 {
 	pid_t	pid;

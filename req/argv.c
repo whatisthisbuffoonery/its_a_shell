@@ -17,7 +17,7 @@ int	do_builtin_match(int argc, char **argv, t_env *env)
 	else if ((*argv)[0] == 'u')//unset
 		status = unset_builtin(argc, argv, env);
 	else if ((*argv)[0] == 'p')//pwd
-		status = pwd();
+		status = pwd(env);
 	else if ((*argv)[1] == 'n')//env
 		status = env_builtin(argc, env);
 	else if ((*argv)[1] == 'c')//echo

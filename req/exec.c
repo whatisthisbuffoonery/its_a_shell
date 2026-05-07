@@ -151,7 +151,7 @@ void	do_pipe_command(t_node *node, t_env *env, t_pipemanager *p, int p_index)
 	pid_t		pid;
 
 	pid = shell_fork(env);//clean blanks
-	p->pid = pid;//take negative pid wait as failure return status
+	pid_bump(p, pid);//take negative pid wait as failure return status
 	if (pid)
 		return ;
 	env->do_not_subshell = 1;//child only route

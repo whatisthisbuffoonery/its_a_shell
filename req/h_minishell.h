@@ -137,6 +137,7 @@ int			isname(t_tok *node);
 
 /*process helpers*/
 pid_t		shell_fork(t_env *env);
+void		pid_bump(t_pipemanager *p, pid_t src);
 
 /*expansion things*/
 char		*find_env_str(char *name, t_env *env, unsigned int len);
