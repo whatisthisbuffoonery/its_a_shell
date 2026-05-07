@@ -28,13 +28,16 @@ int	child_wait(pid_t pid)
 	int	n;
 
 	errno = 0;
-	status = -1;
+	status = 1;
 	while (waitpid(pid, &n, 0) < 0 && errno == EINTR)
 		errno = 0;
-	status = WEXITSTATUS(n);
-	if (WIFSIGNALED(n))
-		status = WTERMSIG(n) + 128;
-	errno = 0;
+	if (errno != ECHILD)
+	{
+		status = WEXITSTATUS(n);
+		if (WIFSIGNALED(n))
+			status = WTERMSIG(n) + 128;
+		errno = 0;
+	}
 	while (1)
     {
         if (wait(NULL) < 0 && errno != EINTR)

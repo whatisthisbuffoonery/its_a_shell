@@ -45,7 +45,7 @@ void	append_new_wrapper(t_arg **head, t_arg **tail, t_arg *src)
 	if (!src->next && !src->str[i])
 		free_arg(src);
 	else
-		append_new_wrapper(src, head, tail);
+		append_new_field(src, head, tail);
 	while (*tail && (*tail)->next)
 		*tail = (*tail)->next;
 }
@@ -72,7 +72,7 @@ int	collect_argv(t_arg **dst, t_tok *src)
 			free_arg_list(head);
 			return (1);
 		}
-		append_new_field_wrapper(&head, &tail, fields);
+		append_new_wrapper(&head, &tail, fields);
 	}
 	*dst = expand_globs(head);//always invalidates src
 	return (!*dst);
@@ -98,7 +98,7 @@ char	**expand_all(t_tok *src, t_env *env, int (*f)(t_arg **, t_tok *))
 	t_arg	*globbed;
 	char	**ret;
 
-	if (expand_str(tok, env) || f(&globbed, src))
+	if (expand_str(src, env) || f(&globbed, src))
 		return (NULL);
 	ret = count_str(globbed);
 	if (!ret)

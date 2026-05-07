@@ -77,23 +77,20 @@ int	do_redir(int *fd)
 int	do_simple(t_node *node, t_env *env, int *fd)
 {
 	char	**argv;
-	char	*cmd;
 	int		status;
+	int		i;
 
 	argv = NULL;
 	if (!node->argv)//redir only path
 		return (do_redir(fd));
-	cmd = make_command(node, env);//account for redir as command//expand + glob here //must return unmodified string if no match
-	//should blend cmd and argv due to multiple results
-	if (cmd)
-		argv = make_argv(cmd, node, env); //free cmd on error internally//expand + glob here
+	argv = make_argv(node->argv, env); //free cmd on error internally//expand + glob here
+	i = 0;
+	while (argv && argv[i])
+		i ++;
 	if (argv)// will create argv even if no args
-		status = exec_simple(count_argv(argv), argv, env, fd);
+		status = exec_simple(i, argv, env, fd);
 	else
 		status = 1;
-//	split_cleanup(argv);//cannot hand off to exec_simple
-//	unset(&fd[0]);//pass cleanup to exec_simple
-//	unset(&fd[1]);
 	return (status);
 }
 
@@ -122,7 +119,6 @@ int	do_list_subshell(t_node *node, t_env *env, int *fd)
 //define double env cleanup by setting elements to null
 int	do_group(t_node *node, t_env *env, int *pfd)
 {
-	int		status;
 	int		fd[2];
 	pid_t	pid;
 
@@ -155,7 +151,7 @@ void	do_pipe_command(t_node *node, t_env *env, t_pipemanager *p, int p_index)
 	pid_t		pid;
 
 	pid = shell_fork(env);//clean blanks
-	pid_bump(p, pid);//take negative pid wait as failure return status
+	p->pid = pid;//take negative pid wait as failure return status
 	if (pid)
 		return ;
 	env->do_not_subshell = 1;//child only route

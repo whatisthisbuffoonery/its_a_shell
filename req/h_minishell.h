@@ -9,9 +9,10 @@
 # include <sys/types.h>
 # include <dirent.h>
 # include <errno.h>
+# include <fcntl.h>
 # include "libft.h"
 
-extern volatile sig_atomic_t	muh_number;
+extern volatile sig_atomic_t	signo;
 
 typedef struct s_shnode
 {
@@ -50,24 +51,16 @@ typedef enum e_node_kind
 typedef struct s_node
 {
 	t_node_kind		kind;
-	t_tok			*argv; // N_CMD  – argv array (NULL-terminated) //cmd name is first item
-	int				argc; //figure out later
+	t_tok			*argv;			// N_CMD  – argv array (NULL-terminated) //cmd name is first item
 	t_tok			*redir_op;		// mutually exclusive with argv
 	t_tok			*redir_target;	//this too
 	struct s_node	*redir_next;	// linked list of redirects on one cmd // again DO NOT FILL THE OTHER TWO FIELDS DIRECTLY
 	struct s_node	*left;			// N_PIPE / N_AND / N_OR / N_GROUP //
-	struct s_node	*right;			// unused for N_GROUP 
+	struct s_node	*right;			// unused for N_GROUP
+	int				heredoc;		//for expanding heredoc contents
 }					t_node;
 
 typedef int	t_pipeset[2];
-
-/*
-typedef struct s_pidnode
-{
-	pid_t				pid;
-	struct s_pidnode	*next;
-}						t_pidnode;
-*/ //VETO
 
 typedef struct	s_glob
 {
@@ -81,14 +74,12 @@ typedef struct s_pipemanager
 	size_t					pid_count;
 	pid_t					pid;//just store the last child
 	t_pipeset				*pipes;
-//	struct s_pipemanager	*next;// VETO
 }							t_pipemanager;
 
 typedef struct	s_env
 {
-//	t_pipemanager	*p; //VETO
-	t_shnode		*export;	//sorted
-	t_shnode		*env;		//not sorted
+	t_shnode		*export;	//not sorted
+	t_shnode		*env;		//also not sorted
 	t_node			*ast;
 	char			last_string[4];
 	int				duped_fd[2];		// reset this too
@@ -110,6 +101,9 @@ void		merge_sort(t_shnode **head);
 
 int			isempty(char *buf);
 
+int			child_wait(pid_t pid);
+int			pipe_dup(int *fd);
+
 /*basic type checking*/
 int			isbracket(int c);
 int			isop(int c);
@@ -128,8 +122,8 @@ int			copy_tok(t_tok *tok);
 int			do_builtin_match(int argc, char **argv, t_env *env);
 int			echo(int argc, char **argv);
 int			cd(int argc, char **argv, t_env *env);
-int			pwd(void);
-int			env(int argc, t_env *env);
+int			pwd(t_env *env);
+int			env_builtin(int argc, t_env *env);
 int			export(int argc, char **argv, t_env *env);
 int			exit_builtin(int argc, char **argv, t_env *env);
 int			unset_builtin(int argc, char **argv, t_env *env);
@@ -158,6 +152,7 @@ int			collect_redir(t_arg **dst, t_tok *src);
 /*expand_all callers*/
 char		**make_envp(t_env *env, int *complain);
 char    	**make_argv(t_tok *src, t_env *env);
+int			redir_to_fd(t_node *node, t_env *env, int *fd, int *pfd);
 
 /*env utils*/
 void		shnode_append(t_shnode **dst, t_shnode *src);
@@ -169,6 +164,7 @@ int			split_expand(t_arg **dst, t_tok *src);
 
 t_arg		*fake_token(void);
 
+t_arg		*append_new_field(t_arg *new, t_arg **head, t_arg **cur);
 t_arg		*field_split(t_arg *src);
 void		free_arg(t_arg *arg);
 t_arg		*free_arg_list(t_arg *head);
@@ -201,6 +197,7 @@ void		clean_ast(t_node *node);
 void		clean_pipemanager(t_pipemanager *p);
 void		shell_cleanup(t_env *env);
 void		unset(int *fd);
+void		pipeset_cleanup(t_pipeset *set, size_t n);
 
 /*print funcs*/
 void		env_print(t_env *env);

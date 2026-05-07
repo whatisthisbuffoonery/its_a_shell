@@ -1,6 +1,6 @@
 #include "h_minishell.h"
 
-volatile sig_atomic_t	muh_number;
+volatile sig_atomic_t	signo;
 
 
 int	shell_exit(t_env *env)
@@ -197,7 +197,7 @@ int loop(char **e)
 		}
 		free(buf);
 		clean_tok(&tok);
-		muh_number = 0;
+		signo = 0;
 	}
 	return (env.last);
 }

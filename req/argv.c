@@ -19,7 +19,7 @@ int	do_builtin_match(int argc, char **argv, t_env *env)
 	else if ((*argv)[0] == 'p')//pwd
 		status = pwd();
 	else if ((*argv)[1] == 'n')//env
-		status = env(argc, env);
+		status = env_builtin(argc, env);
 	else if ((*argv)[1] == 'c')//echo
 		status = echo(argc, argv);
 	else if ((*argv)[2] == 'p')//export
@@ -91,9 +91,9 @@ char    **make_argv(t_tok *src, t_env *env)
 	if (ft_strchr(*argv, '/') || isbuiltin(*argv)
 		|| !path || !path->str || !path->str[0])
 		return (argv);
-	cmd = longest_path(path->str, *argv);//find the largest env string and use that size
+	cmd = longest_argv(path->str, *argv);//find the largest env string and use that size
 	if (ft_err(-!cmd, "cmd malloc error"))
 		return (split_cleanup(argv));
-	find_path(env, argv, cmd);//free unused string
+	find_path(path->str, argv, cmd);//free unused string
 	return (argv);
 }

@@ -2,9 +2,9 @@
 
 int	rl_handle_signals(void)//sigaction flag interrupt, rl handler	//does nl + redisplay (if not running a child)
 {
-	//else if (muh_number == SIGQUIT)
+	//else if (signal == SIGQUIT)
 	//	ft_putstr("^\\");
-	if (muh_number == SIGINT)
+	if (signo == SIGINT)
 	{
 		ft_putstr("^C");
 		write(1, "\n", 1);
@@ -12,13 +12,15 @@ int	rl_handle_signals(void)//sigaction flag interrupt, rl handler	//does nl + re
 		rl_replace_line("", 0);
 		rl_redisplay();
 	}
-	muh_number = 0;
+	signo = 0;
 	return (0);
 }
 
-void	sighands(int signo)
+//use different handler for builtin
+void	sighands(int n)
 {
-	muh_number = signo;
+	if (signo != SIGQUIT)
+		signo = n;
 }
 
 void	signal_init(void)
@@ -36,5 +38,5 @@ void	signal_init(void)
 	hands = (struct sigaction){.sa_mask = mask, .sa_handler = sighands};//, .sa_flags = SA_RESTART;//exclude restart flag
 	ft_err(sigaction(SIGINT, &hands, NULL), "SIGINT setup error");
 	ft_err(sigaction(SIGQUIT, &hands, NULL), "SIGQUIT setup error");
-	muh_number = 0;
+	signo = 0;
 }
