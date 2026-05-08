@@ -6,7 +6,7 @@
 /*   By: achew <achew@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 20:04:09 by achew             #+#    #+#             */
-/*   Updated: 2026/04/28 18:45:45 by achew            ###   ########.fr       */
+/*   Updated: 2026/05/08 15:36:26 by achew            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static t_builtin_entry  g_builtins[] = {
 //    {"cd",      ft_cd},
 //    {"pwd",     ft_pwd},
     {"export",  ft_export},
-//    {"unset",   ft_unset},
+    {"unset",   ft_unset},
     {"env",     ft_env},
 //    {"exit",    ft_exit},
 //    {NULL,      NULL}
@@ -55,8 +55,9 @@ int exec_cmd(t_node *n, t_env *env)
 	char		**envp;
 
     if (!n->argv || !n->argv[0])
-        return (0);
-//    apply_redirects(n->redir_next);  /* dup2 for redirections 
+		return (0);
+//  apply_redirects(n->redir_next);  /* dup2 for redirections
+	ft_printf("the first argv is: %s\n", n->argv[0]);
     builtin = get_builtin(n->argv[0]);
     if (builtin)
         return (builtin(n->argc, n->argv, env));  /* run in current process */

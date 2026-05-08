@@ -164,6 +164,9 @@ void		print_env(t_shnode *env);
 
 int			ft_echo(int argc, char **argv, t_env *env);
 
+int			ft_unset(int argc, char **argv, t_env *env);
+void    shnode_free(t_shnode *node);
+
 int			execute(t_node *n, t_env *env);
 char		*ft_strjoin3(const char *name, const char *val);
 char		**env_to_envp(t_shnode *list);
