@@ -32,7 +32,7 @@ int	heredoc_cmp(char *line, char *v, int v_len)
 {
 	int	line_len;
 
-	if (!line)
+	if (!line || signo)//allow sigquit outcome here
 		return (0);
 	line_len = ft_strlen(line);
 	if (line_len != v_len + 1 || line[v_len] != '\n')
@@ -47,7 +47,7 @@ int	heredoc_write(int *fd, char *s, t_env *env, int flag)
 	int		len;
 	t_tok	tmp;
 
-	if (flag)
+	if (flag && !signo)
 	{
 		tmp.str = s;
 		if (use_expansion(&tmp, env, NULL))
@@ -66,7 +66,7 @@ int	heredoc_write(int *fd, char *s, t_env *env, int flag)
 			return (1);
 		i += k + (k < 0);
 	}
-	return (0);
+	return (signo != 0);
 }
 
 int	rl_heredoc(void)
@@ -99,6 +99,7 @@ int	do_heredoc(char *file, t_env *env, int flag)
 		if(!heredoc_cmp(buf, file, v_len) || heredoc_write(fd, buf, env, flag))
 			break ;
 		free(buf);
+		buf = NULL;
 	}
 	free(buf);
 	close(fd[1]);
@@ -111,25 +112,24 @@ int	do_heredoc(char *file, t_env *env, int flag)
 //no need to iterate here
 int	update_redir_fd(int *fd, char **file, t_node *iter, t_env *env)
 {
-	int		flag;
 	int		id;
 	int		new_fd;
 	char	*op;
 
-	flag = 0;
 	op = iter->redir_op->str;
-	if (op[0] == '<' && op[1])
+	id = (op[0] == '>');
+	if (!id && op[1])
 		new_fd = do_heredoc(*file, env, iter->heredoc);//to change
-	else if (op[0] == '<')
+	else if (!id)
 		new_fd = open(*file, O_RDONLY);
-	else if (op[0] == '>' && op[1])
+	else if (id && op[1])
 		new_fd = open(*file, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	else
 		new_fd = open(*file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	id = 1 - (op[0] == '<');
+	
 	unset(&fd[id]);
 	fd[id] = new_fd;
-	return (ft_err(new_fd, "open error"));
+	return (signo != 0 || ft_err(new_fd, "open error"));
 }
 
 int	find_quote(t_tok *tok)
@@ -157,7 +157,7 @@ int	redir_to_fd(t_node *node, t_env *env, int *fd, int *pfd)
 	{
 		iter->heredoc = !find_quote(iter->redir_target);
 		file = expand_all(iter->redir_target, env, collect_redir);
-		if (!file || shell_assert((!file[0] || file[1]), "ambiguous redirect"))
+		if (!file || shell_assert((!file[0] || file[1]), "ambiguous redirect"))//include the redir glob in msg
 		{
 			split_cleanup(file);
 			return (1);

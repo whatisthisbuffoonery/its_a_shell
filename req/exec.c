@@ -5,8 +5,9 @@ int	do_binary(char **argv, t_env *env, int *fd)
 	char	**envp;
 	int		status;
 
-	status = 0;
-	envp = make_envp(env, &status);//!envp is not the fail condition
+	status = signo;
+	if (!status)
+		envp = make_envp(env, &status);//!envp is not the fail condition
 	if (!status)
 		status = ft_err(-(dup2(fd[0], 0) || dup2(fd[1], 1)), "dup error");
 	if (!status)
@@ -28,7 +29,7 @@ int	do_builtin(int argc, char **argv, t_env *env, int *fd)
 	oldfd[0] = ft_err(dup(0), "dup error");
 	oldfd[1] = ft_err(dup(1), "dup error");
 	status = 1;
-	if (oldfd[0] > 0 && oldfd[1] > 0
+	if (!signo && oldfd[0] > 0 && oldfd[1] > 0
 		&& !ft_err(dup2(fd[0], 0), "dup error"))
 	{
 		if (ft_err(dup2(fd[1], 1), "dup error"))
@@ -122,8 +123,8 @@ int	do_group(t_node *node, t_env *env, int *pfd)
 	int		fd[2];
 	pid_t	pid;
 
-	if(redir_to_fd(node, env, fd, pfd))//init fd to 0, 1 //open files //expand + glob here //call set_fd
-		return (1);
+	if(signo || redir_to_fd(node, env, fd, pfd))//init fd to 0, 1 //open files //expand + glob here //call set_fd
+		return (signo + !signo);
 	if (node->kind != N_GROUP)
 		return (do_simple(node, env, fd));//not do list
 	if (env->do_not_subshell)//need to handle redir//just dup2 here, no need to restore
@@ -179,7 +180,7 @@ int	do_pipe(t_node *node, t_env *env, t_pipemanager *p, int p_index)
 
 	fd[0] = 0;
 	fd[1] = 1;
-	if (node->kind != N_PIPE)
+	if (node->kind != N_PIPE || signo)
 		return (do_group(node, env, fd));
 	else if (node->left->kind == N_PIPE)
 		do_pipe(node->left, env, p, p_index + 1);
@@ -226,21 +227,23 @@ void	update_last(t_env *env, int n)
 //entry point
 //the alternative to forking is keeping depth counters on blank env vars
 //and redir/pipe fds. hell no.
-int	do_list(t_node *node, t_env *env)
+
+
+//plsss check for signals before entering//VETO
+int	do_list(t_node *node, t_env *env)	//remember to update last from outside entry
 {
 	int				status;
 	t_pipemanager	p;
 
-	status = 0;
 	p.pipes = NULL;
 	p.pipe_count = 0;
 	p.pid_count = 0;
 	p.pid = 0;
+	if (signo == SIGINT)
+		return (signo);
+	signo = 0;	//should be sufficient. group and pipe will also check signo.
 	if (node->kind != N_AND && node->kind != N_OR)
-	{
-		status = do_pipe(node, env, &p, 0);
-		return (status);
-	}
+		return (do_pipe(node, env, &p, 0));
 	status = do_list(node->left, env);
 	update_last(env, status);//propose only having this here
 	if ((node->kind == N_AND && !status)
