@@ -58,9 +58,11 @@ int	child_wait(pid_t pid)
 
 	errno = 0;
 	status = 1;
-	while (waitpid(pid, &n, 0) < 0 && errno == EINTR)
+	while (pid > 0 && waitpid(pid, &n, 0) < 0 && errno == EINTR)
 		errno = 0;
-	if (errno != ECHILD)
+	if (pid < 1)
+		status = 1;
+	else if (errno != ECHILD)
 	{
 		status = WEXITSTATUS(n);
 		if (WIFSIGNALED(n))
@@ -76,15 +78,17 @@ int	child_wait(pid_t pid)
 	return (status);
 }
 
+//check later//???//unused
+/*
 int	ast_dup(t_env *env, int *fd)
 {
 	if (ft_err(dup2(fd[0], 0), "dup error"))
 		return (1);
 	if (fd[0] > 2)
 		env->duped_fd[0] = 1;
-	if (!ft_err(dup2(fd[1], 1), "dup error"))
+	if (ft_err(dup2(fd[1], 1), "dup error"))
 		return (1);
 	if (fd[1] > 2)
 		env->duped_fd[1] = 1;
 	return (0);
-}
+}*/

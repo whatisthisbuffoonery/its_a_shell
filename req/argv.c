@@ -7,7 +7,7 @@ int	isbuiltin(char *s)
 		|| !ft_strcmp(s, "unset") || !ft_strcmp(s, "exit"));
 }
 
-int	do_builtin_match(int argc, char **argv, t_env *env)
+int	do_builtin_match(int argc, char **argv, t_env *env, int *fd)
 {
 	int	status;
 
@@ -17,16 +17,18 @@ int	do_builtin_match(int argc, char **argv, t_env *env)
 	else if ((*argv)[0] == 'u')//unset
 		status = unset_builtin(argc, argv, env);
 	else if ((*argv)[0] == 'p')//pwd
-		status = pwd(env);
+		status = pwd(env, fd[1]);
 	else if ((*argv)[1] == 'n')//env
-		status = env_builtin(argc, env);
+		status = env_builtin(argc, env, fd[1]);
 	else if ((*argv)[1] == 'c')//echo
-		status = echo(argc, argv);
+		status = echo(argc, argv, fd[1]);
 	else if ((*argv)[2] == 'p')//export
-		status = export(argc, argv, env);
+		status = export(argc, argv, env, fd[1]);
 	else if ((*argv)[2] == 'i')//exit
-		status = exit_builtin(argc, argv, env);
-	split_cleanup(argv);//did i put this in exec.c?
+		exit_builtin(argc, argv, env, fd);//uses strerr even for normal output
+	split_cleanup(argv);
+	unset(&fd[0]);
+	unset(&fd[1]);
 	return (status);//handles blank cmd string...?
 }
 

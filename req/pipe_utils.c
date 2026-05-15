@@ -50,6 +50,8 @@ void	pipemanager_init(t_pipemanager *dst, int p_index)
 	dst->pipe_count = p_index;
 }
 
+//VETO
+/*
 int	pipe_dup(int *fd)
 {
 	fd[0] = ft_err(dup(fd[0]), "dup error");
@@ -62,4 +64,4 @@ int	pipe_dup(int *fd)
 		return (1);
 	}
 	return (0);
-}
+}*/

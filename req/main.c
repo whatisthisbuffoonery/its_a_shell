@@ -142,13 +142,17 @@ int	execute_buffer(t_env *env, t_tok **tok)
 //	t_arg	*fields;
 //	t_arg	*globbed;
 
-	env->duped_fd[0] = 0;//should not be needed in main process
-	env->duped_fd[1] = 0;
-	env->do_not_subshell = 0;//also should not be needed
+//	env->duped_fd[0] = 0;//should not be needed in main process
+//	env->duped_fd[1] = 0;
+	if (shell_assert(env->duped_fd[0] || env->duped_fd[1] || env->do_not_subshell, "you fool\n\n"))
+		exit(1);
+//	env->do_not_subshell = 0;//also should not be needed
 	make_word(*tok);
 	env->ast = parse(tok);
 	//execution here
-	if (env->ast)
+	if (signo)
+		update_last(env, signo);
+	else if (env->ast)
 		do_list(env->ast, env);
 	//	print_ast(env->ast, 0);
 	clean_ast(env->ast);

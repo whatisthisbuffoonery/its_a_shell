@@ -18,7 +18,7 @@ int	rl_handle_signals(void)//sigaction flag interrupt, rl handler	//does nl + re
 
 //use different handler for builtin//VETO//UNVETO
 //sigquit is allowed to influence every command if it shows up in the parent
-void	sighands(int n)	//note: sigquit does not stop parsing
+void	sighands(int n)
 {
 	if (signo != SIGINT)	//final answer
 		signo = n;

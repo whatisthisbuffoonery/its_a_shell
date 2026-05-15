@@ -11,7 +11,12 @@ int	do_binary(char **argv, t_env *env, int *fd)
 	if (!status)
 		status = ft_err(-(dup2(fd[0], 0) || dup2(fd[1], 1)), "dup error");
 	if (!status)
-		status = ft_err(execve(*argv, argv, envp), *argv);
+		ft_err(execve(*argv, argv, envp), *argv);
+	status = 1;
+	if (errno == ENOENT)
+		status = 127;
+	else if (errno == EACCES)
+		status == 126;
 	shell_cleanup(env);
 	split_cleanup(argv);
 	split_cleanup(envp);
@@ -19,7 +24,7 @@ int	do_binary(char **argv, t_env *env, int *fd)
 	unset(&fd[1]);
 	return (status);
 }
-
+/*
 //where tf are the dups for this one
 int	do_builtin(int argc, char **argv, t_env *env, int *fd)
 {
@@ -48,13 +53,16 @@ int	do_builtin(int argc, char **argv, t_env *env, int *fd)
 	unset(&fd[1]);
 	return (status);
 }
+*/
+
+//exit builtin was leaking fd and oldfd to begin with. do not set duped fd here, clean in exit.
 
 int	exec_simple(int argc, char **argv, t_env *env, int *fd)
 {
 	pid_t	pid;
 
 	if (isbuiltin(*argv))
-		return (do_builtin(argc, argv, env, fd));
+		return (do_builtin_match(argc, argv, env, fd));
 	pid = 0;
 	if (!env->do_not_subshell)
 		pid = shell_fork(env);
@@ -103,13 +111,13 @@ int	do_list_subshell(t_node *node, t_env *env, int *fd)
 	status = 1;
 	flag[0] = ft_err(dup2(fd[0], 0), "dup error");
 	flag[1] = ft_err(dup2(fd[1], 1), "dup error");
-	if (fd[0] > 2 && !flag[0])
+	if (fd[0] > 2 && flag[0] >= 0)
 		env->duped_fd[0] = 1;
-	if (fd[1] > 2 && !flag[1])
+	if (fd[1] > 2 && flag[1] >= 0)
 		env->duped_fd[1] = 1;
 	unset(&fd[0]);
 	unset(&fd[1]);
-	if (!flag[0] && !flag[1])
+	if (flag[0] >= 0 && flag[1] >= 0)
 		status = do_list(node, env);
 	shell_cleanup(env);//needed, do_list, do_pipe and do_group never clean up
 	return (status);
@@ -123,11 +131,13 @@ int	do_group(t_node *node, t_env *env, int *pfd)
 	int		fd[2];
 	pid_t	pid;
 
-	if(signo || redir_to_fd(node, env, fd, pfd))//init fd to 0, 1 //open files //expand + glob here //call set_fd
+	if (signo)//could race if combined with redir cond
+		return (signo);
+	else if (redir_to_fd(node, env, fd, pfd))//init fd to 0, 1 //open files //expand + glob here //call set_fd
 		return (signo + !signo);
-	if (node->kind != N_GROUP)
+	else if (node->kind != N_GROUP)
 		return (do_simple(node, env, fd));//not do list
-	if (env->do_not_subshell)//need to handle redir//just dup2 here, no need to restore
+	else if (env->do_not_subshell)//need to handle redir//just dup2 here, no need to restore
 	{
 		env->do_not_subshell = 0;//i would check for the left child being another N_GROUP, but eh
 		return (do_list_subshell(node->left, env, fd));//dup, set duped_fd for cleanup, call do_list, free and close, exit
@@ -157,15 +167,18 @@ void	do_pipe_command(t_node *node, t_env *env, t_pipemanager *p, int p_index)
 		return ;
 	env->do_not_subshell = 1;//child only route
 	fd[0] = p->pipes[p_index][0];
+	p->pipes[p_index][0] = -1;
 	if (fd[0] < 0)
 		fd[0] = 0;
 	fd[1] = 1;
 	if (p_index)
+	{
 		fd[1] = p->pipes[p_index - 1][1];
-	status = pipe_dup(fd);
+		p->pipes[p_index - 1][1] = -1;
+	}
+//	status = pipe_dup(fd);
 	clean_pipemanager(p);
-	if (!status)
-		status = do_group(node, env, fd);//assumption : child is not a cond //child needs cleanup
+	status = do_group(node, env, fd);//assumption : child is not a cond //child needs cleanup
 	shell_cleanup(env);//child->builtin path
 	exit(status);
 }
@@ -229,7 +242,7 @@ void	update_last(t_env *env, int n)
 //and redir/pipe fds. hell no.
 
 
-//plsss check for signals before entering//VETO
+//plsss check for signals before entering
 int	do_list(t_node *node, t_env *env)	//remember to update last from outside entry
 {
 	int				status;
@@ -246,8 +259,8 @@ int	do_list(t_node *node, t_env *env)	//remember to update last from outside ent
 		return (do_pipe(node, env, &p, 0));
 	status = do_list(node->left, env);
 	update_last(env, status);//propose only having this here
-	if ((node->kind == N_AND && !status)
-		|| (node->kind == N_OR && status))
+	if (!signo && ((node->kind == N_AND && !status)
+		|| (node->kind == N_OR && status)))
 		status = do_list(node->right, env);
 	return (status);
 }

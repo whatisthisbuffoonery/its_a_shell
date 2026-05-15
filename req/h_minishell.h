@@ -100,6 +100,7 @@ void		print_word(t_tok *tok);
 
 int			ft_err(int n, char *s);
 int			shell_assert(int cond, char *s);
+int			shell_assert2(int cond, char *name, char *s);
 
 void		merge_sort(t_shnode **head);
 
@@ -107,6 +108,8 @@ int			isempty(char *buf);
 
 int			child_wait(pid_t pid);
 int			pipe_dup(int *fd);
+
+void		update_last(t_env *env, int n);
 
 /*basic type checking*/
 int			isbracket(int c);
@@ -123,13 +126,13 @@ int			isjoined(t_tok *node);
 int			copy_tok(t_tok *tok);
 
 /*builtin stuff*/
-int			do_builtin_match(int argc, char **argv, t_env *env);
-int			echo(int argc, char **argv);
+int			do_builtin_match(int argc, char **argv, t_env *env, int *fd);
+int			echo(int argc, char **argv, int out);
 int			cd(int argc, char **argv, t_env *env);
-int			pwd(t_env *env);
-int			env_builtin(int argc, t_env *env);
-int			export(int argc, char **argv, t_env *env);
-int			exit_builtin(int argc, char **argv, t_env *env);
+int			pwd(t_env *env, int out);
+int			env_builtin(int argc, t_env *env, int out);
+int			export(int argc, char **argv, t_env *env, int out);
+void		exit_builtin(int argc, char **argv, t_env *env, int *fd);
 int			unset_builtin(int argc, char **argv, t_env *env);
 
 /*checks for iscond or isbracket, do not use with subtok*/

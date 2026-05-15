@@ -7,16 +7,16 @@ int	check_flag(char *v)
 	return (v[2] == 'n');
 }
 
-int	echo(int argc, char **argv)
+int	echo(int argc, char **argv)//write check
 {
 	int	flag;
 	int	i;
 
-	flag = check_flag(v[1]);
+	flag = check_flag(argv[1]);
 	i = flag + 1;
 	while (argv[i])
 	{
-		ft_putstr(v[i]);
+		ft_putstr(argv[i]);
 		ft_putchar(' ');
 		i ++;
 	}
