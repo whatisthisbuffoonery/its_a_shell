@@ -2,9 +2,14 @@
 
 int	check_flag(char *v)
 {
-	if (!v || v[0] != '-')
+	int	i;
+
+	if (!v || v[0] != '-' || v[1] != 'n')
 		return (0);
-	return (v[1] == 'n');
+	i = 1;
+	while (v[i] && v[i] == 'n')
+		i ++;
+	return (!v[i]);
 }
 
 int	echo(char **argv, int out)//write check
@@ -14,6 +19,12 @@ int	echo(char **argv, int out)//write check
 
 	flag = check_flag(argv[1]);
 	i = flag + 1;
+	while (argv[i])
+	{
+		if (!check_flag(argv[i]))
+			break ;
+		i ++;
+	}
 	while (argv[i])
 	{
 		ft_putstr_fd(argv[i], out);
