@@ -41,6 +41,24 @@ int	isempty(char *buf)
 	return (!buf || !buf[i]);
 }
 
+int	quote_check(char *buf)
+{
+	int	c;
+	int	i;
+
+	i = 0;
+	c = 0;
+	while (buf[i])
+	{
+		if (!c && ft_isquote(buf[i]))
+			c = buf[i];
+		else if (c && buf[i] == c)
+			c = 0;
+		i ++;
+	}
+	return (shell_assert(c, "unclosed quotes"));
+}
+
 void	init(t_env *env, char **e, t_tok **tok)
 {
 	signal_init();
@@ -190,7 +208,7 @@ int loop(char **e)
 			return (shell_exit(&env));
 		if (buf[0])
 			add_history(buf);//different rule
-		if (!isempty(buf))
+		if (!isempty(buf) && !quote_check(buf))//currently, this doesnt change $?
 		{
 			env.last = tok_init(buf, &tok);
 			free(buf);

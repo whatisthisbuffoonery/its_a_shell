@@ -16,6 +16,7 @@ void	set_fd(int *fd, int *pfd)
 //else, set_fd
 int	select_fd(int *fd, int *pfd, int flag)
 {
+	ft_printf("select fd entry: [%d, %d], flag: %d\n", fd[0], fd[1], flag);
 	if (flag)
 	{
 		unset(&fd[0]);
@@ -25,6 +26,7 @@ int	select_fd(int *fd, int *pfd, int flag)
 	}
 	else
 		set_fd(fd, pfd);
+	ft_printf("select fd: [%d, %d]\n", fd[0], fd[1]);
 	return (flag);
 }
 
@@ -32,12 +34,24 @@ int	heredoc_cmp(char *line, char *v, int v_len)
 {
 	int	line_len;
 
+	ft_printf("debug: v: [%s] len: %d, cmp: [%s] len: %d\n", v, v_len, line, line ? ft_strlen(line):0);
 	if (!line || signo)//allow sigquit outcome here
 		return (0);
 	line_len = ft_strlen(line);
-	if (line_len != v_len + 1 || line[v_len] != '\n')
+	if (line_len != v_len)//+ 1 || line[v_len] != '\n')
 		return (1);
 	return (ft_strncmp(line, v, v_len));
+}
+
+int	heredoc_help(char *s, int fd)
+{
+	int	i;
+
+	free(s);
+	i = write(fd, "\n", 1);
+	while (i < 0 && errno == EINTR && !signo)
+		i = write(fd, "\n", 1);
+	return (ft_err(i, "write error") < 0 || signo != 0);
 }
 
 int	heredoc_write(int *fd, char *s, t_env *env, int flag)
@@ -62,11 +76,11 @@ int	heredoc_write(int *fd, char *s, t_env *env, int flag)
 	while (i < len && !signo)
 	{
 		k = write(fd[1], s, len - i);
-		if (k < 0 && errno != EINTR)
+		if (ft_err(-(k < 0 && errno != EINTR), "write error"))
 			return (1);
 		i += k + (k < 0);
 	}
-	return (signo != 0);
+	return (heredoc_help(s, fd[1]));
 }
 
 int	rl_heredoc(void)
@@ -98,7 +112,7 @@ int	do_heredoc(char *file, t_env *env, int flag)
 		buf = readline("> ");//I shit you not //should ignore sigquit
 		if(!heredoc_cmp(buf, file, v_len) || heredoc_write(fd, buf, env, flag))
 			break ;
-		free(buf);
+//		free(buf);
 		buf = NULL;
 	}
 	free(buf);
@@ -129,7 +143,8 @@ int	update_redir_fd(int *fd, char **file, t_node *iter, t_env *env)
 	
 	unset(&fd[id]);
 	fd[id] = new_fd;
-	return (signo != 0 || ft_err(new_fd, "open error"));
+	ft_printf("update_redir: %d at fd[%d], cond: %d || %d, cond actual: %d\n", new_fd, id, signo != 0, new_fd < 0, signo != 0 || ft_err(new_fd, "") < 0);
+	return (signo != 0 || ft_err(new_fd, "open error") < 0);
 }
 
 int	find_quote(t_tok *tok)
@@ -164,13 +179,15 @@ int	redir_to_fd(t_node *node, t_env *env, int *fd, int *pfd)
 	{
 		iter->heredoc = !find_quote(iter->redir_target);
 		file = expand_all(iter->redir_target, env, collect_redir);
-		if (!file || shell_assert_redir((!file[0] || file[1]),
+		if (!file || shell_assert_redir((!file[0] || !file[0][0] || file[1]),
 			iter->redir_target, "ambiguous redirect"))
 		{
 			split_cleanup(file);
 			return (1);
 		}
+		ft_printf("schizo prior: %d\n", flag);
 		flag = update_redir_fd(fd, file, iter, env);
+		ft_printf("schizo: %d\n", flag);
 		split_cleanup(file);
 		iter = iter->redir_next;
 	}
