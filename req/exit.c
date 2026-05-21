@@ -14,9 +14,9 @@ int	exit_arg(char *v, int *flag)
 		i ++;
 	while (ft_isspace(v[i]))
 		i ++;
-	*flag += (v[i] != 0)
+	*flag += (v[i] != 0);
 	if (*flag)
-		return(shell_assert2(1 + 1, v, "numeric argument required"));
+		return(shell_assert2(1 + 1, v, "numeric argument required\n"));//nl?
 	return (ft_atoi(v) % 256);
 }
 

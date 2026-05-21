@@ -74,6 +74,6 @@ void	signal_init(void)
 		return ;
 	ft_memset(&hands, 0, sizeof(struct sigaction));
 	hands = (struct sigaction){.sa_mask = mask, .sa_handler = sighands};//, .sa_flags = SA_RESTART;//exclude restart flag
-	ft_err(sigaction(SIGINT, &hands, NULL), "SIGINT setup error");
+	//ft_err(sigaction(SIGINT, &hands, NULL), "SIGINT setup error");
 	ft_err(sigaction(SIGQUIT, &hands, NULL), "SIGQUIT setup error");
 }

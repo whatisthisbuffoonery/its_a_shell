@@ -81,7 +81,7 @@ int	update_shell_name(t_env *dst)
 	free(iter->str);
 	iter->str = ret;
 	iter = find_env(name, dst->env, ft_strlen(name));
-	if (!shell_assert(!iter, "shell missing in env"))
+	if (!shell_assert(!iter, "shell name missing in env"))
 		iter->str = ret;
 	return (0);
 }

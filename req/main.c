@@ -153,7 +153,7 @@ int	execute_buffer(t_env *env, t_tok **tok)
 	if (signo)
 		update_last(env, signo);
 	else if (env->ast)
-		do_list(env->ast, env);
+		update_last(env, do_list(env->ast, env));
 	//	print_ast(env->ast, 0);
 	clean_ast(env->ast);
 	env->ast = NULL;

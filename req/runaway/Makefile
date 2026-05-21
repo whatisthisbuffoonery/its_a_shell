@@ -12,7 +12,8 @@ SRC_FILE := merge_sort.c main.c err.c cleanup.c signal.c arg_clean.c \
 			muh_print.c \
 			ast_check.c ast_init.c ast_logic.c ast_redir.c ast_print.c \
 			word.c \
-			env_utils.c exec.c exec_cleanup.c pipe_utils.c argv.c envp.c expand.c redir.c child.c
+			env_utils.c exec.c exec_cleanup.c pipe_utils.c argv.c envp.c expand.c redir.c child.c \
+			echo.c exit.c dummy_builtin.c
 
 OBJ := $(SRC_FILE:.c=.o)
 

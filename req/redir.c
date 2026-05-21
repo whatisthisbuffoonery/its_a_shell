@@ -143,6 +143,13 @@ int	find_quote(t_tok *tok)
 	return (0);
 }
 
+char	*redir_err_string(t_node *iter)
+{
+	if (!iter->redir_target || !iter->redir_target->str)
+		return ("(null)");
+	return (iter->redir_target->str);
+}
+
 int	redir_to_fd(t_node *node, t_env *env, int *fd, int *pfd)
 {
 	char	**file;
@@ -157,7 +164,8 @@ int	redir_to_fd(t_node *node, t_env *env, int *fd, int *pfd)
 	{
 		iter->heredoc = !find_quote(iter->redir_target);
 		file = expand_all(iter->redir_target, env, collect_redir);
-		if (!file || shell_assert((!file[0] || file[1]), "ambiguous redirect"))//include the redir glob in msg
+		if (!file || shell_assert_redir((!file[0] || file[1]),
+			iter->redir_target, "ambiguous redirect"))
 		{
 			split_cleanup(file);
 			return (1);

@@ -73,6 +73,7 @@ int	collect_argv(t_arg **dst, t_tok *src)
 			return (1);
 		}
 		append_new_wrapper(&head, &tail, fields);
+		src = src->next;
 	}
 	*dst = expand_globs(head);//always invalidates src
 	return (!*dst);
@@ -98,7 +99,7 @@ char	**expand_all(t_tok *src, t_env *env, int (*f)(t_arg **, t_tok *))
 	t_arg	*globbed;
 	char	**ret;
 
-	if (expand_str(src, env) || f(&globbed, src))
+	if (!src || expand_str(src, env) || f(&globbed, src))
 		return (NULL);
 	ret = count_str(globbed);
 	if (!ret)

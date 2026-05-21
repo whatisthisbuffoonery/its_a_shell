@@ -6,22 +6,24 @@ int	do_binary(char **argv, t_env *env, int *fd)
 	int		status;
 
 	status = signo;
+	envp = NULL;
+	errno = 0;
 	if (!status)
 		envp = make_envp(env, &status);//!envp is not the fail condition
 	if (!status)
-		status = ft_err(-(dup2(fd[0], 0) || dup2(fd[1], 1)), "dup error");
+		status = ft_err(-(dup2(fd[0], 0) < 0 || dup2(fd[1], 1) < 0), "dup error binary");
+	unset(&fd[0]);
+	unset(&fd[1]);
 	if (!status)
 		ft_err(execve(*argv, argv, envp), *argv);
 	status = 1;
 	if (errno == ENOENT)
 		status = 127;
 	else if (errno == EACCES)
-		status == 126;
+		status = 126;
 	shell_cleanup(env);
 	split_cleanup(argv);
 	split_cleanup(envp);
-	unset(&fd[0]);
-	unset(&fd[1]);
 	return (status);
 }
 /*
@@ -100,6 +102,9 @@ int	do_simple(t_node *node, t_env *env, int *fd)
 		status = exec_simple(i, argv, env, fd);
 	else
 		status = 1;
+	split_cleanup(argv);
+	unset(&fd[0]);
+	unset(&fd[1]);
 	return (status);
 }
 
@@ -109,8 +114,8 @@ int	do_list_subshell(t_node *node, t_env *env, int *fd)
 	int	flag[2];
 
 	status = 1;
-	flag[0] = ft_err(dup2(fd[0], 0), "dup error");
-	flag[1] = ft_err(dup2(fd[1], 1), "dup error");
+	flag[0] = ft_err(dup2(fd[0], 0), "dup error subshell");
+	flag[1] = ft_err(dup2(fd[1], 1), "dup error subshell");
 	if (fd[0] > 2 && flag[0] >= 0)
 		env->duped_fd[0] = 1;
 	if (fd[1] > 2 && flag[1] >= 0)
@@ -176,6 +181,8 @@ void	do_pipe_command(t_node *node, t_env *env, t_pipemanager *p, int p_index)
 		fd[1] = p->pipes[p_index - 1][1];
 		p->pipes[p_index - 1][1] = -1;
 	}
+	// env->duped_fd[0] += (fd[0] > 2);
+	// env->duped_fd[1] += (fd[1] > 2);
 //	status = pipe_dup(fd);
 	clean_pipemanager(p);
 	status = do_group(node, env, fd);//assumption : child is not a cond //child needs cleanup
@@ -199,7 +206,10 @@ int	do_pipe(t_node *node, t_env *env, t_pipemanager *p, int p_index)
 		do_pipe(node->left, env, p, p_index + 1);
 	else
 	{
-		pipemanager_init(p, p_index);
+		ft_putstr_fd("\n\n======= pipe init: ", 2);
+		ft_putnbr_fd(p_index + 1, 2);
+		ft_putstr_fd(" ======\n\n", 2);
+		pipemanager_init(p, p_index + 1);
 		if (p->pipes)
 			do_pipe_command(node->left, env, p, p_index + 1);//make subshell
 	}

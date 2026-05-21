@@ -1,5 +1,19 @@
 #include "h_minishell.h"
 
+int	shell_assert_redir(int cond, t_tok *src, char *s)
+{
+	if (cond)
+	{
+		ft_putstr_fd("minishell: ", 2);
+		print_word(src);//currently has enclosing [], should remove later
+		if (src)
+			ft_putstr_fd(": ", 2);
+		ft_putstr_fd(s, 2);
+		ft_putchar_fd('\n', 2);
+	}
+	return (cond);
+}
+
 int	shell_assert2(int cond, char *name, char *s)
 {
 	if (cond)
@@ -10,6 +24,7 @@ int	shell_assert2(int cond, char *name, char *s)
 		ft_putstr_fd(name, 2);
 		ft_putstr_fd(": ", 2);
 		ft_putstr_fd(s, 2);
+		ft_putchar_fd('\n', 2);
 	}
 	return (cond);
 }
@@ -20,6 +35,7 @@ int	shell_assert(int cond, char *s)
 	{
 		ft_putstr_fd("minishell: ", 2);
 		ft_putstr_fd(s, 2);
+		ft_putchar_fd('\n', 2);
 	}
 	return (cond);
 }

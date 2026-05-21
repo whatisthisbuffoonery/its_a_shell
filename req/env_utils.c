@@ -33,9 +33,11 @@ int	use_expansion(t_tok *dst, t_env *env, char *ret)
 {
 	int		i;
 	int		len;
+	char	*err_msg;
 
 	i = 0;
 	len = 0;
+	err_msg = "env expansion malloc";
 	if (ret)
 		ret[0] = '\0';
 	while (dst->str[i])
@@ -46,7 +48,7 @@ int	use_expansion(t_tok *dst, t_env *env, char *ret)
 			copy_wrapper(dst->str, ret, &i, &len);//copy one char//yes we copy dollar sign if env name is invalid
 	}
 	if (!ret
-		&& (!ft_err(-!malloc_cond((void **) &ret, len + 1), "env var malloc")))
+		&& (!ft_err(-!malloc_cond((void **) &ret, len + 1), err_msg)))
 		return (use_expansion(dst, env, ret));
 	else if (!ret)
 		return (1);
@@ -67,7 +69,6 @@ int	expand_word(t_tok *iter, t_env *env)
 	return (0);
 }
 
-//wont really be used outside of debug
 int	expand_str(t_tok *iter, t_env *env)
 {
 	while (iter)
