@@ -25,7 +25,6 @@ char	**count_envp(t_env *env, int *complain)
 	return (ret);
 }
 
-//would have been simpler if I managed using string array
 char	**make_envp(t_env *env, int *complain)
 {
 	char		**ret;
@@ -33,15 +32,19 @@ char	**make_envp(t_env *env, int *complain)
 	t_shnode	*iter;
 
 	ret = count_envp(env, complain);
-	if (!ret)
-		return (NULL);
+	ft_printf("envp signo: %d, complain: %d\n", signo, *complain);
+	if (ft_err(-(*complain != 0), "envp malloc error"))
+		return (split_cleanup(ret));
 	iter = env->env;
 	k = 0;
 	while (iter)
 	{
-		ret[k] = malloc(ft_strlen(iter->name) + ft_strlen(iter->str) + 1 + 1);//really have to clean out errors
-		if (!ret[k])
+		ret[k] = malloc(ft_strlen(iter->name) + ft_strlen(iter->str) + 1 + 1);
+		if (ft_err(-!ret[k], "envp malloc error"))
+		{
+			*complain = 1;
 			return (split_cleanup(ret));
+		}
 		ft_strlcpy(ret[k], iter->name, -1);
 		ft_strlcat(ret[k], "=", -1);
 		ft_strlcat(ret[k], iter->str, -1);

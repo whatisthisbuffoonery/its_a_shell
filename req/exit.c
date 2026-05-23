@@ -26,7 +26,7 @@ int	exit_builtin(int argc, char **argv, t_env *env, int *fd)
 	int	flag;
 
 	flag = 0;
-	ft_putstr_fd("exit\n", 2);//yes it goes to stderr
+	ft_putstr_fd("exit\n", 2);//yes it goes to stderr//also yes it prints before checking for too many args
 	if (shell_assert(argc > 2, "exit: too many arguments\n"))//nl is debatable
 		return (1);//do not exit on this error
 	else if (argc > 1)

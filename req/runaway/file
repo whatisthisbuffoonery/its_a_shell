@@ -1,0 +1,5 @@
+select fd entry: [0, 1], flag: 0
+select fd: [0, 4]
+select fd entry: [0, 1], flag: 0
+select fd: [3, 1]
+a

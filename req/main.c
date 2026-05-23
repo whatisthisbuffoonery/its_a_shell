@@ -226,7 +226,10 @@ int loop(char **e)
 
 int	main(int c, char **v, char **e)
 {
-	(void) c;
-	(void) v;
+	if (c == 2 && !ft_strcmp(v[1], "--version"))
+	{
+		ft_putstr("Bash-inspired minishell, version 0.67\n");
+		return (0);
+	}
 	return (loop(e));
 }

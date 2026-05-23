@@ -7,9 +7,20 @@ int	shnode_strlen(t_shnode *env)
 	return (0);
 }
 
-t_shnode	*find_env(char *str, t_shnode *list, unsigned int n)
+static t_shnode	*find_env_internal(char *str, t_shnode *list, unsigned int n)
 {
 	while (list && (ft_strlen(list->name) != n || ft_strncmp(str, list->name, n)))
+		list = list->next;
+	return (list);
+}
+
+t_shnode	*find_env(char *str, t_shnode *list)
+{
+	size_t	matchlen;
+
+	matchlen = ft_strlen(str);
+	while (list && (ft_strlen(list->name) != matchlen
+		|| ft_strncmp(str, list->name, matchlen)))
 		list = list->next;
 	return (list);
 }
@@ -19,18 +30,18 @@ char	*find_env_str(char *name, t_env *env, unsigned int len)
 {
 	t_shnode	*ret;
 
+	ft_printf("env str: %s: %d\n", name, len);
 	if (!name || !name[0])
 		return (NULL);
-	if (name[0] == '?')
+	else if (name[0] == '?')
 		return (env->last_string);
-	else
+	else if (len)
 	{
-		ret = find_env(name, env->env, len);
+		ret = find_env_internal(name, env->env, len);
 		if (ret)
 			return (ret->str);
-		else
-			return ("");
 	}
+	return (NULL);
 }
 
 t_shnode	*shnode_dup(t_shnode *src)
@@ -40,11 +51,8 @@ t_shnode	*shnode_dup(t_shnode *src)
 	if (!src)
 		return (NULL);
 	ret = malloc(sizeof(t_shnode));
-	if (!ret)
-	{
-		ft_err(-1, "shnode dup malloc");
+	if (ft_err(-!ret, "shnode dup malloc"))
 		return (NULL);
-	}
 	ret->name = src->name;
 	ret->str = src->str;
 	ret->next = NULL;

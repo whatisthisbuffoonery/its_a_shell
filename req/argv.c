@@ -19,7 +19,7 @@ int	do_builtin_match(int argc, char **argv, t_env *env, int *fd)
 	else if ((*argv)[0] == 'p')//pwd
 		status = pwd(env, fd[1]);
 	else if ((*argv)[1] == 'n')//env
-		status = env_builtin(argc, env, fd[1]);
+		status = env_builtin(argc, argv, env, fd[1]);
 	else if ((*argv)[1] == 'c')//echo
 		status = echo(argv, fd[1]);
 	else if ((*argv)[2] == 'p')//export
@@ -87,7 +87,7 @@ char    **make_argv(t_tok *src, t_env *env)
 	argv = expand_all(src, env, collect_argv);//no need double ptr//uhh... she handles glob? half half lah hor//take tok for arg
 	if (!argv)
 		return (NULL);
-	path = find_env("PATH", env->env, ft_strlen("PATH"));
+	path = find_env("PATH", env->env);
 	if (ft_strchr(*argv, '/') || isbuiltin(*argv)
 		|| !path || !path->str || !path->str[0])
 		return (argv);

@@ -7,7 +7,19 @@ char	*env_safe(char *s, char *n)
 	return (s);
 }
 
-void	print_env(t_shnode *env)
+void	print_env(t_shnode *env, int fd)
+{
+	while (env)
+	{
+		ft_putstr_fd(env->name, fd);
+		ft_putchar_fd('=', fd);
+		ft_putstr_fd(env->name, fd);
+		ft_putchar_fd('\n', fd);
+		env = env->next;
+	}	
+}
+
+void	print_env_debug(t_shnode *env)
 {
 	while (env)
 	{
@@ -54,7 +66,7 @@ void	shell_print(t_tok **tok, char *buf, t_env *env)
 	free(buf);
 }
 */
-void	env_print(t_env *env)
+void	env_print_debug(t_env *env)
 {
 	t_shnode	*iter;
 

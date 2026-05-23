@@ -150,14 +150,12 @@ int	do_group(t_node *node, t_env *env, int *pfd)
 	else
 	{
 		pid = shell_fork(env);//clean blanks
-		if (pid < 0)
-			return (1);
-		else if (!pid)
+		if (!pid)
 			exit(do_list_subshell(node->left, env, fd));
-		else
-			return (child_wait(pid));
+		unset(&fd[0]);
+		unset(&fd[1]);
+		return (child_wait(pid));
 	}
-	return (0);
 }
 
 void	do_pipe_command(t_node *node, t_env *env, t_pipemanager *p, int p_index)

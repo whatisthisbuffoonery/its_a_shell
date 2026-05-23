@@ -32,7 +32,7 @@ int	update_shell_lvl(t_env *dst)
 	char		*name;
 
 	name = "SHLVL";
-	iter = find_env(name, dst->export, ft_strlen(name));
+	iter = find_env(name, dst->export);
 	if (!iter)
 	{
 		iter = env_init_node("SHLVL=1");
@@ -50,7 +50,7 @@ int	update_shell_lvl(t_env *dst)
 		return (ft_err(-1, "shlvl update error"));
 	free(iter->str);
 	iter->str = ret;
-	iter = find_env(name, dst->env, ft_strlen(name));
+	iter = find_env(name, dst->env);
 	if (!shell_assert(!iter, "shlvl missing in env"))
 		iter->str = ret;
 	return (0);
@@ -65,7 +65,7 @@ int	update_shell_name(t_env *dst)
 	char		*name;
 
 	name = "SHELL";
-	iter = find_env(name, dst->export, ft_strlen(name));
+	iter = find_env(name, dst->export);
 	if (!iter)
 	{
 		iter = env_init_node("SHELL=minishell");
@@ -80,7 +80,7 @@ int	update_shell_name(t_env *dst)
 		return (ft_err(-1, "shell name update error"));
 	free(iter->str);
 	iter->str = ret;
-	iter = find_env(name, dst->env, ft_strlen(name));
+	iter = find_env(name, dst->env);
 	if (!shell_assert(!iter, "shell name missing in env"))
 		iter->str = ret;
 	return (0);

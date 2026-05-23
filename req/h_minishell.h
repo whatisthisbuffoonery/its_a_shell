@@ -86,8 +86,6 @@ typedef struct	s_env
 	char			last_string[4];
 	int				duped_fd[2];		// reset this too
 	int				do_not_subshell;	//PSA reset on each loop plz
-	int				pwd_size;
-	int				oldpwd_size;
 	char			last;
 }					t_env;			//PSA empty strings can be in env list, null strings cannot
 
@@ -131,7 +129,7 @@ int			do_builtin_match(int argc, char **argv, t_env *env, int *fd);
 int			echo(char **argv, int out);
 int			cd(int argc, char **argv, t_env *env);
 int			pwd(t_env *env, int out);
-int			env_builtin(int argc, t_env *env, int out);
+int			env_builtin(int argc, char **argv, t_env *env, int out);
 int			export(int argc, char **argv, t_env *env, int out);
 int			exit_builtin(int argc, char **argv, t_env *env, int *fd);
 int			unset_builtin(int argc, char **argv, t_env *env);
@@ -166,7 +164,7 @@ int			redir_to_fd(t_node *node, t_env *env, int *fd, int *pfd);
 /*env utils*/
 void		shnode_append(t_shnode **dst, t_shnode *src);
 t_shnode	*shnode_dup(t_shnode *src);
-t_shnode	*find_env(char *str, t_shnode *list, unsigned int n);
+t_shnode	*find_env(char *str, t_shnode *list);
 int			env_add(t_env *env, t_shnode *src, char *dst);
 int			use_expansion(t_tok *dst, t_env *env, char *ret);
 int			split_expand(t_arg **dst, t_tok *src);
@@ -209,10 +207,11 @@ void		unset(int *fd);
 void		pipeset_cleanup(t_pipeset *set, size_t n);
 
 /*print funcs*/
-void		env_print(t_env *env);
+void		env_print_debug(t_env *env);
 void		shell_print(t_tok **tok, char *buf, t_env *env);
 void		print_tok(t_tok **tok);
-void		print_env(t_shnode *env);
+void		print_env_debug(t_shnode *env);
+void		print_env(t_shnode *env, int fd);
 void		print_linear_tok(t_tok *tok, char *s);
 void		print_ast(t_node *n, int depth);
 

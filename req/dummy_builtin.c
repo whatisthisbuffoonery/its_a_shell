@@ -13,7 +13,7 @@ int	pwd(t_env *env, int out)
 	(void) out;
 	return (0);
 }
-int	env_builtin(int argc, t_env *env, int out)
+int	env_builtin_dummy(int argc, t_env *env, int out)
 {
 	(void) argc;
 	(void) out;
@@ -28,7 +28,7 @@ int	export(int argc, char **argv, t_env *env, int out)
 	(void) out;
 	return (0);
 }
-int	unset_builtin(int argc, char **argv, t_env *env)
+int	unset_builtin_dummy(int argc, char **argv, t_env *env)
 {
 	(void) argc;
 	(void) argv;
