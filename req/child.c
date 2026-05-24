@@ -33,6 +33,8 @@ pid_t	shell_fork(t_env *env)
 {
 	pid_t	pid;
 
+	if (signo)
+		return (-1);
 	pid = fork();
 	if (!pid)
 		env_import(env);
@@ -61,7 +63,7 @@ int	child_wait(pid_t pid)
 	while (pid > 0 && waitpid(pid, &n, 0) < 0 && errno == EINTR)
 		errno = 0;
 	if (pid < 1)
-		status = 1;
+		status = signo + !signo;
 	else if (errno != ECHILD)
 	{
 		status = WEXITSTATUS(n);

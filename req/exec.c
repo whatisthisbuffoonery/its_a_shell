@@ -11,7 +11,7 @@ int	do_binary(char **argv, t_env *env, int *fd)
 	if (!status)
 		envp = make_envp(env, &status);//!envp is not the fail condition
 	if (!status)
-		status = ft_err(-(dup2(fd[0], 0) < 0 || dup2(fd[1], 1) < 0), "dup error binary");
+		status = ft_err(-(dup2(fd[0], 0) < 0 || dup2(fd[1], 1) < 0), "dup error binary");//valgrind you jerk
 	unset(&fd[0]);
 	unset(&fd[1]);
 	if (!status)
@@ -114,8 +114,12 @@ int	do_list_subshell(t_node *node, t_env *env, int *fd)
 	int	flag[2];
 
 	status = 1;
-	flag[0] = ft_err(dup2(fd[0], 0), "dup error subshell");
-	flag[1] = ft_err(dup2(fd[1], 1), "dup error subshell");
+	flag[0] = 0;
+	if (fd[0] > 2)
+		flag[0] = ft_err(dup2(fd[0], 0), "dup error subshell");
+	flag[1] = 1;
+	if (fd[1] > 2)
+		flag[1] = ft_err(dup2(fd[1], 1), "dup error subshell");//bruh
 	if (fd[0] > 2 && flag[0] >= 0)
 		env->duped_fd[0] = 1;
 	if (fd[1] > 2 && flag[1] >= 0)
