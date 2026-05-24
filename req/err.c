@@ -4,7 +4,7 @@ int	shell_assert_redir(int cond, t_tok *src, char *s)
 {
 	if (cond)
 	{
-		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd("-minishell: ", 2);
 		print_word(src);//currently has enclosing [], should remove later //also this prints to stdout not stderr huurrrrr
 		if (src)
 			ft_putstr_fd(": ", 2);
@@ -18,7 +18,7 @@ int	shell_assert2(int cond, char *name, char *s)
 {
 	if (cond)
 	{
-		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd("-minishell: ", 2);
 		if (!name)
 			name = "(null)";
 		ft_putstr_fd(name, 2);
@@ -33,7 +33,7 @@ int	shell_assert(int cond, char *s)
 {
 	if (cond)
 	{
-		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd("-minishell: ", 2);
 		ft_putstr_fd(s, 2);
 		ft_putchar_fd('\n', 2);
 	}
@@ -44,7 +44,7 @@ int	ft_err(int n, char *s)
 {
 	if (n < 0)
 	{
-		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd("-minishell: ", 2);
 		perror(s);
 	}
 	return (n);

@@ -260,12 +260,12 @@ int	do_list(t_node *node, t_env *env)	//remember to update last from outside ent
 	p.pipe_count = 0;
 	p.pid_count = 0;
 	p.pid = 0;
-	if (signo == SIGINT)
-		return (signo);
-	signo = 0;	//should be sufficient. group and pipe will also check signo.
 	if (node->kind != N_AND && node->kind != N_OR)
 		return (do_pipe(node, env, &p, 0));
 	status = do_list(node->left, env);
+	if (signo == SIGINT)
+		return (signo);
+	signo = 0;	//should be sufficient. group and pipe will also check signo.
 	update_last(env, status);//propose only having this here
 	if (!signo && ((node->kind == N_AND && !status)
 		|| (node->kind == N_OR && status)))

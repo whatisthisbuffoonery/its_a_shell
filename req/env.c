@@ -17,7 +17,7 @@ int	env_builtin(int argc, char **argv, t_env *env, int fd)
 	(void) argv;
 	if (argc != 1)
 	{
-		ft_printf("only support env without options and arguments\n");
+		ft_putstr_fd("only support env without options and arguments\n", 2);
 		return (125);
 	}
 	print_env(env->env, fd);
