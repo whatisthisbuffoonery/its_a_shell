@@ -114,18 +114,19 @@ int	do_list_subshell(t_node *node, t_env *env, int *fd)
 	int	flag[2];
 
 	status = 1;
-	flag[0] = 0;
-	if (fd[0] > 2)
-		flag[0] = ft_err(dup2(fd[0], 0), "dup error subshell");
-	flag[1] = 1;
-	if (fd[1] > 2)
-		flag[1] = ft_err(dup2(fd[1], 1), "dup error subshell");//bruh
+//	flag[0] = 0;
+//	if (fd[0] > 2)
+	flag[0] = ft_err(dup2(fd[0], 0), "dup error subshell");
+//	flag[1] = 1;
+//	if (fd[1] > 2)
+	flag[1] = ft_err(dup2(fd[1], 1), "dup error subshell");//bruh
 	if (fd[0] > 2 && flag[0] >= 0)
 		env->duped_fd[0] = 1;
 	if (fd[1] > 2 && flag[1] >= 0)
 		env->duped_fd[1] = 1;
 	unset(&fd[0]);
 	unset(&fd[1]);
+	env->is_in_subshell = 1;
 	if (flag[0] >= 0 && flag[1] >= 0)
 		status = do_list(node, env);
 	shell_cleanup(env);//needed, do_list, do_pipe and do_group never clean up
@@ -267,7 +268,7 @@ int	do_list(t_node *node, t_env *env)	//remember to update last from outside ent
 	if (node->kind != N_AND && node->kind != N_OR)
 		return (do_pipe(node, env, &p, 0));
 	status = do_list(node->left, env);
-	if (signo == SIGINT)
+	if (signo == SIGINT || (env->is_in_subshell && signo))
 		return (signo);
 	signo = 0;	//should be sufficient. group and pipe will also check signo.
 	update_last(env, status);//propose only having this here
