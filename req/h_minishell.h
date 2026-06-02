@@ -131,7 +131,7 @@ int			echo(char **argv, int out);
 int			cd(int argc, char **argv, t_env *env);
 int			pwd(t_env *env, int out);
 int			env_builtin(int argc, char **argv, t_env *env, int out);
-int			export(int argc, char **argv, t_env *env, int out);
+int			ft_export(int argc, char **argv, t_env *env, int out);
 int			exit_builtin(int argc, char **argv, t_env *env, int *fd);
 int			unset_builtin(int argc, char **argv, t_env *env);
 
@@ -163,6 +163,7 @@ char    	**make_argv(t_tok *src, t_env *env);
 int			redir_to_fd(t_node *node, t_env *env, int *fd, int *pfd);
 
 /*env utils*/
+t_shnode	*env_init_node(char *e);
 void		shnode_append(t_shnode **dst, t_shnode *src);
 t_shnode	*shnode_dup(t_shnode *src);
 t_shnode	*find_env(char *str, t_shnode *list);

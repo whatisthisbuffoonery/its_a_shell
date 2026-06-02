@@ -1,26 +1,34 @@
 #include "h_minishell.h"
 
+void	clean_one_shnode(t_shnode *node)
+{
+	free(node->name);
+	free(node->str);
+	free(node);
+}
+
 t_shnode	*env_init_node(char *e)
 {
 	t_shnode	*ret;
 	int			i;
 
-	ret = malloc(sizeof(t_shnode));
+	ret = ft_calloc(1, sizeof(t_shnode)); //initialize with calloc
 	if (!ret)
 		return (NULL);
 	i = 0;
 	while (e[i] && e[i] != '=')
 		i ++;
 	ret->name = ft_strndup(e, i);
-	if (ret->name)
-		ret->str = ft_strdup(&e[i + (e[i] != '\0')]);
-	if (!ret->name || !ret->str)
+	if (!ret->name)
+		return (clean_one_shnode(ret), NULL);
+	if (e[i]) //bc i need "export a" to be displayed differently from "export a=" (a vs a="")
 	{
-		free(ret->name);
-		free(ret);
-		return (NULL);
+		ret->str = ft_strdup(&e[i + 1]);
+		if (!ret->str)
+			return (clean_one_shnode(ret), NULL);
 	}
-	ret->next = NULL;
+	else //for the above reason
+		ret->str = NULL;
 	return (ret);
 }
 
@@ -110,7 +118,7 @@ void	env_init(t_env *dst, char **e)
 		env_add(dst, iter, "export");
 		i ++;
 	}
-//	merge_sort(&dst->env);
+	merge_sort(&dst->export);
 	update_shell_lvl(dst);
 	update_shell_name(dst);
 }

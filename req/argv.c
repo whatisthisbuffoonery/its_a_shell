@@ -23,7 +23,7 @@ int	do_builtin_match(int argc, char **argv, t_env *env, int *fd)
 	else if ((*argv)[1] == 'c')//echo
 		status = echo(argv, fd[1]);
 	else if ((*argv)[2] == 'p')//export
-		status = export(argc, argv, env, fd[1]);
+		status = ft_export(argc, argv, env, fd[1]);
 	else if ((*argv)[2] == 'i')//exit
 		exit_builtin(argc, argv, env, fd);//uses strerr even for normal output
 //	split_cleanup(argv);

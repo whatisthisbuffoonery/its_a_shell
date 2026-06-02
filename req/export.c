@@ -12,7 +12,7 @@
 
 #include "h_minishell.h"
 
-int		invalid_var(const char *var)
+int		invalid_var(char *var)
 {
 	int		i;
 
@@ -30,7 +30,7 @@ int		invalid_var(const char *var)
 	return (0);
 }
 
-static int	invalid_identifier(const char *arg)
+static int	invalid_identifier(char *arg)
 {
 	write(2, "export: `", 9);
 	write(2, arg, ft_strlen(arg));
@@ -38,12 +38,12 @@ static int	invalid_identifier(const char *arg)
 	return (1);
 }
 
-static int	  is_in_list(const char *name, t_shnode *list)
+static t_shnode	*is_in_list(char *name, t_shnode *list)
 {
 	return (find_env(name, list));
 }
 
-static int	update_val(const char *val, t_shnode *existing)
+static int	update_val(char *val, t_shnode *existing)
 {
 	char	*new_str;
 
@@ -55,60 +55,96 @@ static int	update_val(const char *val, t_shnode *existing)
 	return (0);
 }
 
-static int	  export_set(t_env *env, const char *name, const char *val)
+static int	env_set(t_shnode *exp_node, char *name, char *val, t_env *env)
 {
 	t_shnode	*existing;
-	t_shnode	*node;
-	t_shnode	*node2;
-	char		*entry;
+	t_shnode	*env_node;
 
-	existing = is_in_list(name, env->export);
+	existing = is_in_list(name, env->env);
 	if (existing && val)
-		return (update_val(val, existing, n, env));
-	else if (existing)
-		return (0);
-	node = env_init_node(name);
-	if (!node)
-		return (1);
-	env_add(env, node, "export");
-	if (val)
+		existing->str = exp_node->str;
+	else if (val)
 	{
-		node2 = shnode_dup(node);
-		if (!node2)
+		env_node = shnode_dup(exp_node);
+		if (!env_node)
 			return (1);
-		env_add(env, node2, "env");
+		shnode_append(&env->env, env_node);
 	}
 	return (0);
 }
 
-static int	process_export_arg(const char *arg, t_env *env)
+static int	  export_set(char *arg, char *name, char *val, t_env *env)
 {
-	char		*eq;
-	char		*name;
+	t_shnode	*existing;
+	t_shnode	*exp_node;
+
+	existing = is_in_list(name, env->export);
+	exp_node = existing;
+	if (existing && val)
+		update_val(val, existing);
+	else if (!existing)
+	{
+		exp_node = env_init_node(arg);
+		if (!exp_node)
+			return (1);
+		shnode_append(&env->export, exp_node);
+	}
+	return (env_set(exp_node, name, val, env));
+}
+
+static int	process_export_arg2(char *arg, int name_len, char *eq, t_env *env)
+{
+	char	name[name_len];
+
+	ft_strlcpy(name, arg, name_len + 1);
+	if (invalid_var(name))
+		return (invalid_identifier(name));
+	if (!eq)
+		return (export_set(arg, name, NULL, env));
+	else
+		return (export_set(arg, name, eq + 1, env));
+}
+
+static int	process_export_arg(char *arg, t_env *env)
+{
+	char	*eq;
+	int		name_len;
 
 	if (!arg || arg[0] == '=')
 		return (invalid_identifier(arg));
 	eq = ft_strchr(arg, '=');
 	if (eq)
-		ft_strlcpy(name, arg, eq - arg);
+		name_len = eq - arg;
 	else
-		name = arg;
-	if (invalid_var(name))
-		return (invalid_identifier(name));
-	if (!eq)
-		return (export_set(env, name, NULL));
-	else
-		return (export_set(env, name, eq + 1));
+		name_len = ft_strlen(arg);
+	return (process_export_arg2(arg, name_len, eq, env));
 }
 
-int    ft_export(int argc, char **argv, t_env *env)
+void    print_export(t_shnode *export, int out)
+{
+    while (export)
+    {   
+        ft_putstr_fd("declare -x ", out);
+        ft_putstr_fd(export->name, out);
+        if (export->str)
+		{
+			ft_putstr_fd("=\"", out);
+        	ft_putstr_fd(export->str, out);
+			ft_putstr_fd("\"", out);
+		}
+		ft_putstr_fd("\n", out);
+        export = export->next;
+    }   
+}
+
+int    ft_export(int argc, char **argv, t_env *env, int out)
 {
 	int		i;
 	int		status;
 
 	if (argc < 2)
 	{
-		print_export(env->export);
+		print_export(env->export, out);
 		return (0);
 	}
 	status = 0;
