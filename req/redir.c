@@ -123,7 +123,25 @@ int	do_heredoc(char *file, t_env *env, int flag)
 	return (fd[0]);
 }
 
-//no need to iterate here
+//allow empty string
+char	**catch_heredoc(t_node *src, t_env *env, int (*f)(t_arg **, t_tok *))
+{
+	char	**file;
+
+	if (ft_strcmp(src->redir_op->str, "<<"))
+		return (expand_all(src->redir_target, env, f));
+	file = NULL;
+	if (!malloc_cond((void **) &file, 2 * sizeof(char *))
+		|| !word_to_str(file, src->redir_target))
+	{
+		free(file);
+		return (NULL);
+	}
+	file[1] = NULL;
+	return (file);
+}
+
+//no need to iterate here 
 int	update_redir_fd(int *fd, char **file, t_node *iter, t_env *env)
 {
 	int		id;
@@ -178,8 +196,9 @@ int	redir_to_fd(t_node *node, t_env *env, int *fd, int *pfd)
 	while (iter && !flag)
 	{
 		iter->heredoc = !find_quote(iter->redir_target);
-		file = expand_all(iter->redir_target, env, collect_redir);
-		if (!file || shell_assert_redir((!file[0] || !file[0][0] || file[1]),
+		file = catch_heredoc(iter, env, collect_redir);
+		if (!file || shell_assert_redir((!file[0] || file[1]
+			|| (!file[0][0] && !ft_strcmp(iter->redir_target->str, "<<"))),
 			iter->redir_target, "ambiguous redirect"))
 		{
 			split_cleanup(file);

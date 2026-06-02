@@ -1,5 +1,33 @@
 #include "h_minishell.h"
 
+char	*word_to_str(char **dst, t_tok *src)
+{
+	int		i;
+	char	*ret;
+	t_tok	*iter;
+
+	i = 0;
+	iter = src;
+	while (iter)
+	{
+		i += ft_strlen(iter->str);
+		iter = iter->word_next;
+	}
+	if (!malloc_cond((void **) &ret, i + 1))
+		return (NULL);
+	ret[0] = '\0';
+	iter = src;
+	while (iter)
+	{
+		ft_strlcat(ret, iter->str, i + 1);
+		iter = iter->word_next;
+	}
+	if (dst)
+		*dst = ret;
+	ft_printf("heredoc word: %s\n", ret);
+	return (ret);
+}
+
 void	make_word(t_tok *iter)
 {
 	t_tok	*next;

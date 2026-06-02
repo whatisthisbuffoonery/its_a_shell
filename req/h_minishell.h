@@ -96,6 +96,7 @@ int			rl_handle_signals(void);
 
 void		make_word(t_tok *iter);
 void		print_word(t_tok *tok);
+char		*word_to_str(char **dst, t_tok *src);
 
 int			ft_err(int n, char *s);
 int			shell_assert(int cond, char *s);
