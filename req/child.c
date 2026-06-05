@@ -33,11 +33,12 @@ pid_t	shell_fork(t_env *env)
 {
 	pid_t	pid;
 
+	(void)env;
 	if (signo)
 		return (-1);
 	pid = fork();
-	if (!pid)
-		env_import(env);
+	// if (!pid)
+	// 	env_import(env); //why is this function needed?
 	return (ft_err(pid, "shell fork"));
 }
 

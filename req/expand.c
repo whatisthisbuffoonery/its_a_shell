@@ -64,7 +64,13 @@ int	collect_argv(t_arg **dst, t_tok *src)
 	{
 		if (split_expand(&arg, src))//always overwrites arg
 			return (1);
-		fields = field_split(arg);
+		if (src->assignment)
+		{
+			fields = arg;
+			fields->next = NULL;
+		}
+		else
+			fields = field_split(arg);
 		if (fields != arg)
 			free_arg(arg);
 		if (!fields)
@@ -72,7 +78,10 @@ int	collect_argv(t_arg **dst, t_tok *src)
 			free_arg_list(head);
 			return (1);
 		}
-		append_new_wrapper(&head, &tail, fields);
+		if (src->assignment)
+			append_new_field(fields, &head, &tail);
+		else	
+			append_new_wrapper(&head, &tail, fields);
 		src = src->next;
 	}
 	*dst = expand_globs(head);//always invalidates src

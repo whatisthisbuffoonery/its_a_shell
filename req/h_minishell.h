@@ -25,6 +25,7 @@ typedef struct s_arg
 {
 	char			*str;
 	char			*mask;
+	int				assignment;
 	struct s_arg	*next;
 }					t_arg;
 
@@ -35,6 +36,7 @@ typedef struct s_tok
 	char			*str;		//stores one word, operator, or quoted section
 	char			type;		//stores just first char of pre parsed string, which might be a dquote excluded from str field
 	char			end_space;	//bool for whether the char after the token was whitespace
+	int				assignment;
 }					t_tok;
 
 typedef enum e_node_kind
@@ -142,6 +144,7 @@ int			ismeta(t_tok *tok);
 /*other checkers*/
 int			isbuiltin(char *s);
 int			isname(t_tok *node);
+int			is_assignment_word(char *s);
 
 /*process helpers*/
 pid_t		shell_fork(t_env *env);

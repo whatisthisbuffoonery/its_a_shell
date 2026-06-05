@@ -96,8 +96,8 @@ t_arg	*arg_init(t_tok *iter)
 	ret = ft_calloc(1, sizeof(t_arg));
 	if (ret)
 	{
-		ret->mask = malloc(i + 1);
-		ret->str = malloc(i + 1);
+		ret->mask = ft_calloc(i + 1, sizeof(char));
+		ret->str = ft_calloc(i + 1, sizeof(char));
 		if (!ret->mask || !ret->str)
 		{
 			free(ret->mask);
@@ -119,6 +119,8 @@ int	split_expand(t_arg **dst, t_tok *src)
 	t_tok	*iter;
 
 	*dst = arg_init(src);
+	if (*dst)
+		(*dst)->assignment = src->assignment;
 	len = 0;
 	iter = src;
 	while (*dst && iter)
@@ -327,7 +329,7 @@ t_arg	*expand_globs(t_arg *fields)
 	while (iter)
 	{
 		next = iter->next;
-		if (has_glob(iter))
+		if (!iter->assignment && has_glob(iter))
 		{
 			if (do_glob(&prev, &iter, &next, &head))
 				return (free_arg_list(head));

@@ -36,3 +36,19 @@ int	iscontent(int c)
 	return (c && c != '*' /*&& c != '='  do not consider */
 		&& !isop(c) && !ft_isquote(c) && !ft_isspace(c) && !isbracket(c));
 }
+
+int	is_assignment_word(char *s)
+{
+	int	i;
+
+	if (!ft_isalpha(*s) && *s != '_')
+		return (0);
+	i = 1;
+	while (s[i] && s[i] != '=')
+	{
+		if (!ft_isalnum(s[i]) && s[i] != '_')
+			return (0);
+		i++;
+	}
+	return (s[i] == '=');
+}

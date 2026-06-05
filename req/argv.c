@@ -77,6 +77,23 @@ void	find_path(char *path, char **dst, char *new)
 	free(new);
 }
 
+void	mark_assignment_args(t_tok *argv)
+{
+	t_tok	*arg;
+
+	if (!argv)
+		return ;
+	if (ft_strcmp(argv->str, "export") != 0)
+		return ;
+	arg = argv->next;
+	while (arg)
+	{
+		if (is_assignment_word(arg->str))
+			arg->assignment = 1;
+		arg = arg->next;
+	}
+}
+
 //contructs args consuming one word at a time, should call multiple times and factor out cmd string
 char    **make_argv(t_tok *src, t_env *env)
 {
@@ -84,6 +101,7 @@ char    **make_argv(t_tok *src, t_env *env)
 	char		*cmd;
 	t_shnode	*path;
 
+	mark_assignment_args(src); //need to mark before expansion (export a=export; export b="abc + *"; $a c=$b should go through field splitting and globbing while export d=$b should not)
 	argv = expand_all(src, env, collect_argv);//no need double ptr//uhh... she handles glob? half half lah hor//take tok for arg
 	if (!argv)
 		return (NULL);
