@@ -122,6 +122,10 @@ static int	process_export_arg(char *arg, t_env *env)
 
 void    print_export(t_shnode *export, int out)
 {
+	char	*double_quote;
+	int		i;
+	int		n;
+
     while (export)
     {   
         ft_putstr_fd("declare -x ", out);
@@ -129,7 +133,17 @@ void    print_export(t_shnode *export, int out)
         if (export->str)
 		{
 			ft_putstr_fd("=\"", out);
-        	ft_putstr_fd(export->str, out);
+			double_quote = ft_strchr(export->str, '"');
+			i = 0;
+			while (double_quote)
+			{
+				n = double_quote - &export->str[i];
+				write(out, &export->str[i], n);
+				write(out, "\\", 1);
+				i += n;
+				double_quote = ft_strchr(&export->str[i + 1], '"');
+			}
+        	ft_putstr_fd(&export->str[i], out);
 			ft_putstr_fd("\"", out);
 		}
 		ft_putstr_fd("\n", out);

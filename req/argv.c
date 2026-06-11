@@ -101,7 +101,7 @@ char    **make_argv(t_tok *src, t_env *env)
 	char		*cmd;
 	t_shnode	*path;
 
-	mark_assignment_args(src); //need to mark before expansion (export a=export; export b="abc + *"; $a c=$b should go through field splitting and globbing while export d=$b should not)
+	mark_assignment_args(src); //need to mark these before expansion (export a=export; export b="abc + *"; $a c=$b should go through field splitting and globbing while export d=$b should not)
 	argv = expand_all(src, env, collect_argv);//no need double ptr//uhh... she handles glob? half half lah hor//take tok for arg
 	if (!argv)
 		return (NULL);

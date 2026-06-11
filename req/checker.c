@@ -37,7 +37,7 @@ int	iscontent(int c)
 		&& !isop(c) && !ft_isquote(c) && !ft_isspace(c) && !isbracket(c));
 }
 
-int	is_assignment_word(char *s)
+int	is_assignment_word(char *s) //only when export is argv[0] of the cmd
 {
 	int	i;
 
