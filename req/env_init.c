@@ -94,6 +94,34 @@ int	update_shell_name(t_env *dst)
 	return (0);
 }
 
+char	*grab_home(t_env *env)
+{
+	t_shnode	*tmp;
+
+	tmp = find_env("HOME", env->env);
+	if (!tmp)
+		return (NULL);//no recovery method
+	return (ft_strdup(tmp->str));
+}
+
+void	pwd_init(t_env *env)
+{
+	t_shnode	*tmp;
+
+	tmp = find_env("PWD", env->env);
+	if (tmp && tmp->str)
+		env->pwd = ft_strdup(tmp->str);
+	else
+		env->pwd = getcwd(NULL, 0);
+	tmp = find_env("OLDPWD", env->env);
+	if (tmp && tmp->str)
+		env->oldpwd = ft_strdup(tmp->str);
+	else
+		env->oldpwd = grab_home(env);//has strdup
+	ft_err(-!env->pwd, "pwd init error");
+	ft_err(-!env->oldpwd, "oldpwd init error");
+}
+
 //init shell level, only init cd dash if null/not present
 //also also change SHELL to be minishell, update SHLVL
 //dealing with LINES and COLUMNS for display stuff is way outside subject scope
@@ -121,4 +149,5 @@ void	env_init(t_env *dst, char **e)
 	merge_sort(&dst->export);
 	update_shell_lvl(dst);
 	update_shell_name(dst);
+	pwd_init(dst);
 }

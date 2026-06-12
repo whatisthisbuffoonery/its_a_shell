@@ -1,6 +1,6 @@
 #include "h_minishell.h"
 
-int	cd(int argc, char **argv, t_env *env)
+int	cd_dummy(int argc, char **argv, t_env *env)
 {
 	(void) argc;
 	(void) argv;

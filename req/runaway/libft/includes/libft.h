@@ -110,6 +110,7 @@ unsigned int	ft_atohu_ind(char *s, int *index, int i);
 
 int				ft_ptrlen(char **a);
 size_t			ft_strlen(const char *s);
+size_t			strlen_null(char *s);
 size_t			ft_strlcpy(char *dst, const char *src, size_t size);
 size_t			ft_strlcat(char *dst, const char *src, size_t size);
 

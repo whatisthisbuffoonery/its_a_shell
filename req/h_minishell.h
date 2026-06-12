@@ -183,6 +183,8 @@ void		free_arg(t_arg *arg);
 t_arg		*free_arg_list(t_arg *head);
 t_arg		*expand_globs(t_arg *fields);
 
+char		*grab_home(t_env *env);
+
 /*init funcs*/
 int			tok_init(char *buf, t_tok **tok);
 int			node_init(t_tok **dst, char *src, int *cry);

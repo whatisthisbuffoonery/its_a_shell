@@ -13,7 +13,7 @@ SRC_FILE := merge_sort.c main.c err.c cleanup.c signal.c arg_clean.c \
 			ast_check.c ast_init.c ast_logic.c ast_redir.c ast_print.c \
 			word.c \
 			env_utils.c exec.c exec_cleanup.c pipe_utils.c argv.c envp.c expand.c redir.c child.c \
-			echo.c exit.c dummy_builtin.c env.c unset.c export.c
+			echo.c exit.c dummy_builtin.c env.c unset.c export.c cd.c other_cd.c
 OBJ := $(SRC_FILE:.c=.o)
 
 all: $(NAME)
