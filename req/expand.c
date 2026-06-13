@@ -50,59 +50,32 @@ void	append_new_wrapper(t_arg **head, t_arg **tail, t_arg *src)
 		*tail = (*tail)->next;
 }
 
-//this will be passed as a handler to expand_all
-int	collect_argv(t_arg **dst, t_tok *src)
+//src destroyed on failure
+t_arg	*expand_globs(t_arg *fields)
 {
-	t_arg	*arg;
-	t_arg	*fields;
-	t_arg	*tail;
+	t_arg	*iter;
+	t_arg	*next;
+	t_arg	*prev;
 	t_arg	*head;
 
-	tail = NULL;
-	head = NULL;
-	while (src)
+	head = fields;
+	iter = fields;
+	prev = NULL;
+	while (iter)
 	{
-		if (split_expand(&arg, src))//always overwrites arg
-			return (1);
-		if (src->assignment)
+		next = iter->next;
+		if (!iter->assignment && has_glob(iter))
 		{
-			fields = arg;
-			fields->next = NULL;
+			if (do_glob(&prev, &iter, &next, &head))
+				return (free_arg_list(head));
 		}
 		else
-			fields = field_split(arg);
-		if (fields != arg)
-			free_arg(arg);
-		if (!fields)
-		{
-			free_arg_list(head);
-			return (1);
-		}
-		if (src->assignment)
-			append_new_field(fields, &head, &tail);
-		else	
-			append_new_wrapper(&head, &tail, fields);
-		src = src->next;
+			prev = iter;
+		iter = next;
 	}
-	*dst = expand_globs(head);//always invalidates src
-	return (!*dst);
+	return (head);
 }
 
-int	collect_redir(t_arg **dst, t_tok *src)
-{
-	t_arg	*arg;
-	t_arg	*fields;
-
-	if (split_expand(&arg, src))
-		return (1);
-	fields = field_split(arg);
-	if (fields != arg)
-		free_arg(arg);
-	*dst = expand_globs(fields);//does check for null src
-	return (!*dst);
-}
-
-//to do: verify malloc failure detection and find somewhere to stick err msg
 char	**expand_all(t_tok *src, t_env *env, int (*f)(t_arg **, t_tok *))
 {
 	t_arg	*globbed;

@@ -62,7 +62,7 @@ int	tok_node_init(t_tok **dst, char *src, int *cry)
 		i ++;
 	ret = tok_node(src, i, c, cry);
 	tok_node_append(dst, ret);
-	return (i + hadquote(src, i));//thing //replaced c with ret str//WARNING//put src now
+	return (i + hadquote(src, i));
 }
 
 int	tok_init(char *buf, t_tok **tok)

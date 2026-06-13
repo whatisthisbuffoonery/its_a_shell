@@ -118,6 +118,10 @@ int			shell_assert2(int cond, char *name, char *s);
 int			shell_assert_redir(int cond, t_tok *iter, char *s);
 int			builtin_err(int cond, char *name, char *s);
 
+/*env updating*/
+int			update_shell_lvl(t_env *dst);
+int			update_shell_name(t_env *dst);
+
 /*basic type checking*/
 int			isbracket(int c);
 int			isop(int c);
@@ -215,6 +219,7 @@ void		tok_delone(t_tok *tok);
 void		clean_tok(t_tok **tok);
 void		clean_shnode_dup(t_shnode **shnode);
 void		clean_shnode(t_shnode **shnode);
+void		*clean_one_shnode(t_shnode *node);
 void		clean_ast(t_node *node);
 void		clean_pipemanager(t_pipemanager *p);
 void		shell_cleanup(t_env *env);

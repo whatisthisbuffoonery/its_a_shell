@@ -37,8 +37,8 @@ pid_t	shell_fork(t_env *env)
 	if (signo)
 		return (-1);
 	pid = fork();
-	// if (!pid)
-	// 	env_import(env); //why is this function needed?
+	if (!pid)
+		env_import(env); //why is this function needed?
 	return (ft_err(pid, "shell fork"));
 }
 
@@ -80,18 +80,3 @@ int	child_wait(pid_t pid)
     }
 	return (status);
 }
-
-//check later//???//unused
-/*
-int	ast_dup(t_env *env, int *fd)
-{
-	if (ft_err(dup2(fd[0], 0), "dup error"))
-		return (1);
-	if (fd[0] > 2)
-		env->duped_fd[0] = 1;
-	if (ft_err(dup2(fd[1], 1), "dup error"))
-		return (1);
-	if (fd[1] > 2)
-		env->duped_fd[1] = 1;
-	return (0);
-}*/

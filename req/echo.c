@@ -12,7 +12,7 @@ int	check_flag(char *v)
 	return (!v[i]);
 }
 
-int	echo(char **argv, int out)//write check
+int	echo(char **argv, int out)
 {
 	int	flag;
 	int	i;
