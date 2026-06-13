@@ -1,10 +1,11 @@
 #include "h_minishell.h"
 
-void	clean_one_shnode(t_shnode *node)
+void	*clean_one_shnode(t_shnode *node)
 {
 	free(node->name);
 	free(node->str);
 	free(node);
+	return (NULL);
 }
 
 t_shnode	*env_init_node(char *e)
@@ -20,12 +21,12 @@ t_shnode	*env_init_node(char *e)
 		i ++;
 	ret->name = ft_strndup(e, i);
 	if (!ret->name)
-		return (clean_one_shnode(ret), NULL);
+		return (clean_one_shnode(ret));
 	if (e[i]) //bc i need "export a" to be displayed differently from "export a=" (a vs a="")
 	{
 		ret->str = ft_strdup(&e[i + 1]);
 		if (!ret->str)
-			return (clean_one_shnode(ret), NULL);
+			return (clean_one_shnode(ret));
 	}
 	else //for the above reason
 		ret->str = NULL;
@@ -101,7 +102,7 @@ char	*grab_home(t_env *env)
 	tmp = find_env("HOME", env->env);
 	if (!tmp)
 		return (NULL);//no recovery method
-	return (ft_strdup(tmp->str));
+	return (tmp->str);
 }
 
 void	pwd_init(t_env *env)
@@ -117,7 +118,7 @@ void	pwd_init(t_env *env)
 	if (tmp && tmp->str)
 		env->oldpwd = ft_strdup(tmp->str);
 	else
-		env->oldpwd = grab_home(env);//has strdup
+		env->oldpwd = ft_strdup(grab_home(env));
 	ft_err(-!env->pwd, "pwd init error");
 	ft_err(-!env->oldpwd, "oldpwd init error");
 }
@@ -146,7 +147,7 @@ void	env_init(t_env *dst, char **e)
 		env_add(dst, iter, "export");
 		i ++;
 	}
-	merge_sort(&dst->export);
+//	merge_sort(&dst->export);
 	update_shell_lvl(dst);
 	update_shell_name(dst);
 	pwd_init(dst);

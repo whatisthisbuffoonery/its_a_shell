@@ -18,5 +18,9 @@ void	shell_cleanup(t_env *env)
 		close(1);
 	env->duped_fd[0] = 0;
 	env->duped_fd[1] = 0;//could incluse an indicator for if stdin/stdout was closed. should I?
+	free(env->pwd);
+	free(env->oldpwd);
+	env->pwd = NULL;
+	env->oldpwd = NULL;
 	rl_clear_history();
 }

@@ -7,6 +7,7 @@
 # include <readline/history.h>
 # include <sys/wait.h>
 # include <sys/types.h>
+# include <sys/stat.h>
 # include <dirent.h>
 # include <errno.h>
 # include <fcntl.h>
@@ -92,18 +93,14 @@ typedef struct	s_env
 	char			last;
 }					t_env;				//PSA empty strings can be in env list, null strings cannot
 
-/*misc*/
+/*signal handling*/
 void		signal_init(void);
 int			rl_handle_signals(void);
 
+/*word funcs*/
 void		make_word(t_tok *iter);
 void		print_word(t_tok *tok);
 char		*word_to_str(char **dst, t_tok *src);
-
-int			ft_err(int n, char *s);
-int			shell_assert(int cond, char *s);
-int			shell_assert2(int cond, char *name, char *s);
-int			shell_assert_redir(int cond, t_tok *iter, char *s);
 
 void		merge_sort(t_shnode **head);
 
@@ -113,6 +110,13 @@ int			child_wait(pid_t pid);
 int			pipe_dup(int *fd);
 
 void		update_last(t_env *env, int n);
+
+/*error printing*/
+int			ft_err(int n, char *s);
+int			shell_assert(int cond, char *s);
+int			shell_assert2(int cond, char *name, char *s);
+int			shell_assert_redir(int cond, t_tok *iter, char *s);
+int			builtin_err(int cond, char *name, char *s);
 
 /*basic type checking*/
 int			isbracket(int c);
@@ -137,6 +141,9 @@ int			env_builtin(int argc, char **argv, t_env *env, int out);
 int			ft_export(int argc, char **argv, t_env *env, int out);
 int			exit_builtin(int argc, char **argv, t_env *env, int *fd);
 int			unset_builtin(int argc, char **argv, t_env *env);
+
+/*cd utils*/
+int			new_pwd(char *pwd, char *v);
 
 /*checks for iscond or isbracket, do not use with subtok*/
 int			ismeta(t_tok *tok);

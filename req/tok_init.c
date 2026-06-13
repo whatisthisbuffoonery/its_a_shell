@@ -1,6 +1,6 @@
 #include "h_minishell.h"
 
-int	ft_crutch(char *s, int n)
+int	hadquote(char *s, int n)
 {
 	return (ft_isquote(s[0]) != 0 && s[n] == s[0]);
 }
@@ -17,13 +17,13 @@ t_tok	*tok_node(char *src, int i, char c, int *cry)
 		return (NULL);
 	}
 	shell_assert(!i || !c, "zero string???? how???????\n");
-	ret->str = ft_substr(src, ft_crutch(src, i), i - ft_crutch(src, i));
+	ret->str = ft_substr(src, hadquote(src, i), i - hadquote(src, i));
 	if (!ret->str)
 		*cry = (ft_err(-1, "tok node str malloc"));
 	ret->type = c;
 	if (ret->str && !ft_strcmp(ret->str, "&"))
 		ret->type = "me is name node"[0];
-	ret->end_space = ft_isspace(src[i + ft_crutch(src, i)]);
+	ret->end_space = ft_isspace(src[i + hadquote(src, i)]);
 	return (ret);
 }
 
@@ -62,7 +62,7 @@ int	tok_node_init(t_tok **dst, char *src, int *cry)
 		i ++;
 	ret = tok_node(src, i, c, cry);
 	tok_node_append(dst, ret);
-	return (i + ft_crutch(src, i));//thing //replaced c with ret str//WARNING//put src now
+	return (i + hadquote(src, i));//thing //replaced c with ret str//WARNING//put src now
 }
 
 int	tok_init(char *buf, t_tok **tok)

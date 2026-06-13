@@ -1,5 +1,68 @@
 #include "h_minishell.h"
 
+t_shnode	*shnode_replace(char *name, char **src, char *builtin)
+{
+	t_shnode	*tmp;
+
+	tmp = malloc(sizeof(t_shnode));
+	if (tmp)
+		tmp->name = ft_strdup(name);
+	if (builtin_err(!tmp || !tmp->name, builtin, "could not replace node"))
+	{
+		if (tmp)
+			free(tmp->name);
+		free(tmp);
+		free(*src);
+		*src = NULL;
+		return (NULL);
+	}
+	tmp->str = src;
+	return (tmp);
+}
+
+void	shnode_update(char *name, char *src, t_env *env)
+{
+	t_shnode	*tmp;
+	char		*val;
+
+	val = ft_strdup(src);
+	tmp = find_env(name, env->export);
+	if (builtin_err(!val, "cd", "could not update env lists"))
+		return ;
+	if (tmp)
+	{
+		free(tmp->str);
+		tmp->str = val;
+	}
+	else
+		env_add(env, shnode_replace(name, &val, "cd"), "export");
+	tmp = find_env(name, env->env);
+	if (tmp && val)
+		tmp->str = val;
+	else
+		env_add(env, find_env(name, env->export), "env");
+}
+
+int	change_dir(char *dst, char *v, t_env *env)
+{
+	int			ret;
+	int			pwdlen;
+
+	pwdlen = ft_strlen(dst);
+	if (v[0] == '/')
+		ft_strlcpy(dst, v, -1);
+	ret = chdir(dst);
+	if (!ret)
+	{
+		free(env->oldpwd);
+		env->oldpwd = env->pwd;
+		env->pwd = dst;
+		shnode_update("OLDPWD", env->oldpwd, env);
+		shnode_update("PWD", env->pwd, env);
+	}
+	return (ret);
+}
+
 char	*grab_v(char **v, t_env *env, int *status)
 {
 	char	*ret;
@@ -7,8 +70,9 @@ char	*grab_v(char **v, t_env *env, int *status)
 	ret = v[1];
 	if (!ret || !ft_strcmp(ret, "~"))
 		ret = grab_home(env);
-	else
-		v[1] = NULL;
+	else if (!ft_strcmp(ret, "-"))
+		ret = env->oldpwd;
+//	ft_printf("oldpwd check: %s\n", env->oldpwd);
 	*status = shell_assert2(!ret, "cd", "could not resolve HOME");//make builtin version that uses errno
 	return (ret);
 }
@@ -28,14 +92,15 @@ int	cd(int argc, char **argv, t_env *env)
 		env->pwd = getcwd(NULL, 0);
 	dst = NULL;
 	if (env->pwd)
-		dst = malloc(ft_strlen(v) + ft_strlen(env->pwd) + 1);
+		dst = malloc(ft_strlen(v) + ft_strlen(env->pwd) + 1 + 1);
 	status = shell_assert2(!dst, "cd", "malloc error");
 	if (dst)//need to check pwd null
 	{
 		ft_strlcpy(dst, env->pwd, -1);
-		new_pwd(&dst, &v, &status);
+		status = new_pwd(dst, v);
+		if (!status)
+			status = change_dir(dst, v, env);
 	}
-	free(v);
 	free(dst);
 	return (status);
 }

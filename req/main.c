@@ -10,6 +10,8 @@ int	shell_exit(t_env *env)
 	clean_shnode_dup(&env->env);
 	clean_shnode(&env->export);
 	clean_ast(env->ast);//should not really do anything
+	free(env->pwd);
+	free(env->oldpwd);
 	return (env->last);
 }
 

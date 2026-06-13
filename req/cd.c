@@ -1,12 +1,5 @@
 #include "h_minishell.h"
 
-int	update_pwd(t_env *env, char *v)
-{
-	(void) env;
-	(void) v;
-	return (0);
-}
-
 void	path_strmove(char *dst, int n)
 {
 	int		i;
@@ -42,15 +35,8 @@ void	path_process(char *v)
 		path_strmove(&v[i], k);
 		i += (v[i] != '\0');
 	}
-//	ft_putstr(v);
-//	ft_putchar('\n');
-//	exit(0);
 }
 
-//a. check that we even have enough buffer to fill the gap with
-//b. that last if is for setting src to the previous item
-//c. needs an int to recall the index of the last successful cd incase of cwd disappearing
-//d. check for trailing '/'
 void	remove_component(char *str, int *src)
 {
 	int	i;
@@ -70,50 +56,67 @@ void	remove_component(char *str, int *src)
 	if (!i)
 		return ;
 	ft_printf("remove: index: %d, i: %d, str: %s\n", index, i, str);
-	
 	i += (str[index + i] == '/');
 	path_strmove(&str[index], i);
-//	exit(0);
 	index -= (index > 0 && str[index - 1] == '/') + (index > 1);
 	while (index > 0 && str[index - 1] != '/')
 		index --;
 	if (src)
 		*src = index;
 	ft_printf("cd component: %s, index: %d\n", str, index);
-//	exit(0);
+}
+
+int	check_stat(char *pwd, int *src)
+{
+	int			curr;
+	int			ret;
+	char		tmp;
+	struct stat	dump;
+
+	curr = *src;
+	if (curr > 1 && pwd[curr - 1] == '/')
+		curr --;
+	tmp = pwd[curr + 1];
+	pwd[curr + 1] = '\0';
+	ret = stat(pwd, &dump);
+	ft_printf("stat: vlen: buf: %s, result: %d\n", pwd, ret);
+	pwd[curr + 1] = tmp;
+	ft_printf("pwd reset check: %s\n", pwd);
+	(void) dump;
+	return (ret);
 }
 
 //cd .. from /root resolves to /root, delete .. and skip decrement in this case
 //functions by shoving the string to the left and setting index
-int	resolve_relative(char *pwd, char *v, int *src)
+int	resolve_relative(char *pwd, int *src)
 {
 	int	i;
 	int index;
 
 	i = 0;
 	index = *src;
-	if (!v[index] || (v[index] == '/' && !v[index + 1]))
+	if (!pwd[index] || (pwd[index] == '/' && !pwd[index + 1]))
 		return (1);
-	while (v[i + index] && v[i + index] != '/')
+	while (pwd[i + index] && pwd[i + index] != '/')
 		i ++;
 	ft_printf("resolve: index: %d, i: %d, str: %s\n", index, i, pwd);
-//	exit(0);
-	if (v[index] == '.' && v[index + 1] == '.' && i == 2)// ../ // ... is a different dirname
+	if (pwd[index] == '.' && pwd[index + 1] == '.' && i == 2)// ../ // ... is a different dirname
 	{
-		remove_component(v, src);//delete ../ first (, new src -= 1 + (src > 1 + 1)
+		remove_component(pwd, src);//delete ../ first (, new src -= 1 + (src > 1 + 1)
 		if (index > 1)
-			remove_component(v, src);
-		else
-			remove_component(pwd, NULL);
+			remove_component(pwd, src);
 	}
-	else if (v[index] == '.' && i == 1)
-		path_strmove(&v[index], i + 1);
+	else if (pwd[index] == '.' && i == 1)
+		path_strmove(&pwd[index], i + 1);
 	else
-		*src += i + (v[index + i] == '/');// && v[*index + 1]);
-	ft_printf("cd intermediate: %s, %s\n", pwd, v);
-	return (check_stat(pwd, v, src));
+	{
+		*src += i + (pwd[index + i] == '/');
+		return (check_stat(pwd, src));
+	}
+	ft_printf("cd intermediate: %s\n", pwd);
+	return (0);
 }
-
+/* VETO
 int	check_pwd(char **dst, char **src)//suggest using newpwd buffer to handle instead
 {
 	*dst = NULL;
@@ -122,34 +125,35 @@ int	check_pwd(char **dst, char **src)//suggest using newpwd buffer to handle ins
 	if (*src)
 		*dst = ft_strdup(*src);
 	return (ft_err(-!*dst, "cd pwd prep"));
-}
+}*/
 
 //I still havent init pwd
 //psa $PWD restores from internal value, even if unset
 //if v ends up empty, modify free flag
-int	new_pwd(char **pwd, char **v, int *status)
+int	new_pwd(char *pwd, char *v)
 {
 	int		i;
 	int		done;
 
-	path_process(v);//opportunity to print result and no op
+//	path_process(v);//opportunity to print result and no op
 	if (v[0] == '/')
-	{
-		free(*pwd);
-		*pwd = *v;
-		*v = NULL;
 		return (0);
+	path_process(pwd);
+	i = ft_strlen(pwd);
+	if (pwd[i - 1] != '/')
+	{
+		i ++;
+		ft_strlcat(pwd, "/", -1);
 	}
-	i = 0;
+	ft_strlcat(pwd, v, -1);
+	path_process(pwd);
 	done = 0;
-	while (!done)//maybe
-		done = resolve_relative(pwd, v, &i);//here too
-//	*dst = join_path(*pwd, v[1]);
-	ft_printf("cd result: %s, %s\n", *pwd, v);
-//	exit(0);
+	while (!done)
+		done = resolve_relative(pwd, &i);//here too
+	ft_printf("cd result: %s, %s\n", pwd, v);
 	return (done < 0);
 }
-
+/*
 int element_check(char *v)
 {
 	(void) v;
@@ -190,4 +194,4 @@ int	cd_trial(int argc, char **argv, t_env *env)
 	free(chdir_dst);
 //	return (update_pwd(env, chdir_dst, should_free_v));//if chdir[0] == '/' && !should, else if !should, ...
 	return (0);
-}
+}*/
