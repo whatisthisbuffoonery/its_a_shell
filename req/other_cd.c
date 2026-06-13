@@ -16,7 +16,7 @@ t_shnode	*shnode_replace(char *name, char **src, char *builtin)
 		*src = NULL;
 		return (NULL);
 	}
-	tmp->str = src;
+	tmp->str = *src;
 	return (tmp);
 }
 
@@ -46,13 +46,13 @@ void	shnode_update(char *name, char *src, t_env *env)
 int	change_dir(char *dst, char *v, t_env *env)
 {
 	int			ret;
-	int			pwdlen;
+//	int			pwdlen;
 
-	pwdlen = ft_strlen(dst);
-	if (v[0] == '/')
-		ft_strlcpy(dst, v, -1);
+//	pwdlen = ft_strlen(dst);
+//	if (v[0] == '/')
+//		ft_strlcpy(dst, v, -1);
 	ret = chdir(dst);
-	if (!ret)
+	if (!builtin_err(ret, "cd chdir", v))
 	{
 		free(env->oldpwd);
 		env->oldpwd = env->pwd;
@@ -60,6 +60,8 @@ int	change_dir(char *dst, char *v, t_env *env)
 		shnode_update("OLDPWD", env->oldpwd, env);
 		shnode_update("PWD", env->pwd, env);
 	}
+	else
+		free(dst);
 	return (ret);
 }
 
@@ -94,13 +96,14 @@ int	cd(int argc, char **argv, t_env *env)
 	if (env->pwd)
 		dst = malloc(ft_strlen(v) + ft_strlen(env->pwd) + 1 + 1);
 	status = shell_assert2(!dst, "cd", "malloc error");
-	if (dst)//need to check pwd null
+	if (dst)
 	{
 		ft_strlcpy(dst, env->pwd, -1);
 		status = new_pwd(dst, v);
 		if (!status)
 			status = change_dir(dst, v, env);
+		else
+			free(dst);
 	}
-	free(dst);
 	return (status);
 }

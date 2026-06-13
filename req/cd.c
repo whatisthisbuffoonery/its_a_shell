@@ -65,8 +65,8 @@ void	remove_component(char *str, int *src)
 		*src = index;
 	ft_printf("cd component: %s, index: %d\n", str, index);
 }
-
-int	check_stat(char *pwd, int *src)
+/*
+int	check_stat(char *pwd, int *src, char *err)
 {
 	int			curr;
 	int			ret;
@@ -74,18 +74,22 @@ int	check_stat(char *pwd, int *src)
 	struct stat	dump;
 
 	curr = *src;
+	int debug = curr;
+	
 	if (curr > 1 && pwd[curr - 1] == '/')
 		curr --;
 	tmp = pwd[curr + 1];
+	ft_printf("stat debug: curr: %d, curr + 1: %d, strlen: %d, char: %c:%d, str: %s", debug, curr, ft_strlen(pwd), tmp, tmp, pwd);
+	exit(0);
 	pwd[curr + 1] = '\0';
 	ret = stat(pwd, &dump);
 	ft_printf("stat: vlen: buf: %s, result: %d\n", pwd, ret);
 	pwd[curr + 1] = tmp;
 	ft_printf("pwd reset check: %s\n", pwd);
 	(void) dump;
-	return (ret);
+	return (builtin_err(ret, "cd", err));
 }
-
+*/
 //cd .. from /root resolves to /root, delete .. and skip decrement in this case
 //functions by shoving the string to the left and setting index
 int	resolve_relative(char *pwd, int *src)
@@ -111,7 +115,7 @@ int	resolve_relative(char *pwd, int *src)
 	else
 	{
 		*src += i + (pwd[index + i] == '/');
-		return (check_stat(pwd, src));
+	//	return (check_stat(pwd, src, err));
 	}
 	ft_printf("cd intermediate: %s\n", pwd);
 	return (0);
@@ -132,12 +136,15 @@ int	check_pwd(char **dst, char **src)//suggest using newpwd buffer to handle ins
 //if v ends up empty, modify free flag
 int	new_pwd(char *pwd, char *v)
 {
-	int		i;
-	int		done;
+	int			i;
+	int			done;
+	struct stat	dump;
 
-//	path_process(v);//opportunity to print result and no op
 	if (v[0] == '/')
-		return (0);
+	{
+		ft_strlcpy(pwd, v, -1);
+		return (builtin_err(-1 * stat(pwd, &dump), "cd abs", v));
+	}
 	path_process(pwd);
 	i = ft_strlen(pwd);
 	if (pwd[i - 1] != '/')
@@ -147,10 +154,11 @@ int	new_pwd(char *pwd, char *v)
 	}
 	ft_strlcat(pwd, v, -1);
 	path_process(pwd);
-	done = 0;
+	done = builtin_err(stat(pwd, &dump), "cd rela", v);
 	while (!done)
 		done = resolve_relative(pwd, &i);//here too
-	ft_printf("cd result: %s, %s\n", pwd, v);
+	ft_printf("cd result: done:%d, done bool:%d, %s, %s\n", done, (done < 0), pwd, v);
+	(void) dump;
 	return (done < 0);
 }
 /*

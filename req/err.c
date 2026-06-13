@@ -36,9 +36,10 @@ int	builtin_err(int cond, char *name, char *s)
 		ft_putstr_fd("-minishell: ", 2);
 		if (!name)
 			name = "(null)";
+		if (!s)
+			s = "(null)";
 		ft_putstr_fd(name, 2);
 		ft_putstr_fd(": ", 2);
-		ft_putstr_fd(s, 2);
 		perror(s);
 	}
 	return (cond);
