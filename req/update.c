@@ -1,19 +1,29 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   update.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dthoo <dthoo@student.42singapore.sg>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/14 07:49:11 by dthoo             #+#    #+#             */
+/*   Updated: 2026/06/14 07:49:11 by dthoo            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "h_minishell.h"
 
-//note: this func should only be called on making another child within minishell, bash hands off an updated shell lvl already
-int	update_shell_lvl(t_env *dst)
+//bash hands off an updated shell lvl already for v5.2.x, campus coms use 5.1.16
+int	update_shell_lvl(t_env *dst, int is_subshell)
 {
 	t_shnode	*iter;
 	char		*ret;
-	char		*name;
 
-	name = "SHLVL";
-	iter = find_env(name, dst->export);
+	iter = find_env("SHLVL", dst->export);
 	if (!iter)
 	{
 		iter = env_init_node("SHLVL=1");
 		if (!iter)
-			return (ft_err(-1, "could not replace missing shlvl"));
+			return (ft_err(-!is_subshell, "could not replace missing shlvl"));
 		env_add(dst, iter, "env");
 		env_add(dst, iter, "export");
 		return (0);
@@ -23,23 +33,21 @@ int	update_shell_lvl(t_env *dst)
 	else
 		ret = ft_itoa(1);
 	if (!ret)
-		return (ft_err(-1, "shlvl update error"));
+		return (ft_err(-!is_subshell, "shlvl update error"));
 	free(iter->str);
 	iter->str = ret;
-	iter = find_env(name, dst->env);
-	if (!shell_assert(!iter, "shlvl missing in env"))
+	iter = find_env("SHLVL", dst->env);
+	if (iter)
 		iter->str = ret;
-	return (0);
+	return (shell_assert(!iter && !is_subshell, "shlvl missing in env"));
 }
 
 int	update_shell_name(t_env *dst)
 {
 	t_shnode	*iter;
 	char		*ret;
-	char		*name;
 
-	name = "SHELL";
-	iter = find_env(name, dst->export);
+	iter = find_env("SHELL", dst->export);
 	if (!iter)
 	{
 		iter = env_init_node("SHELL=minishell");
@@ -54,7 +62,7 @@ int	update_shell_name(t_env *dst)
 		return (ft_err(-1, "shell name update error"));
 	free(iter->str);
 	iter->str = ret;
-	iter = find_env(name, dst->env);
+	iter = find_env("SHELL", dst->env);
 	if (!shell_assert(!iter, "shell name missing in env"))
 		iter->str = ret;
 	return (0);

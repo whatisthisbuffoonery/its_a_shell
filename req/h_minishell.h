@@ -119,8 +119,12 @@ int			shell_assert_redir(int cond, t_tok *iter, char *s);
 int			builtin_err(int cond, char *name, char *s);
 
 /*env updating*/
-int			update_shell_lvl(t_env *dst);
+int			update_shell_lvl(t_env *dst, int is_subshell);
 int			update_shell_name(t_env *dst);
+
+/*glob utils*/
+int			has_glob(t_arg *field);
+int			do_glob(t_arg **prev, t_arg **iter, t_arg **next, t_arg **head);
 
 /*basic type checking*/
 int			isbracket(int c);

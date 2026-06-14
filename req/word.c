@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   word.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dthoo <dthoo@student.42singapore.sg>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/14 07:49:12 by dthoo             #+#    #+#             */
+/*   Updated: 2026/06/14 07:49:12 by dthoo            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "h_minishell.h"
 
 char	*word_to_str(char **dst, t_tok *src)
@@ -36,7 +48,7 @@ void	make_word(t_tok *iter)
 	{
 		if (isjoined(iter))
 		{
-			iter->word_next = subtok(&iter->next, isjoined);//append and update
+			iter->word_next = subtok(&iter->next, isjoined);
 			next = iter->word_next;
 			while (next)
 			{

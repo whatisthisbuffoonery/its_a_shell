@@ -1,35 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ast_check.c                                        :+:      :+:    :+:   */
+/*   arg_cleanup.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dthoo <dthoo@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/14 07:48:02 by dthoo             #+#    #+#             */
-/*   Updated: 2026/06/14 07:48:02 by dthoo            ###   ########.fr       */
+/*   Created: 2026/06/14 07:47:27 by dthoo             #+#    #+#             */
+/*   Updated: 2026/06/14 07:47:36 by dthoo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "h_minishell.h"
 
-int	single_tok(t_tok *iter)
+void	free_arg(t_arg *arg)
 {
-	(void) iter;
-	return (0);
+	if (!arg)
+		return ;
+	free(arg->str);
+	free(arg->mask);
+	free(arg);
 }
 
-int	isname(t_tok *node)
+t_arg	*free_arg_list(t_arg *head)
 {
-	return (node && (iscontent(node->type) || ft_isquote(node->type)
-			|| node->type == '*' || node->type == '='));
-}
-
-int	isjoined(t_tok *node)
-{
-	return (isname(node) && isname(node->next) && !node->end_space);
-}
-
-int	ismeta(t_tok *tok)
-{
-	return (tok && (iscond(tok->type) || isbracket(tok->type)));
+	t_arg	*next;
+	
+	while (head)
+	{
+		next = head->next;
+		free_arg(head);
+		head = next;
+	}
+	return (NULL);
 }

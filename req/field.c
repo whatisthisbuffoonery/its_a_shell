@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   field.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dthoo <dthoo@student.42singapore.sg>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/14 07:48:42 by dthoo             #+#    #+#             */
+/*   Updated: 2026/06/14 07:48:42 by dthoo            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "h_minishell.h"
 
 t_arg	*arg_init(t_tok *iter)
@@ -28,34 +40,32 @@ t_arg	*arg_init(t_tok *iter)
 	}
 	return (ret);
 }
-		
+
 //check null token in parent
 int	split_expand(t_arg **dst, t_tok *src)
 {
 	int		i;
 	int		len;
-	t_tok	*iter;
 
 	*dst = arg_init(src);
 	if (*dst)
 		(*dst)->assignment = src->assignment;
 	len = 0;
-	iter = src;
-	while (*dst && iter)
+	while (*dst && src)
 	{
 		i = 0;
-		while (iter->str && iter->str[i])
+		while (src->str && src->str[i])
 		{
-			if (!ft_isquote(iter->type)
-				&& (ft_isspace(iter->str[i]) || iter->str[i] == '*'))
+			if (!ft_isquote(src->type)
+				&& (ft_isspace(src->str[i]) || src->str[i] == '*'))
 				(*dst)->mask[len + i] = 1;
 			else
 				(*dst)->mask[len + i] = 0;
 			i ++;
 		}
 		len += i;
-		ft_strlcat((*dst)->str, iter->str, -1);
-		iter = iter->word_next;
+		ft_strlcat((*dst)->str, src->str, -1);
+		src = src->word_next;
 	}
 	return (ft_err(-!*dst, "expansion splitting malloc"));
 }

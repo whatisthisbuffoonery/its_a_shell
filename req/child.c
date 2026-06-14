@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   child.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dthoo <dthoo@student.42singapore.sg>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/14 07:48:11 by dthoo             #+#    #+#             */
+/*   Updated: 2026/06/14 07:48:11 by dthoo            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "h_minishell.h"
 
 void	env_import(t_env *env)
@@ -27,6 +39,7 @@ void	env_import(t_env *env)
 			iter = iter->next;
 		}
 	}
+	update_shell_lvl(env, 1);
 }
 
 pid_t	shell_fork(t_env *env)

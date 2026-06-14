@@ -12,6 +12,18 @@
 
 #include "h_minishell.h"
 
+void	print_env(t_shnode *env, int fd)
+{
+	while (env)
+	{
+		ft_putstr_fd(env->name, fd);
+		ft_putchar_fd('=', fd);
+		ft_putstr_fd(env->str, fd);
+		ft_putchar_fd('\n', fd);
+		env = env->next;
+	}	
+}
+
 int	env_builtin(int argc, char **argv, t_env *env, int fd)
 {
 	(void) argv;

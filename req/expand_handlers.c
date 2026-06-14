@@ -1,4 +1,36 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expand_handlers.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dthoo <dthoo@student.42singapore.sg>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/14 07:48:34 by dthoo             #+#    #+#             */
+/*   Updated: 2026/06/14 07:48:34 by dthoo            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "h_minishell.h"
+
+//empty src is easy to remove at this stage
+void	append_new_wrapper(t_arg **head, t_arg **tail, t_arg *src)
+{
+	int	i;
+
+	i = 0;
+	while (!src->next && src->str[i])
+	{
+		if (!ft_isspace(src->str[i]) || !src->mask[i])
+			break ;
+		i ++;
+	}
+	if (!src->next && !src->str[i])
+		free_arg(src);
+	else
+		append_new_field(src, head, tail);
+	while (*tail && (*tail)->next)
+		*tail = (*tail)->next;
+}
 
 //this will be passed as a handler to expand_all
 int	collect_argv(t_arg **dst, t_tok *src)

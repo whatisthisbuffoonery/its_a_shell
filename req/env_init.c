@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env_init.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dthoo <dthoo@student.42singapore.sg>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/14 07:48:23 by dthoo             #+#    #+#             */
+/*   Updated: 2026/06/14 07:48:23 by dthoo            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "h_minishell.h"
 
 t_shnode	*env_init_node(char *e)
@@ -77,7 +89,7 @@ void	env_init(t_env *dst, char **e)
 		env_add(dst, iter, "export");
 		i ++;
 	}
-	update_shell_lvl(dst);
+	update_shell_lvl(dst, 0);
 	update_shell_name(dst);
 	pwd_init(dst);
 }
