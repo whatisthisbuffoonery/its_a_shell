@@ -37,7 +37,7 @@ void	path_process(char *v)
 	int	k;
 
 	i = 0;
-	while(v[i])
+	while (v[i])
 	{
 		k = 0;
 		while (v[i] && v[i] != '/')
@@ -82,7 +82,7 @@ void	remove_component(char *str, int *src)
 int	resolve_relative(char *pwd, int *src)
 {
 	int	i;
-	int index;
+	int	index;
 
 	i = 0;
 	index = *src;
@@ -98,7 +98,7 @@ int	resolve_relative(char *pwd, int *src)
 			remove_component(pwd, src);
 	}
 	else if (pwd[index] == '.' && i == 1)
-		path_strmove(&pwd[index], i + 1);
+		path_strmove(&pwd[index], i + (pwd[index + i] == '/'));
 	else
 		*src += i + (pwd[index + i] == '/');
 	ft_printf("cd intermediate: %s\n", pwd);

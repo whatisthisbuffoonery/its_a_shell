@@ -57,12 +57,8 @@ void	shnode_update(char *name, char *src, t_env *env)
 
 int	change_dir(char *dst, char *v, t_env *env)
 {
-	int			ret;
-//	int			pwdlen;
+	int	ret;
 
-//	pwdlen = ft_strlen(dst);
-//	if (v[0] == '/')
-//		ft_strlcpy(dst, v, -1);
 	ret = chdir(dst);
 	if (!builtin_err(ret, "cd chdir", v))
 	{
@@ -87,7 +83,7 @@ char	*grab_v(char **v, t_env *env, int *status)
 	else if (!ft_strcmp(ret, "-"))
 		ret = env->oldpwd;
 //	ft_printf("oldpwd check: %s\n", env->oldpwd);
-	*status = shell_assert2(!ret, "cd", "could not resolve HOME");//make builtin version that uses errno
+	*status = builtin_err(!ret, "cd", "HOME not set");//make builtin version that uses errno
 	return (ret);
 }
 

@@ -266,7 +266,6 @@ void	update_last(t_env *env, int n)
 //the alternative to forking is keeping depth counters on blank env vars
 //and redir/pipe fds. hell no.
 
-
 //plsss check for signals before entering
 int	do_list(t_node *node, t_env *env)	//remember to update last from outside entry
 {
@@ -285,7 +284,7 @@ int	do_list(t_node *node, t_env *env)	//remember to update last from outside ent
 	signo = 0;	//should be sufficient. group and pipe will also check signo.
 	update_last(env, status);//propose only having this here
 	if (!signo && ((node->kind == N_AND && !status)
-		|| (node->kind == N_OR && status)))
+			|| (node->kind == N_OR && status)))
 		status = do_list(node->right, env);
 	return (status);
 }

@@ -32,12 +32,10 @@ void	env_import(t_env *env)
 				iter = prev->next;
 			else
 				iter = env->export;
+			continue ;
 		}
-		else
-		{
-			prev = iter;
-			iter = iter->next;
-		}
+		prev = iter;
+		iter = iter->next;		
 	}
 	update_shell_lvl(env, 1);
 }

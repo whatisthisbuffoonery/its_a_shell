@@ -21,7 +21,7 @@ void	print_env(t_shnode *env, int fd)
 		ft_putstr_fd(env->str, fd);
 		ft_putchar_fd('\n', fd);
 		env = env->next;
-	}	
+	}
 }
 
 int	env_builtin(int argc, char **argv, t_env *env, int fd)
@@ -34,4 +34,4 @@ int	env_builtin(int argc, char **argv, t_env *env, int fd)
 	}
 	print_env(env->env, fd);
 	return (0);
-}	 
+}

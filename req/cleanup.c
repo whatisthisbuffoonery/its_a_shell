@@ -24,7 +24,7 @@ void	clean_tok(t_tok **tok)
 	t_tok	*next;
 
 	iter = *tok;
-	while(iter)
+	while (iter)
 	{
 		next = iter->next;
 		clean_tok(&iter->word_next);
