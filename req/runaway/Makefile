@@ -18,7 +18,7 @@ INCLUDES := $(LIBFT_DIR)/includes
 SRC_FILE := main.c err.c signal.c word.c update.c cleanup.c checker.c \
 			ast_check.c ast_init.c ast_logic.c ast_redir.c \
 			expand.c expand_utils.c expand_handlers.c field.c glob_utils.c \
-			echo.c exit.c pwd.c export.c unset.c env.c cd.c cd_utils.c \
+			echo.c exit.c pwd.c export.c export_helpers.c unset.c env.c cd.c cd_utils.c \
 			argv.c redir.c envp.c arg_cleanup.c \
 			child.c pipe_utils.c exec.c exec_cleanup.c \
 			env_init.c shnode_cleanup.c shnode_utils.c find.c \

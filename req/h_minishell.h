@@ -150,6 +150,11 @@ int			ft_export(int argc, char **argv, t_env *env, int out);
 int			exit_builtin(int argc, char **argv, t_env *env, int *fd);
 int			unset_builtin(int argc, char **argv, t_env *env);
 
+void		print_export(t_shnode *export, int out);
+int			invalid_identifier(char *arg);
+int			invalid_var(char *var);
+int			update_val(char *val, t_shnode *existing);
+
 /*cd utils*/
 int			new_pwd(char *pwd, char *v);
 
