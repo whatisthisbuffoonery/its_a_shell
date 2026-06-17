@@ -68,7 +68,6 @@ void	remove_component(char *str, int *src)
 		i ++;
 	if (!i)
 		return ;
-	ft_printf("remove: index: %d, i: %d, str: %s\n", index, i, str);
 	i += (str[index + i] == '/');
 	path_strmove(&str[index], i);
 	index -= (index > 0 && str[index - 1] == '/') + (index > 1);
@@ -76,7 +75,6 @@ void	remove_component(char *str, int *src)
 		index --;
 	if (src)
 		*src = index;
-	ft_printf("cd component: %s, index: %d\n", str, index);
 }
 
 int	resolve_relative(char *pwd, int *src)
@@ -90,7 +88,6 @@ int	resolve_relative(char *pwd, int *src)
 		return (1);
 	while (pwd[i + index] && pwd[i + index] != '/')
 		i ++;
-	ft_printf("resolve: index: %d, i: %d, str: %s\n", index, i, pwd);
 	if (pwd[index] == '.' && pwd[index + 1] == '.' && i == 2)
 	{
 		remove_component(pwd, src);
@@ -101,7 +98,6 @@ int	resolve_relative(char *pwd, int *src)
 		path_strmove(&pwd[index], i + (pwd[index + i] == '/'));
 	else
 		*src += i + (pwd[index + i] == '/');
-	ft_printf("cd intermediate: %s\n", pwd);
 	return (0);
 }
 
@@ -114,7 +110,7 @@ int	new_pwd(char *pwd, char *v)
 	if (v[0] == '/')
 	{
 		ft_strlcpy(pwd, v, -1);
-		return (builtin_err(-1 * stat(pwd, &dump), "cd abs", v));
+		return (builtin_err(-1 * stat(pwd, &dump), "cd", v));
 	}
 	path_process(pwd);
 	i = ft_strlen(pwd);
@@ -125,10 +121,9 @@ int	new_pwd(char *pwd, char *v)
 	}
 	ft_strlcat(pwd, v, -1);
 	path_process(pwd);
-	done = builtin_err(stat(pwd, &dump), "cd rela", v);
+	done = builtin_err(stat(pwd, &dump), "cd", v);
 	while (!done)
 		done = resolve_relative(pwd, &i);
-	ft_printf("cd result: done:%d, done bool:%d, %s, %s\n", done, (done < 0), pwd, v);
 	(void) dump;
 	return (done < 0);
 }

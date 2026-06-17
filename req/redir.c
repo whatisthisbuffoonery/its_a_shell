@@ -28,7 +28,6 @@ void	set_fd(int *fd, int *pfd)
 //else, set_fd
 int	select_fd(int *fd, int *pfd, int flag)
 {
-	ft_printf("select fd entry: [%d, %d], flag: %d\n", fd[0], fd[1], flag);
 	if (flag)
 	{
 		unset(&fd[0]);
@@ -38,7 +37,6 @@ int	select_fd(int *fd, int *pfd, int flag)
 	}
 	else
 		set_fd(fd, pfd);
-	ft_printf("select fd: [%d, %d]\n", fd[0], fd[1]);
 	return (flag);
 }
 
@@ -61,7 +59,6 @@ int	update_redir_fd(int *fd, char **file, t_node *iter, t_env *env)
 		new_fd = open(*file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	unset(&fd[id]);
 	fd[id] = new_fd;
-	ft_printf("update_redir: %d at fd[%d], cond: %d || %d, cond actual: %d\n", new_fd, id, g_signo != 0, new_fd < 0, g_signo != 0 || ft_err(new_fd, "") < 0);
 	return (g_signo != 0 || ft_err(new_fd, "open error") < 0);
 }
 
@@ -95,9 +92,7 @@ int	redir_to_fd(t_node *node, t_env *env, int *fd, int *pfd)
 			split_cleanup(file);
 			return (1);
 		}
-		ft_printf("schizo prior: %d\n", flag);
 		flag = update_redir_fd(fd, file, iter, env);
-		ft_printf("schizo: %d\n", flag);
 		split_cleanup(file);
 		iter = iter->redir_next;
 	}

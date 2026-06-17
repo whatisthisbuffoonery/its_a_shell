@@ -51,6 +51,39 @@ void	mark_assignment_args(t_tok *argv)
 	}
 }
 
+void	move_argv(char **argv)
+{
+	char	*tmp;
+	int		i;
+
+	i = 0;
+	tmp = *argv;
+	while (argv[i])
+	{
+		argv[i] = argv[i + 1];
+		i ++;
+	}
+	free(tmp);
+}
+
+void	process_argv(char **argv, t_tok *src)
+{
+	int	i;
+
+	if (!argv)
+		return ;
+	i = 0;
+	while (argv[i])
+	{
+		if (!argv[i][0] && !ft_isquote(src->type))
+		{
+			move_argv(&argv[i]);
+			continue ;
+		}
+		i ++;
+	}
+}
+
 char	**make_argv(t_tok *src, t_env *env, int *complain)
 {
 	char		**argv;
@@ -61,8 +94,9 @@ char	**make_argv(t_tok *src, t_env *env, int *complain)
 	status = 1;
 	mark_assignment_args(src);
 	argv = expand_all(src, env, collect_argv);
-	if (!argv)
-		return (NULL);
+	process_argv(argv, src);
+	if (!argv || !argv[0])
+		return (argv);
 	path = find_env("PATH", env->env);
 	if (ft_strchr(*argv, '/') || isbuiltin(*argv)
 		|| !path || !path->str || !path->str[0])

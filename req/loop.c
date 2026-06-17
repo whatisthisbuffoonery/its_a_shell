@@ -16,7 +16,7 @@ sig_atomic_t	g_signo;
 
 int	shell_exit(t_env *env)
 {
-	ft_putstr("exiting now\n");
+	ft_putstr("exit\n");
 	rl_clear_history();
 	clean_shnode_dup(&env->env);
 	clean_shnode(&env->export);
@@ -45,7 +45,6 @@ int	execute_buffer(t_env *env, t_tok **tok)
 {
 	make_word(*tok);
 	env->ast = parse(tok);
-	ft_putstr("parsed\n");
 	if (g_signo)
 		update_last(env, g_signo);
 	else if (env->ast)

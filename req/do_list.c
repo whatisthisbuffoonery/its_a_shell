@@ -103,9 +103,6 @@ int	do_pipe(t_node *node, t_env *env, t_pipemanager *p, int p_index)
 		do_pipe(node->left, env, p, p_index + 1);
 	else
 	{
-		ft_putstr_fd("\n\n======= pipe init: ", 2);
-		ft_putnbr_fd(p_index + 1, 2);
-		ft_putstr_fd(" ======\n\n", 2);
 		pipemanager_init(p, p_index + 1);
 		if (p->pipes)
 			do_pipe_command(node->left, env, p, p_index + 1);
@@ -136,7 +133,6 @@ int	do_list(t_node *node, t_env *env)
 	if (g_signo == SIGINT || (env->is_in_subshell && g_signo))
 		return (g_signo);
 	g_signo = 0;
-	ft_printf("debug status: %d\n", status);
 	update_last(env, status);
 	if (!g_signo && ((node->kind == N_AND && !status)
 			|| (node->kind == N_OR && status)))

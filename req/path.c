@@ -11,6 +11,8 @@ void	path_error(char *new, int *status)
 	(void) dump;
 }
 
+//calling access("dir/ + empty string", X_OK) queries the dir itself
+//can return 0, not gud
 int	empty_path(char *dst, char *new, int *status)
 {
 	if (dst[0])

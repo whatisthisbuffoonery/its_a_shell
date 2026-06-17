@@ -36,7 +36,6 @@ char	*word_to_str(char **dst, t_tok *src)
 	}
 	if (dst)
 		*dst = ret;
-	ft_printf("heredoc word: %s\n", ret);
 	return (ret);
 }
 

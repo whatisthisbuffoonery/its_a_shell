@@ -5,7 +5,6 @@ void	update_last(t_env *env, int n)
 	int	i;
 	int	t;
 
-	ft_printf("update query: n: %d, last: %d, str: %s\n", n, env->last, env->last_string);
 	if (n > 255 || n < 0)
 		n = 1;
 	i = 0;
@@ -39,7 +38,7 @@ int	do_builtin_match(int argc, char **argv, t_env *env, int *fd)
 	else if ((*argv)[2] == 'p')
 		status = ft_export(argc, argv, env, fd[1]);
 	else if ((*argv)[2] == 'i')
-		exit_builtin(argc, argv, env, fd);
+		status = exit_builtin(argc, argv, env, fd);
 	return (status);
 }
 
@@ -59,11 +58,11 @@ int	do_binary(char **argv, t_env *env, int *fd)
 	unset(&fd[1]);
 	if (!status)
 		ft_err(execve(*argv, argv, envp), *argv);
-	status = 1;
-	if (errno == ENOENT)
-		status = 127;
-	else if (errno == EACCES)
-		status = 126;
+	status = errno + !errno;
+	
+	status = 126 + (errno == ENOENT);
+	close(0);
+	close(1);
 	shell_cleanup(env);
 	split_cleanup(argv);
 	split_cleanup(envp);
@@ -107,9 +106,7 @@ int	do_simple(t_node *node, t_env *env, int *fd)
 	i = 0;
 	while (argv && argv[i])
 		i ++;
-	ft_printf("null argv? %d\n", !argv);
-	ft_printf("access check: %d\n", access("/home/darren/.local/bin/", X_OK));
-	if (argv && !status)
+	if (argv && argv[0] && !status)
 		status = exec_simple(i, argv, env, fd);
 	else if (argv && status == ENOENT)
 		status = shell_assert2(127, *argv, "command not found");

@@ -4,7 +4,6 @@ int	heredoc_cmp(char *line, char *v, int v_len)
 {
 	int	line_len;
 
-	ft_printf("debug: v: [%s] len: %d, cmp: [%s] len: %d\n", v, v_len, line, line ? ft_strlen(line):0);
 	if (!line || g_signo)
 		return (0);
 	line_len = ft_strlen(line);

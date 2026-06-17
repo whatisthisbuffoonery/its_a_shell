@@ -24,7 +24,6 @@ char	*find_env_str(char *name, t_env *env, unsigned int len)
 {
 	t_shnode	*ret;
 
-	ft_printf("env str: %s: %d\n", name, len);
 	if (!name || !name[0])
 		return (NULL);
 	else if (name[0] == '?')
