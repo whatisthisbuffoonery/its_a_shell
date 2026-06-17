@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   loop.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dthoo <dthoo@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -24,30 +24,6 @@ int	shell_exit(t_env *env)
 	free(env->pwd);
 	free(env->oldpwd);
 	return (env->last);
-}
-
-int	buf_check(char *buf)
-{
-	int	c;
-	int	i;
-
-	i = 0;
-	c = buf[0];
-	while (buf[i] && ft_isspace(buf[i]))
-		i ++;
-	if (!buf[i])
-		return (1);
-	i = 0;
-	c = 0;
-	while (buf[i])
-	{
-		if (!c && ft_isquote(buf[i]))
-			c = buf[i];
-		else if (c && buf[i] == c)
-			c = 0;
-		i ++;
-	}
-	return (shell_assert(c, "unclosed quotes"));
 }
 
 void	init(t_env *env, char **e, t_tok **tok)

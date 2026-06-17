@@ -16,7 +16,7 @@ HEADERS := $(LIBFT_DIR)/includes/libft.h $(SRC_DIR)/h_minishell.h
 # 			env_utils.c exec.c exec_cleanup.c pipe_utils.c argv.c envp.c expand.c redir.c child.c \
 # 			echo.c exit.c env.c unset.c export.c cd.c other_cd.c pwd.c
 
-SRC_FILE := main.c loop.c err.c signal.c word.c update.c cleanup.c checker.c \
+SRC_FILE := main.c loop.c buf_check.c err.c signal.c word.c update.c cleanup.c checker.c \
 			ast_check.c ast_init.c ast_logic.c ast_redir.c \
 			expand.c expand_utils.c expand_handlers.c field.c glob_utils.c \
 			echo.c exit.c pwd.c export.c export_helpers.c unset.c env.c cd.c cd_utils.c \

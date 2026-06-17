@@ -34,12 +34,34 @@ char	*longest_argv(char *path, char *src)
 	return (ret);
 }
 
-void	find_path(char *path, char **dst, char *new)
+void	path_error(char *new, int *status)
+{
+	struct stat	dump;
+
+	if (errno == ENOENT || stat(new, &dump))
+		return ;
+	ft_err(-1, new);
+	*status = errno;
+	(void) dump;
+}
+
+int	empty_path(char *dst, char *new, int *status)
+{
+	if (dst[0])
+		return (0);
+	free(new);
+	*status = ENOENT;
+	return (1);
+}
+
+void	find_path(char *path, char **dst, char *new, int *status)
 {
 	int		i;
 	int		k;
 
 	i = 0;
+	if (empty_path(*dst, new, status))
+		return ;
 	while (path[i])
 	{
 		k = 0;
@@ -50,10 +72,12 @@ void	find_path(char *path, char **dst, char *new)
 		ft_strlcat(new, *dst, -1);
 		if (!access(new, X_OK))
 		{
+			*status = 0;
 			free(*dst);
 			*dst = new;
 			return ;
 		}
+		path_error(new, status);
 		i += k + (path[i + k] != '\0');
 	}
 	free(new);
@@ -76,12 +100,14 @@ void	mark_assignment_args(t_tok *argv)
 	}
 }
 
-char	**make_argv(t_tok *src, t_env *env)
+char	**make_argv(t_tok *src, t_env *env, int *complain)
 {
 	char		**argv;
 	char		*cmd;
 	t_shnode	*path;
+	int			status;
 
+	status = 1;
 	mark_assignment_args(src);
 	argv = expand_all(src, env, collect_argv);
 	if (!argv)
@@ -93,6 +119,10 @@ char	**make_argv(t_tok *src, t_env *env)
 	cmd = longest_argv(path->str, *argv);
 	if (ft_err(-!cmd, "cmd malloc error"))
 		return (split_cleanup(argv));
-	find_path(path->str, argv, cmd);
+	find_path(path->str, argv, cmd, &status);
+	if (status && status != 1)
+		*complain = status;
+	else if (status)
+		*complain = ENOENT;
 	return (argv);
 }

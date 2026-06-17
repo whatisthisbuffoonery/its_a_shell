@@ -96,6 +96,10 @@ typedef struct	s_env
 /*shell entry*/
 int			loop(char **e);
 
+/*buffer checking*/
+int			buf_check(char *buf);
+int			isempty(char *buf);
+
 /*signal handling*/
 void		signal_init(void);
 int			rl_handle_signals(void);
@@ -164,7 +168,7 @@ int			collect_redir(t_arg **dst, t_tok *src);
 
 /*expand_all callers*/
 char		**make_envp(t_env *env, int *complain);
-char    	**make_argv(t_tok *src, t_env *env);
+char    	**make_argv(t_tok *src, t_env *env, int *complain);
 int			redir_to_fd(t_node *node, t_env *env, int *fd, int *pfd);
 
 /*env utils*/

@@ -5,22 +5,20 @@ void	update_last(t_env *env, int n)
 	int	i;
 	int	t;
 
+    ft_printf("update query: n: %d, last: %d, str: %s\n", n, env->last, env->last_string);
 	if (n > 255 || n < 0)
 		n = 1;
-	if (env->last != n)
+	i = 0;
+	t = 1;
+	while (n / t > 9)
+		t *= 10;
+	while (t)
 	{
-		i = 0;
-		t = 1;
-		while (n / t > 9)
-			t *= 10;
-		while (t)
-		{
-			env->last_string[i++] = ((n / t) % 10) + '0';
-			t /= 10;
-		}
-		env->last_string[i] = '\0';
-		env->last = n;
+		env->last_string[i++] = ((n / t) % 10) + '0';
+		t /= 10;
 	}
+	env->last_string[i] = '\0';
+	env->last = n;
 }
 
 int	do_builtin_match(int argc, char **argv, t_env *env, int *fd)
@@ -98,21 +96,24 @@ int	do_simple(t_node *node, t_env *env, int *fd)
 	int		i;
 
 	argv = NULL;
+    status = 0;
 	if (!node->argv)
 	{
 		unset(&fd[0]);
 		unset(&fd[1]);
 		return (0);
 	}
-	argv = make_argv(node->argv, env);
+	argv = make_argv(node->argv, env, &status);//status?
+    status += !argv;
 	i = 0;
 	while (argv && argv[i])
 		i ++;
-    ft_printf("null argv? %d\n", !argv);
-	if (argv)
+	ft_printf("null argv? %d\n", !argv);
+    ft_printf("access check: %d\n", access("/home/darren/.local/bin/", X_OK));
+	if (argv && !status)
 		status = exec_simple(i, argv, env, fd);
-	else
-		status = 1;
+	else if (argv && status == ENOENT)
+		status = shell_assert2(127, *argv, "command not found");
 	split_cleanup(argv);
 	unset(&fd[0]);
 	unset(&fd[1]);
