@@ -93,6 +93,9 @@ typedef struct	s_env
 	char			last;
 }					t_env;				//PSA empty strings can be in env list, null strings cannot
 
+/*makefile punking*/
+int			group_kind(char c);
+
 /*shell entry*/
 int			loop(char **e);
 

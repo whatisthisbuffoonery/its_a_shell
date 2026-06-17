@@ -12,6 +12,13 @@
 
 #include "h_minishell.h"
 
+int	simple_cond(t_tok *src)
+{
+	int	cond[3];
+
+	cond
+
+//further separation efforts here
 t_node	*parse_simple(t_tok **tok, int *stop)
 {
 	t_node	*new_cmd;
@@ -70,7 +77,7 @@ t_node	*parse_command(t_tok **tok, int *stop)
 		*stop = 1;
 		return (NULL);
 	}
-	if ((*tok)->type == '(')
+	if (group_kind((*tok)->type))
 		return (parse_group(tok, stop));
 	return (parse_simple(tok, stop));
 }
