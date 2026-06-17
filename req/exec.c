@@ -5,7 +5,7 @@ void	update_last(t_env *env, int n)
 	int	i;
 	int	t;
 
-    ft_printf("update query: n: %d, last: %d, str: %s\n", n, env->last, env->last_string);
+	ft_printf("update query: n: %d, last: %d, str: %s\n", n, env->last, env->last_string);
 	if (n > 255 || n < 0)
 		n = 1;
 	i = 0;
@@ -74,7 +74,6 @@ int	exec_simple(int argc, char **argv, t_env *env, int *fd)
 {
 	pid_t	pid;
 
-    
 	if (isbuiltin(*argv))
 		return (do_builtin_match(argc, argv, env, fd));
 	pid = 0;
@@ -96,20 +95,20 @@ int	do_simple(t_node *node, t_env *env, int *fd)
 	int		i;
 
 	argv = NULL;
-    status = 0;
+	status = 0;
 	if (!node->argv)
 	{
 		unset(&fd[0]);
 		unset(&fd[1]);
 		return (0);
 	}
-	argv = make_argv(node->argv, env, &status);//status?
-    status += !argv;
+	argv = make_argv(node->argv, env, &status);
+	status += !argv;
 	i = 0;
 	while (argv && argv[i])
 		i ++;
 	ft_printf("null argv? %d\n", !argv);
-    ft_printf("access check: %d\n", access("/home/darren/.local/bin/", X_OK));
+	ft_printf("access check: %d\n", access("/home/darren/.local/bin/", X_OK));
 	if (argv && !status)
 		status = exec_simple(i, argv, env, fd);
 	else if (argv && status == ENOENT)

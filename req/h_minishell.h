@@ -171,6 +171,9 @@ char		**make_envp(t_env *env, int *complain);
 char    	**make_argv(t_tok *src, t_env *env, int *complain);
 int			redir_to_fd(t_node *node, t_env *env, int *fd, int *pfd);
 
+/*argv command finder*/
+void		find_path(char *path, char **dst, char *new, int *status);
+
 /*env utils*/
 t_shnode	*env_init_node(char *e);
 void		shnode_append(t_shnode **dst, t_shnode *src);

@@ -12,7 +12,7 @@
 
 #include "h_minishell.h"
 
-//empty src is easy to remove at this stage
+//empty src is easy to remove at this stage, but it would be wrong
 void	append_new_wrapper(t_arg **head, t_arg **tail, t_arg *src, int assign)
 {
 	int	i;
@@ -29,9 +29,6 @@ void	append_new_wrapper(t_arg **head, t_arg **tail, t_arg *src, int assign)
 			break ;
 		i ++;
 	}
-//	if (!src->next && !src->str[i])
-//		free_arg(src);
-//	else
 	append_new_field(head, tail, src);
 	while (*tail && (*tail)->next)
 		*tail = (*tail)->next;

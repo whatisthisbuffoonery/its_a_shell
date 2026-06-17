@@ -18,7 +18,7 @@ int	heredoc_help(char *s, int fd)
 {
 	int	i;
 
-    free(s);
+	free(s);
 	i = write(fd, "\n", 1);
 	while (i < 0 && errno == EINTR && !g_signo)
 		i = write(fd, "\n", 1);
