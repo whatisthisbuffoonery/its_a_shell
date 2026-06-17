@@ -66,6 +66,17 @@ void	move_argv(char **argv)
 	free(tmp);
 }
 
+int	argv_check_quote(t_tok *src)
+{
+	while (src)
+	{
+		if (ft_isquote(src->type))
+			return (1);
+		src = src->word_next;
+	}
+	return (0);
+}
+
 void	process_argv(char **argv, t_tok *src)
 {
 	int	i;
@@ -75,9 +86,10 @@ void	process_argv(char **argv, t_tok *src)
 	i = 0;
 	while (argv[i])
 	{
-		if (!argv[i][0] && !ft_isquote(src->type))
+		if (!argv[i][0] && !argv_check_quote(src))
 		{
 			move_argv(&argv[i]);
+			src = src->next;
 			continue ;
 		}
 		i ++;
