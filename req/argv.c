@@ -51,51 +51,6 @@ void	mark_assignment_args(t_tok *argv)
 	}
 }
 
-void	move_argv(char **argv)
-{
-	char	*tmp;
-	int		i;
-
-	i = 0;
-	tmp = *argv;
-	while (argv[i])
-	{
-		argv[i] = argv[i + 1];
-		i ++;
-	}
-	free(tmp);
-}
-
-int	argv_check_quote(t_tok *src)
-{
-	while (src)
-	{
-		if (ft_isquote(src->type))
-			return (1);
-		src = src->word_next;
-	}
-	return (0);
-}
-
-void	process_argv(char **argv, t_tok *src)
-{
-	int	i;
-
-	if (!argv)
-		return ;
-	i = 0;
-	while (argv[i])
-	{
-		if (!argv[i][0] && !argv_check_quote(src))
-		{
-			move_argv(&argv[i]);
-			src = src->next;
-			continue ;
-		}
-		i ++;
-	}
-}
-
 char	**make_argv(t_tok *src, t_env *env, int *complain)
 {
 	char		**argv;
@@ -106,7 +61,7 @@ char	**make_argv(t_tok *src, t_env *env, int *complain)
 	status = 1;
 	mark_assignment_args(src);
 	argv = expand_all(src, env, collect_argv);
-	process_argv(argv, src);
+	argv_remove_empty(argv, src);
 	if (!argv || !argv[0])
 		return (argv);
 	path = find_env("PATH", env->env);

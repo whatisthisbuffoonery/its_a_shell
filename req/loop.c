@@ -49,6 +49,8 @@ int	execute_buffer(t_env *env, t_tok **tok)
 		update_last(env, g_signo);
 	else if (env->ast)
 		update_last(env, do_list(env->ast, env));
+	else
+		update_last(env, 1);
 	clean_ast(env->ast);
 	env->ast = NULL;
 	return (env->last);
@@ -70,11 +72,14 @@ int	loop(char **e)
 			add_history(buf);
 		if (!buf_check(buf))
 		{
+			//update_last(&env, tok_init(buf, &tok));
 			env.last = tok_init(buf, &tok);
 			free(buf);
 			buf = NULL;
 			if (!env.last)
 				execute_buffer(&env, &tok);
+			else
+				update_last(&env, 1);
 		}
 		free(buf);
 		clean_tok(&tok);
