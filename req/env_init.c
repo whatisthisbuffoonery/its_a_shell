@@ -12,6 +12,7 @@
 
 #include "h_minishell.h"
 
+//bc i need "export a" to be displayed differently from "export a=" (a vs a="")
 t_shnode	*env_init_node(char *e)
 {
 	t_shnode	*ret;
@@ -26,24 +27,25 @@ t_shnode	*env_init_node(char *e)
 	ret->name = ft_strndup(e, i);
 	if (!ret->name)
 		return (clean_one_shnode(ret));
-	if (e[i]) //bc i need "export a" to be displayed differently from "export a=" (a vs a="")
+	if (e[i])
 	{
 		ret->str = ft_strdup(&e[i + 1]);
 		if (!ret->str)
 			return (clean_one_shnode(ret));
 	}
-	else //for the above reason
+	else
 		ret->str = NULL;
 	return (ret);
 }
 
+//no recovery method
 char	*grab_home(t_env *env)
 {
 	t_shnode	*tmp;
 
 	tmp = find_env("HOME", env->env);
 	if (!tmp)
-		return (NULL);//no recovery method
+		return (NULL);
 	return (tmp->str);
 }
 
@@ -65,9 +67,7 @@ void	pwd_init(t_env *env)
 	ft_err(-!env->oldpwd, "oldpwd init error");
 }
 
-//init shell level, only init cd dash if null/not present
-//also also change SHELL to be minishell, update SHLVL
-//dealing with LINES and COLUMNS for display stuff is way outside subject scope
+//test program on null envp
 void	env_init(t_env *dst, char **e)
 {
 	int			i;
@@ -77,7 +77,7 @@ void	env_init(t_env *dst, char **e)
 	ft_memset(dst, 0, sizeof(t_env));
 	if (!e || !*e)
 	{
-		ft_putstr_fd("minishell: null envp at init\n", 2);//test program on null envp
+		ft_putstr_fd("minishell: null envp at init\n", 2);
 		return ;
 	}
 	while (e[i])

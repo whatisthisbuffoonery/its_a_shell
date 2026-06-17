@@ -21,7 +21,7 @@ char	**count_str(t_arg *globbed)
 
 	i = 0;
 	next = globbed;
-	while(next)
+	while (next)
 	{
 		i ++;
 		next = next->next;

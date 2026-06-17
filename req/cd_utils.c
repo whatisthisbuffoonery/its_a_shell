@@ -127,7 +127,7 @@ int	new_pwd(char *pwd, char *v)
 	path_process(pwd);
 	done = builtin_err(stat(pwd, &dump), "cd rela", v);
 	while (!done)
-		done = resolve_relative(pwd, &i);//here too
+		done = resolve_relative(pwd, &i);
 	ft_printf("cd result: done:%d, done bool:%d, %s, %s\n", done, (done < 0), pwd, v);
 	(void) dump;
 	return (done < 0);

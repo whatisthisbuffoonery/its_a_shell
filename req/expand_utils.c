@@ -30,7 +30,7 @@ int	concat_wrapper(t_tok *dst, t_env *env, char *ret, int *i)
 	k = 0;
 	str = &dst->str[*i + 1];
 	tmp_len = 0;
-	while (isenv(str[k]))//huh
+	while (isenv(str[k]))
 		k ++;
 	src = find_env_str(str, env, k);
 	if (ret && src)
@@ -41,6 +41,7 @@ int	concat_wrapper(t_tok *dst, t_env *env, char *ret, int *i)
 	return (tmp_len);
 }
 
+//we copy dollar sign if env name is invalid
 int	use_expansion(t_tok *dst, t_env *env, char *ret)
 {
 	int		i;
@@ -55,9 +56,9 @@ int	use_expansion(t_tok *dst, t_env *env, char *ret)
 	while (dst->str[i])
 	{
 		if (envname(&dst->str[i]))
-			len += concat_wrapper(dst, env, ret, &i);//either strlen or strlcat
+			len += concat_wrapper(dst, env, ret, &i);
 		else
-			copy_wrapper(dst->str, ret, &i, &len);//copy one char//yes we copy dollar sign if env name is invalid
+			copy_wrapper(dst->str, ret, &i, &len);
 	}
 	if (!ret
 		&& (!ft_err(-!malloc_cond((void **) &ret, len + 1), err_msg)))

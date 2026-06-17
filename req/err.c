@@ -12,12 +12,13 @@
 
 #include "h_minishell.h"
 
+//check for [] printing
 int	shell_assert_redir(int cond, t_tok *src, char *s)
 {
 	if (cond)
 	{
 		ft_putstr_fd("-minishell: ", 2);
-		print_word(src);//currently has enclosing [], should remove later //also this prints to stdout not stderr huurrrrr
+		print_word(src);
 		if (src)
 			ft_putstr_fd(": ", 2);
 		ft_putstr_fd(s, 2);

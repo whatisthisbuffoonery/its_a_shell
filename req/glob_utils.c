@@ -91,11 +91,12 @@ int	has_glob(t_arg *field)
 	return (0);
 }
 
+//glob_split returns iter on no result, so NULL is an error
 int	do_glob(t_arg **prev, t_arg **iter, t_arg **next, t_arg **head)
 {
 	t_arg	*ex;
 
-	ex = glob_split(*iter);//returns iter on no result, so NULL is an error
+	ex = glob_split(*iter);
 	if (!ex)
 		return (1);
 	if (ex == *iter)
@@ -113,39 +114,4 @@ int	do_glob(t_arg **prev, t_arg **iter, t_arg **next, t_arg **head)
 		free_arg(*iter);
 	}
 	return (0);
-}
-
-
-
-//-----------------------------------------------------------------------
-
-t_arg	*fake_token(void)
-{
-	int		i;
-	int		len;
-	t_arg   *arg;
-	t_tok   fake;
-
-	ft_printf("\nfake token testing:\n");
-	fake.type = '$';
-	fake.str = ft_strdup("  $a$b-hello world  *.c* env*_init*  hi   ");
-	fake.word_next = NULL;
-	fake.next = NULL;
-	ft_printf("tkn(->next)->str: %s\n", fake.str);
-	split_expand(&arg, &fake);
-	ft_printf("arg->str: %s\n", arg->str);
-	len = ft_strlen(arg->str);
-	ft_printf("arg->mas: ", arg->mask);
-	i = 0;
-	while (i < len)
-	{
-		if (arg->mask[i])
-			ft_putchar('1');
-		else
-			ft_putchar('0');
-		i ++;
-	}
-	ft_putstr("\n\n");
-	free(fake.str);
-	return (arg);
 }

@@ -82,11 +82,11 @@ char	*grab_v(char **v, t_env *env, int *status)
 		ret = grab_home(env);
 	else if (!ft_strcmp(ret, "-"))
 		ret = env->oldpwd;
-//	ft_printf("oldpwd check: %s\n", env->oldpwd);
-	*status = builtin_err(!ret, "cd", "HOME not set");//make builtin version that uses errno
+	*status = builtin_err(!ret, "cd", "HOME not set");
 	return (ret);
 }
 
+//dont free v
 int	cd(int argc, char **argv, t_env *env)
 {
 	char	*v;
@@ -95,7 +95,7 @@ int	cd(int argc, char **argv, t_env *env)
 
 	if (shell_assert(argc > 2, "too many arguments"))
 		return (1);
-	v = grab_v(argv, env, &status);//never free
+	v = grab_v(argv, env, &status);
 	if (!v || !v[0])
 		return (status);
 	if (!env->pwd)

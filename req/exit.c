@@ -21,26 +21,28 @@ int	exit_arg(char *v, int *flag)
 		i ++;
 	if (v[i] == '+' || v[i] == '-')
 		i ++;
-	*flag += !v[i];//empty arg //expand should have accounted for quotes, check to see.
+	*flag += !v[i];
 	while (ft_isdigit(v[i]))
 		i ++;
 	while (ft_isspace(v[i]))
 		i ++;
 	*flag += (v[i] != 0);
 	if (*flag)
-		return(shell_assert2(1 + 1, v, "numeric argument required"));//nl?
+		return (shell_assert2(1 + 1, v, "numeric argument required"));
 	return (ft_atoi(v) % 256);
 }
 
+//always prints to stderr//also yes it prints before checking for too many args
+//does not exit on too many args
 int	exit_builtin(int argc, char **argv, t_env *env, int *fd)
 {
-    int status;
+	int	status;
 	int	flag;
 
 	flag = 0;
-	ft_putstr_fd("exit\n", 2);//yes it goes to stderr//also yes it prints before checking for too many args
-	if (shell_assert2(argc > 2, "exit", "too many arguments"))//nl is debatable
-		return (1);//do not exit on this error
+	ft_putstr_fd("exit\n", 2);
+	if (shell_assert2(argc > 2, "exit", "too many arguments"))
+		return (1);
 	else if (argc > 1)
 		status = exit_arg(argv[1], &flag);
 	else
@@ -49,7 +51,6 @@ int	exit_builtin(int argc, char **argv, t_env *env, int *fd)
 	split_cleanup(argv);
 	unset(&fd[0]);
 	unset(&fd[1]);
-//	write(1, "\n", 1);
 	exit(status);
 	return (0);
 }

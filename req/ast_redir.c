@@ -19,7 +19,7 @@ t_node	*parse_one_redir(t_tok **tok, int *stop)
 	r = node_new(N_REDIR, stop);
 	if (!r)
 		return (NULL);
-	r->redir_op = subtok(tok, single_tok);//increment
+	r->redir_op = subtok(tok, single_tok);
 	if (!*tok || !isarg((*tok)->type))
 	{
 		ft_putstr_fd("syntax error: redirect followed by ", 2);
@@ -31,11 +31,10 @@ t_node	*parse_one_redir(t_tok **tok, int *stop)
 		*stop = 1;
 	}
 	else
-		r->redir_target = subtok(tok, single_tok);//still counting on word_next
+		r->redir_target = subtok(tok, single_tok);
 	return (r);
 }
 
-//check redir_next usage
 t_node	*parse_redir_group(t_tok **tok, int *stop)
 {
 	t_node	*head;

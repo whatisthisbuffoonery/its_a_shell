@@ -12,44 +12,25 @@
 
 #include "h_minishell.h"
 
-int	isredir(int c)
-{
-	return (c == '>' || c == '<');
-}
-
-int	isbracket(int c)//move this over to libft
-{
-	return (c == '(' || c == ')');
-}
-
-int	iscond(int c)
-{
-	return (c == '|' || c == '&');
-}
-
-int	isop(int c)
-{
-	return (isredir(c) || iscond(c));
-}
-
 int	isenv(char c)
 {
-	//ft_printf("%d\n", c);
 	return (c == '_' || ft_isalnum(c));
+}
+
+int	isbuiltin(char *s)
+{
+	return (!ft_strcmp(s, "env") || !ft_strcmp(s, "cd") || !ft_strcmp(s, "pwd")
+		|| !ft_strcmp(s, "echo") || !ft_strcmp(s, "export")
+		|| !ft_strcmp(s, "unset") || !ft_strcmp(s, "exit"));
 }
 
 int	envname(char *s)
 {
-	return (s[0] == '$' && (isenv(s[1]) || s[1] == '?'));
+	return (s[0] == '$' && (s[1] == '_' || ft_isalpha(s[1]) || s[1] == '?'));
 }
 
-int	iscontent(int c)
-{
-	return (c && c != '*' /*&& c != '='  do not consider */
-		&& !isop(c) && !ft_isquote(c) && !ft_isspace(c) && !isbracket(c));
-}
-
-int	is_assignment_word(char *s) //only when export is argv[0] of the cmd
+//only when export is argv[0] of the cmd
+int	is_assignment_word(char *s)
 {
 	int	i;
 
@@ -63,4 +44,15 @@ int	is_assignment_word(char *s) //only when export is argv[0] of the cmd
 		i++;
 	}
 	return (s[i] == '=');
+}
+
+int	find_quote(t_tok *tok)
+{
+	while (tok)
+	{
+		if (ft_isquote(tok->type))
+			return (1);
+		tok = tok->word_next;
+	}
+	return (0);
 }

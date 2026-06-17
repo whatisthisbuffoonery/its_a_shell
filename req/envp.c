@@ -24,7 +24,7 @@ char	**count_envp(t_env *env, int *complain)
 		return (NULL);
 	while (iter)
 	{
-		if (iter->name && iter->str)//I should really account for this by cleaning out malloc fails
+		if (iter->name && iter->str)
 			i ++;
 		iter = iter->next;
 	}
@@ -44,7 +44,7 @@ char	**make_envp(t_env *env, int *complain)
 	t_shnode	*iter;
 
 	ret = count_envp(env, complain);
-	ft_printf("envp signo: %d, complain: %d\n", signo, *complain);
+	ft_printf("envp g_signo: %d, complain: %d\n", g_signo, *complain);
 	if (ft_err(-(*complain != 0), "envp malloc error"))
 		return (split_cleanup(ret));
 	iter = env->env;

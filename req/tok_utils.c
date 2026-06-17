@@ -48,37 +48,25 @@ int	copy_tok(t_tok *tok)
 	return (tok != NULL);
 }
 
-int	counttype(t_tok *node, char c)
-{
-	int	i;
-
-	i = 0;
-	while (node)
-	{
-		i += (node->type == c);
-		node = node->next;
-	}
-	return (i);
-}
-
 //does not support rejoining of prior listnorminette
 //usage pattern: arg = thisfunc, redir = subtok('>'->next, isjoined)
+//in ls"a" sumshit, next is "a" due to !"a"->next || "a"->end_space
 t_tok	*subtok(t_tok **index, int (*f)(t_tok *))
 {
 	t_tok	*iter;
 	t_tok	*next;
 	t_tok	*ret;
 
-	iter = *index;//start from node 1
-	ret = *index;//remember node 1
+	iter = *index;
+	ret = *index;
 	while (f(iter))
-		iter = iter->next;//it is just isjoined here
-	next = iter;//in ls"a" sumshit, next is "a" due to !"a"->next || "a"->end_space
+		iter = iter->next;
+	next = iter;
 	if (iter)
 	{
 		next = iter->next;
 		iter->next = NULL;
 	}
-	*index = next;//index = sumshit
+	*index = next;
 	return (ret);
 }

@@ -64,13 +64,12 @@ int	tok_node_init(t_tok **dst, char *src, int *cry)
 	char	c;
 	t_tok	*ret;
 
-	i = 1;//oh mah gah
+	i = 0 + 1;
 	c = src[0];
-	//yep
-	while (!signo && ((isop(c) && src[i] == c && i < 2)				//operator
-		|| (iscontent(c) && iscontent(src[i]))						//operand
-			|| (ft_isquote(c) && src[i] && src[i] != c)				//quote, also operand
-				|| (c && i < 1)))									//put brackets in their own node
+	while (!g_signo && ((isop(c) && src[i] == c && i < 2)
+			|| (iscontent(c) && iscontent(src[i]))
+			|| (ft_isquote(c) && src[i] && src[i] != c)
+			|| (c && i < 1)))
 		i ++;
 	ret = tok_node(src, i, c, cry);
 	tok_node_append(dst, ret);

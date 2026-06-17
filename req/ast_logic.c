@@ -16,7 +16,7 @@ t_node	*parse_simple(t_tok **tok, int *stop)
 {
 	t_node	*new_cmd;
 
-	if (!*tok || !(*tok)->type || ismeta(*tok))//accept redir
+	if (!*tok || !(*tok)->type || ismeta(*tok))
 	{
 		ft_putstr_fd("expected command, got ", 2);
 		if (!*tok)
@@ -27,20 +27,19 @@ t_node	*parse_simple(t_tok **tok, int *stop)
 		*stop = 1;
 		return (NULL);
 	}
-	new_cmd = node_new(N_CMD, stop);//does not increment
+	new_cmd = node_new(N_CMD, stop);
 	if (!new_cmd)
 		return (NULL);
 	while (*tok && !*stop && (*tok)->type && !ismeta(*tok))
 	{
 		if (isredir((*tok)->type))
-			redir_append(new_cmd, parse_one_redir(tok, stop));//make a func
+			redir_append(new_cmd, parse_one_redir(tok, stop));
 		else
-			tok_node_append(&new_cmd->argv, subtok(tok, single_tok));//increment
+			tok_node_append(&new_cmd->argv, subtok(tok, single_tok));
 	}
 	return (new_cmd);
 }
 
-//veto open bracket check
 t_node	*parse_group(t_tok **tok, int *stop)
 {
 	t_node	*new_group;
@@ -76,8 +75,6 @@ t_node	*parse_command(t_tok **tok, int *stop)
 	return (parse_simple(tok, stop));
 }
 
-//left = pipe symbol, right = command
-//execution idea: recursive pipe manager increments count
 t_node	*parse_pipeline(t_tok **tok, int *stop)
 {
 	t_node	*left;
@@ -93,7 +90,7 @@ t_node	*parse_pipeline(t_tok **tok, int *stop)
 		if (!new_pipe)
 			return (left);
 		tok_pop(tok);
-		right = parse_command(tok, stop);//veto failure catch
+		right = parse_command(tok, stop);
 		new_pipe->left = left;
 		new_pipe->right = right;
 		left = new_pipe;
@@ -116,7 +113,7 @@ t_node	*parse_list(t_tok **tok, int *stop)
 		if (!new_op)
 			return (left);
 		tok_pop(tok);
-		right = parse_pipeline(tok, stop);//veto failure catch
+		right = parse_pipeline(tok, stop);
 		new_op->left = left;
 		new_op->right = right;
 		left = new_op;

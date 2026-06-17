@@ -93,7 +93,7 @@ t_arg	*new_field(t_arg *src, int start, int end)
 	return (node);
 }
 
-t_arg	*append_new_field(t_arg *new, t_arg **head, t_arg **cur)
+t_arg	*append_new_field(t_arg **head, t_arg **cur, t_arg *new)
 {
 	if (!new)
 		return (NULL);
@@ -107,6 +107,7 @@ t_arg	*append_new_field(t_arg *new, t_arg **head, t_arg **cur)
 
 //for empty word i.e. $c="     " unquoted, this returns src
 //caller of this has to weed out completely empty entries
+//(!head) condition checks if src->str was empty
 t_arg	*field_split(t_arg *src)
 {
 	t_arg	*head;
@@ -116,23 +117,22 @@ t_arg	*field_split(t_arg *src)
 	int		i;
 
 	head = NULL;
-	cur = NULL;
 	i = 0;
 	next_to_1 = 0;
 	start = 0;
 	while (src->str[i])
 	{
 		if (src->mask[i] && ft_isspace(src->str[i]) && !next_to_1 && i > start
-			&& !append_new_field(new_field(src, start, i), &head, &cur))
+			&& !append_new_field(&head, &cur, new_field(src, start, i)))
 			return (free_arg_list(head));
 		next_to_1 = src->mask[i] && ft_isspace(src->str[i]);
 		if (next_to_1)
 			start = i + 1;
 		i++;
 	}
-	if (i > start && !(append_new_field(new_field(src, start, i), &head, &cur)))
+	if (i > start && !(append_new_field(&head, &cur, new_field(src, start, i))))
 		return (free_arg_list(head));
-	if (!head) //if src->str was empty
+	if (!head)
 		return (src);
 	return (head);
 }

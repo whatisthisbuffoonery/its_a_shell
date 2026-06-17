@@ -15,7 +15,6 @@
 void	clean_pipemanager(t_pipemanager *p)
 {
 	pipeset_cleanup(p->pipes, p->pipe_count);
-//	free(p);
 }
 
 void	shell_cleanup(t_env *env)
@@ -29,7 +28,7 @@ void	shell_cleanup(t_env *env)
 	if (env->duped_fd[1])
 		close(1);
 	env->duped_fd[0] = 0;
-	env->duped_fd[1] = 0;//could incluse an indicator for if stdin/stdout was closed. should I?
+	env->duped_fd[1] = 0;
 	free(env->pwd);
 	free(env->oldpwd);
 	env->pwd = NULL;
