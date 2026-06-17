@@ -41,8 +41,10 @@ void	init(t_env *env, char **e, t_tok **tok)
 }
 
 //need to update last in execution
-int	execute_buffer(t_env *env, t_tok **tok)
+int	execute_buffer(t_env *env, t_tok **tok, char **buf)
 {
+	free(*buf);
+	*buf = NULL;
 	make_word(*tok);
 	env->ast = parse(tok);
 	if (g_signo)
@@ -56,6 +58,7 @@ int	execute_buffer(t_env *env, t_tok **tok)
 	return (env->last);
 }
 
+//updating last for tok init causes $? to always show 0
 int	loop(char **e)
 {
 	char	*buf;
@@ -72,14 +75,11 @@ int	loop(char **e)
 			add_history(buf);
 		if (!buf_check(buf))
 		{
-			//update_last(&env, tok_init(buf, &tok));
 			env.last = tok_init(buf, &tok);
-			free(buf);
-			buf = NULL;
 			if (!env.last)
-				execute_buffer(&env, &tok);
+				execute_buffer(&env, &tok, &buf);
 			else
-				update_last(&env, 1);
+				update_last(&env, env.last);
 		}
 		free(buf);
 		clean_tok(&tok);

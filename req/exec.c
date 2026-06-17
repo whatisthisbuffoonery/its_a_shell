@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exec.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dthoo <dthoo@student.42singapore.sg>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/17 18:31:00 by dthoo             #+#    #+#             */
+/*   Updated: 2026/06/17 18:31:01 by dthoo            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "h_minishell.h"
 
 void	update_last(t_env *env, int n)
@@ -53,13 +65,12 @@ int	do_binary(char **argv, t_env *env, int *fd)
 	if (!status)
 		envp = make_envp(env, &status);
 	if (!status)
-		status = ft_err(-(dup2(fd[0], 0) < 0 || dup2(fd[1], 1) < 0), "dup error binary");//valgrind you jerk
+		status = ft_err(-(dup2(fd[0], 0) < 0
+					|| dup2(fd[1], 1) < 0), "dup error");
 	unset(&fd[0]);
 	unset(&fd[1]);
 	if (!status)
 		ft_err(execve(*argv, argv, envp), *argv);
-	status = errno + !errno;
-	
 	status = 126 + (errno == ENOENT);
 	close(0);
 	close(1);

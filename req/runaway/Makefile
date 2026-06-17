@@ -19,6 +19,8 @@ SRC_FILE := main.c loop.c buf_check.c err.c signal.c word.c update.c cleanup.c c
 
 OBJ := $(SRC_FILE:.c=.o)
 
+bonus: all
+
 all: $(NAME)
 
 $(NAME): $(OBJ)
