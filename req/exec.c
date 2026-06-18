@@ -116,7 +116,6 @@ int	do_simple(t_node *node, t_env *env, int *fd)
 		return (0);
 	}
 	argv = make_argv(node->argv, env, &status);
-	i = 0;
 	if (argv && argv[0] && !status)
 		status = exec_simple(argv, env, fd);
 	else if (argv && status == ENOENT)
