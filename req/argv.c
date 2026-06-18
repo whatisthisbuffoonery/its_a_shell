@@ -51,6 +51,21 @@ void	mark_assignment_args(t_tok *argv)
 	}
 }
 
+static char	**check_argv(char **argv, int *complain)
+{
+	struct stat	info;
+
+	if (isbuiltin(*argv))
+		return (argv);
+	if (stat(*argv, &info))
+		*complain = errno;
+	else if (!S_ISREG(info.st_mode))
+		*complain = shell_assert2(126, *argv, "Is a directory");
+	else if (access(*argv, X_OK))
+		*complain = shell_assert2(126, *argv, "Permission denied");
+	return (argv);
+}
+
 char	**make_argv(t_tok *src, t_env *env, int *complain)
 {
 	char		**argv;
@@ -67,7 +82,7 @@ char	**make_argv(t_tok *src, t_env *env, int *complain)
 	path = find_env("PATH", env->env);
 	if (ft_strchr(*argv, '/') || isbuiltin(*argv)
 		|| !path || !path->str || !path->str[0])
-		return (argv);
+		return (check_argv(argv, complain));
 	cmd = longest_argv(path->str, *argv);
 	if (ft_err(-!cmd, "cmd malloc error"))
 		return (split_cleanup(argv));

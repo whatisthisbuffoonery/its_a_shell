@@ -19,7 +19,7 @@ void	path_error(char *new, int *status)
 	if (errno == ENOENT || stat(new, &dump))
 		return ;
 	ft_err(-1, new);
-	*status = errno;
+	*status = 126;
 	(void) dump;
 }
 

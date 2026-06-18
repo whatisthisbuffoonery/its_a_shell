@@ -56,8 +56,9 @@ int	do_builtin_match(int argc, char **argv, t_env *env, int *fd)
 
 int	do_binary(char **argv, t_env *env, int *fd)
 {
-	char	**envp;
-	int		status;
+	char		**envp;
+	int			status;
+	struct stat	dump;
 
 	status = g_signo;
 	envp = NULL;
@@ -71,9 +72,10 @@ int	do_binary(char **argv, t_env *env, int *fd)
 	unset(&fd[1]);
 	if (!status)
 		ft_err(execve(*argv, argv, envp), *argv);
-	status = 126 + (errno == ENOENT);
+	status = 126 + (stat(*argv, &dump) != 0);
 	close(0);
 	close(1);
+	(void) dump;
 	shell_cleanup(env);
 	split_cleanup(argv);
 	split_cleanup(envp);
