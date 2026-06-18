@@ -105,12 +105,11 @@ int	new_pwd(char *pwd, char *v)
 {
 	int			i;
 	int			done;
-	struct stat	dump;
 
 	if (v[0] == '/')
 	{
 		ft_strlcpy(pwd, v, -1);
-		return (builtin_err(-1 * stat(pwd, &dump), "cd", v));
+		return (builtin_err(-1 * access(pwd, X_OK), "cd", v));
 	}
 	path_process(pwd);
 	i = ft_strlen(pwd);
@@ -121,9 +120,8 @@ int	new_pwd(char *pwd, char *v)
 	}
 	ft_strlcat(pwd, v, -1);
 	path_process(pwd);
-	done = builtin_err(stat(pwd, &dump), "cd", v);
+	done = builtin_err(access(pwd, X_OK), "cd", v);
 	while (!done)
 		done = resolve_relative(pwd, &i);
-	(void) dump;
 	return (done < 0);
 }

@@ -14,13 +14,10 @@
 
 void	path_error(char *new, int *status)
 {
-	struct stat	dump;
-
-	if (errno == ENOENT || stat(new, &dump))
+	if (errno == ENOENT || access(new, F_OK))
 		return ;
 	ft_err(-1, new);
 	*status = 126;
-	(void) dump;
 }
 
 //calling access("dir/ + empty string", X_OK) queries the dir itself

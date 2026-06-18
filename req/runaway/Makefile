@@ -20,7 +20,7 @@ SRC_FILE := main.c loop.c buf_check.c err.c signal.c word.c update.c cleanup.c c
 
 SRC_MAND := ast_mand.c
 
-SRC_BONUS := ast_bonus.c
+SRC_BONUS := ast_extras.c
 
 OBJ := $(SRC_FILE:.c=.o)
 
@@ -39,7 +39,6 @@ $(NAME): $(OBJ) $(OBJ_MAND)
 $(BONUS_NAME): $(OBJ) $(OBJ_BONUS)
 	$(MAKE) -C $(LIBFT_DIR)
 	$(CC) $(CC_FLAGS) $(OBJ) $(OBJ_BONUS) $(LIBS) $(INCLUDES) -o $(BONUS_NAME)
-	cp $(BONUS_NAME) $(NAME)
 
 $(OBJ): %.o: $(SRC_DIR)/%.c $(HEADERS)
 	$(CC) $(CC_FLAGS) -c $< $(INCLUDES) -o $@

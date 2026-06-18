@@ -60,7 +60,7 @@ int	change_dir(char *dst, char *v, t_env *env)
 	int	ret;
 
 	ret = chdir(dst);
-	if (!builtin_err(ret, "cd chdir", v))
+	if (!builtin_err(ret, "cd", v))
 	{
 		free(env->oldpwd);
 		env->oldpwd = env->pwd;
