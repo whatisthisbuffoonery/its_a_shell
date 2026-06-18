@@ -110,6 +110,7 @@ t_node	*parse_list(t_tok **tok, int *stop)
 		return (left);
 	while (*tok && !*stop && ast_iscond(*tok))
 	{
+		ft_putstr_fd("why am I running\n", 2);
 		new_op = node_new(find_kind_op(*tok), stop);
 		if (!new_op)
 			return (left);

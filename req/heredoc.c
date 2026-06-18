@@ -16,7 +16,16 @@ int	heredoc_cmp(char *line, char *v, int v_len)
 {
 	int	line_len;
 
-	if (!line || g_signo)
+	if (!line)
+	{
+		ft_putstr_fd("-minishell: ", 2);
+		ft_putstr_fd("heredoc delimited by EOF ", 2);
+		ft_putstr_fd("(wanted: \'", 2);
+		ft_putstr_fd(v, 2);
+		ft_putstr_fd("\')\n", 2);
+		return (0);
+	}
+	if (g_signo)
 		return (0);
 	line_len = ft_strlen(line);
 	if (line_len != v_len)

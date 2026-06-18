@@ -45,6 +45,7 @@ int	execute_buffer(t_env *env, t_tok **tok, char **buf)
 {
 	free(*buf);
 	*buf = NULL;
+	errno = 0;
 	make_word(*tok);
 	env->ast = parse(tok);
 	if (g_signo)
@@ -52,7 +53,7 @@ int	execute_buffer(t_env *env, t_tok **tok, char **buf)
 	else if (env->ast)
 		update_last(env, do_list(env->ast, env));
 	else
-		update_last(env, 1);
+		update_last(env, 1 + !errno);
 	clean_ast(env->ast);
 	env->ast = NULL;
 	return (env->last);

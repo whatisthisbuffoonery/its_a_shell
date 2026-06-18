@@ -3,7 +3,7 @@ CC_FLAGS := -Wall -Wextra -Werror -g
 LIBFT_DIR := libft
 SRC_DIR := ..
 NAME := minishell
-BONUS_NAME := bruhface
+BONUS_NAME := minishell_bonus
 
 LIBS := -L$(LIBFT_DIR) -lreadline -lhistory -lft
 INCLUDES := -I$(LIBFT_DIR)/includes -I$(SRC_DIR)

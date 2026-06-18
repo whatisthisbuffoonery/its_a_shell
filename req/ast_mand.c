@@ -1,12 +1,17 @@
 #include "h_minishell.h"
 
+static int	ft_iscarrot(int c)
+{
+	return (c == '>' || c == '<');
+}
+
 static int	mand_cond(char c, char i)
 {
 	if (!c || !i)
 		return (0);
-	if (c == '|' || ft_isquote(c))
+	if (c == '|' || ft_isquote(c) || ft_iscarrot(c))
 		return (0);
-	if (i == '|' || ft_isquote(i))
+	if (i == '|' || ft_isquote(i) || ft_iscarrot(i))
 		return (0);
 	return (1);
 }
@@ -25,7 +30,8 @@ int	tok_node_init(t_tok **dst, char *src, int *cry)
 
 	i = 0 + 1;
 	c = src[0];
-	while (!g_signo && ((c == '|' && i < 1)
+	while (!g_signo && (((c == '|' || c == '*') && i < 1)
+			|| (ft_iscarrot(c) && c == src[i] && i < 2)
 			|| mand_cond(c, src[i])
 			|| (ft_isquote(c) && src[i] && src[i] != c)))
 		i ++;
