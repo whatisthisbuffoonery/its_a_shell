@@ -80,10 +80,14 @@ int	do_binary(char **argv, t_env *env, int *fd)
 	return (status);
 }
 
-int	exec_simple(int argc, char **argv, t_env *env, int *fd)
+int	exec_simple(char **argv, t_env *env, int *fd)
 {
 	pid_t	pid;
+	int		argc;
 
+	argc = 0;
+	while (argv && argv[argc])
+			argc ++;
 	if (isbuiltin(*argv))
 		return (do_builtin_match(argc, argv, env, fd));
 	pid = 0;
@@ -102,7 +106,6 @@ int	do_simple(t_node *node, t_env *env, int *fd)
 {
 	char	**argv;
 	int		status;
-	int		i;
 
 	argv = NULL;
 	status = 0;
@@ -113,14 +116,13 @@ int	do_simple(t_node *node, t_env *env, int *fd)
 		return (0);
 	}
 	argv = make_argv(node->argv, env, &status);
-	status += !argv;
 	i = 0;
-	while (argv && argv[i])
-		i ++;
 	if (argv && argv[0] && !status)
-		status = exec_simple(i, argv, env, fd);
+		status = exec_simple(argv, env, fd);
 	else if (argv && status == ENOENT)
 		status = shell_assert2(127, *argv, "command not found");
+	else
+		status = !argv + (126 * (argv != NULL));
 	split_cleanup(argv);
 	unset(&fd[0]);
 	unset(&fd[1]);
