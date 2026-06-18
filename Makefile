@@ -6,7 +6,7 @@
 #    By: achew <achew@student.42singapore.sg>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/10/28 21:29:55 by achew             #+#    #+#              #
-#    Updated: 2026/06/18 23:50:17 by achew            ###   ########.fr        #
+#    Updated: 2026/06/19 01:00:40 by dthoo            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 # **************************************************************************** #
@@ -14,6 +14,7 @@
 # **************************************************************************** #
 
 NAME        := minishell 
+BONUS_NAME  := minishell_bonus
 
 CC          := cc
 CFLAGS      := -Wall -Wextra -Werror -g -O0
@@ -61,7 +62,7 @@ OBJ_BONUS   := $(addprefix $(OBJ_DIR), $(SRC_BONUS:.c=.o))
 
 all: libft $(NAME)
 
-bonus: libft $(NAME)
+bonus: libft $(BONUS_NAME)
 
 # -------------------- PHONY --------------------
 
@@ -82,6 +83,9 @@ endif
 $(NAME): $(LINK_OBJ) $(LINK_HDR) $(LIBS)
 	$(CC) $(CFLAGS) $(INCLUDES) $(LINK_OBJ) $(LIBS) -o $(NAME)
 
+$(BONUS_NAME): $(LINK_OBJ) $(LINK_HDR) $(LIBS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(LINK_OBJ) $(LIBS) -o $(BONUS_NAME)
+
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c $(LINK_HDR) | $(OBJ_DIR)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
@@ -99,6 +103,7 @@ clean:
 fclean:
 	rm -rf $(OBJ_DIR)
 	rm -f $(NAME)
+	rm -f $(BONUS_NAME)
 	$(MAKE) -C $(LIBFT_DIR) fclean
 
 re: fclean all
