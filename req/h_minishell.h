@@ -95,6 +95,7 @@ typedef struct	s_env
 
 /*makefile punking*/
 int			group_kind(char c);
+int			simple_cond(t_tok *src);
 
 /*shell entry*/
 int			loop(char **e);
@@ -118,6 +119,11 @@ int			tok_init(char *buf, t_tok **tok);
 int			node_init(t_tok **dst, char *src, int *cry);
 void		env_init(t_env *dst, char **e);
 void		pipemanager_init(t_pipemanager *dst, int p_index);
+
+/*tok init*/
+int			tok_node_init(t_tok **dst, char *src, int *cry);
+int			hadquote(char *s, int n);
+t_tok		*tok_node(char *src, int i, char c, int *cry);
 
 /*error printing*/
 int			ft_err(int n, char *s);

@@ -12,18 +12,12 @@
 
 #include "h_minishell.h"
 
-int	simple_cond(t_tok *src)
-{
-	int	cond[3];
-
-	cond
-
 //further separation efforts here
 t_node	*parse_simple(t_tok **tok, int *stop)
 {
 	t_node	*new_cmd;
 
-	if (!*tok || !(*tok)->type || ismeta(*tok))
+	if (!simple_cond(*tok))
 	{
 		ft_putstr_fd("expected command, got ", 2);
 		if (!*tok)
@@ -37,7 +31,7 @@ t_node	*parse_simple(t_tok **tok, int *stop)
 	new_cmd = node_new(N_CMD, stop);
 	if (!new_cmd)
 		return (NULL);
-	while (*tok && !*stop && (*tok)->type && !ismeta(*tok))
+	while (!*stop && simple_cond(*tok))
 	{
 		if (isredir((*tok)->type))
 			redir_append(new_cmd, parse_one_redir(tok, stop));
