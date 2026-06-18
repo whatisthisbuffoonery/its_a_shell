@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   h_minishell.h                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: achew <achew@student.42singapore.sg>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/19 00:02:36 by achew             #+#    #+#             */
+/*   Updated: 2026/06/19 00:02:40 by achew            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef H_MINISHELL_H
 # define H_MINISHELL_H
 
@@ -35,8 +47,11 @@ typedef struct s_tok
 	struct s_tok	*next;
 	struct s_tok	*word_next;
 	char			*str;		//stores one word, operator, or quoted section
-	char			type;		//stores just first char of pre parsed string, which might be a dquote excluded from str field
-	char			end_space;	//bool for whether the char after the token was whitespace
+	char			type;		//stores just first char of pre parsed string,
+								//which might be a dquote excluded from
+								//str field
+	char			end_space;	//bool for whether the char after the token
+								//was whitespace
 	int				assignment;
 }					t_tok;
 
@@ -54,18 +69,21 @@ typedef enum e_node_kind
 typedef struct s_node
 {
 	t_node_kind		kind;
-	t_tok			*argv;			// N_CMD  – argv array (NULL-terminated) //cmd name is first item
+	t_tok			*argv;			// N_CMD  – argv array (NULL-terminated)
+									// cmd name is first item
 	t_tok			*redir_op;		// mutually exclusive with argv
 	t_tok			*redir_target;	//this too
-	struct s_node	*redir_next;	// linked list of redirects on one cmd // again DO NOT FILL THE OTHER TWO FIELDS DIRECTLY
+	struct s_node	*redir_next;	// linked list of redirects on one cmd
+									// again DO NOT FILL THE OTHER TWO
+									// FIELDS DIRECTLY
 	struct s_node	*left;			// N_PIPE / N_AND / N_OR / N_GROUP //
 	struct s_node	*right;			// unused for N_GROUP
 	int				heredoc;		//for expanding heredoc contents
 }					t_node;
 
-typedef int	t_pipeset[2];
+typedef int			t_pipeset[2];
 
-typedef struct	s_glob
+typedef struct s_glob
 {
 	char			**glob_arr;
 	struct s_glob	*next;
@@ -79,19 +97,22 @@ typedef struct s_pipemanager
 	t_pipeset				*pipes;
 }							t_pipemanager;
 
-typedef struct	s_env
+typedef struct s_env
 {
 	t_shnode		*export;	//not sorted
 	t_shnode		*env;		//also not sorted
 	t_node			*ast;
 	char			*pwd;
-	char			*oldpwd;			//these will be separate strings from the env lists //to be handled in env_init
+	char			*oldpwd;			//these will be separate strings
+										//from the env lists
+										//to be handled in env_init
 	int				duped_fd[2];
 	char			last_string[4];
 	char			do_not_subshell;
 	char			is_in_subshell;
 	char			last;
-}					t_env;				//PSA empty strings can be in env list, null strings cannot
+}					t_env;				//PSA empty strings can be in env list,
+										//null strings cannot
 
 /*makefile punking*/
 int			group_kind(char c);
@@ -163,7 +184,8 @@ int			is_assignment_word(char *s);
 /*heredoc funcs*/
 int			find_quote(t_tok *tok);
 int			do_heredoc(char *file, t_env *env, int flag);
-char		**catch_heredoc(t_node *src, t_env *env, int (*f)(t_arg **, t_tok *));
+char		**catch_heredoc(t_node *src, t_env *env,
+				int (*f)(t_arg **, t_tok *));
 
 /*expansion things*/
 char		*find_env_str(char *name, t_env *env, unsigned int len);
@@ -177,7 +199,7 @@ int			collect_redir(t_arg **dst, t_tok *src);
 
 /*expand_all callers*/
 char		**make_envp(t_env *env, int *complain);
-char    	**make_argv(t_tok *src, t_env *env, int *complain);
+char		**make_argv(t_tok *src, t_env *env, int *complain);
 int			redir_to_fd(t_node *node, t_env *env, int *fd, int *pfd);
 
 /*argv utils*/
