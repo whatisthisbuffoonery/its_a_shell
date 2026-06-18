@@ -35,3 +35,10 @@ void	shell_cleanup(t_env *env)
 	env->oldpwd = NULL;
 	rl_clear_history();
 }
+
+char	*absent_command_str(char *v)
+{
+	if (ft_strchr(v, '/'))
+		return ("No such file or directory");
+	return ("command not found");
+}

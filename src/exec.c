@@ -12,13 +12,12 @@
 
 #include "h_minishell.h"
 
-void	update_last(t_env *env, int n)
+void	update_last(t_env *env, unsigned int n)
 {
 	int	i;
 	int	t;
 
-	if (n > 255 || n < 0)
-		n = 1;
+	n %= 256;
 	i = 0;
 	t = 1;
 	while (n / t > 9)
@@ -120,7 +119,7 @@ int	do_simple(t_node *node, t_env *env, int *fd)
 	if (argv && argv[0] && !status)
 		status = exec_simple(i, argv, env, fd);
 	else if (argv && status == ENOENT)
-		status = shell_assert2(127, *argv, "command not found");
+		status = shell_assert2(127, *argv, absent_command_str(*argv));
 	split_cleanup(argv);
 	unset(&fd[0]);
 	unset(&fd[1]);

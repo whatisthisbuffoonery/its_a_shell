@@ -6,7 +6,7 @@
 /*   By: achew <achew@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/19 00:02:36 by achew             #+#    #+#             */
-/*   Updated: 2026/06/19 00:02:40 by achew            ###   ########.fr       */
+/*   Updated: 2026/06/19 00:46:54 by dthoo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@
 # include <sys/wait.h>
 # include <sys/types.h>
 # include <sys/stat.h>
+# include <asm/termbits.h>
+# include <sys/ioctl.h>
 # include <dirent.h>
 # include <errno.h>
 # include <fcntl.h>
@@ -107,10 +109,10 @@ typedef struct s_env
 										//from the env lists
 										//to be handled in env_init
 	int				duped_fd[2];
+	int				last;
 	char			last_string[4];
 	char			do_not_subshell;
 	char			is_in_subshell;
-	char			last;
 }					t_env;				//PSA empty strings can be in env list,
 										//null strings cannot
 
@@ -152,6 +154,7 @@ int			shell_assert(int cond, char *s);
 int			shell_assert2(int cond, char *name, char *s);
 int			shell_assert_redir(int cond, t_tok *iter, char *s);
 int			builtin_err(int cond, char *name, char *s);
+char		*absent_command_str(char *v);
 
 /*token utils*/
 void		tok_pop(t_tok **tok);
@@ -234,12 +237,11 @@ int			do_glob(t_arg **prev, t_arg **iter, t_arg **next, t_arg **head);
 /*execution funcs*/
 int			do_list(t_node *node, t_env *env);
 int			do_simple(t_node *node, t_env *env, int *fd);
-void		update_last(t_env *env, int n);
 
 /*child and status management*/
 int			child_wait(pid_t pid);
 int			pipe_dup(int *fd);
-void		update_last(t_env *env, int n);
+void		update_last(t_env *env, unsigned int n);
 
 /*print funcs*/
 void		print_env(t_shnode *env, int fd);

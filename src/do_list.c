@@ -130,7 +130,7 @@ int	do_list(t_node *node, t_env *env)
 	if (node->kind != N_AND && node->kind != N_OR)
 		return (do_pipe(node, env, &p, 0));
 	status = do_list(node->left, env);
-	if (g_signo == SIGINT || (env->is_in_subshell && g_signo))
+	if (g_signo == SIGINT + 128 || (env->is_in_subshell && g_signo))
 		return (g_signo);
 	g_signo = 0;
 	update_last(env, status);

@@ -6,7 +6,7 @@
 /*   By: dthoo <dthoo@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/14 07:48:54 by dthoo             #+#    #+#             */
-/*   Updated: 2026/06/14 07:48:54 by dthoo            ###   ########.fr       */
+/*   Updated: 2026/06/18 22:56:18 by dthoo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,7 @@
 
 int	rl_heredoc(void)
 {
-	if (g_signo == SIGQUIT)
-		g_signo = 0;
-	else if (g_signo == SIGINT)
+	if (g_signo == SIGINT + 128)
 	{
 		rl_done = 1;
 		ft_putstr("^C");
@@ -26,10 +24,9 @@ int	rl_heredoc(void)
 
 int	rl_handle_signals(void)
 {
-	if (g_signo == SIGINT)
+	if (g_signo == SIGINT + 128)
 	{
-		ft_putstr("^C");
-		write(1, "\n", 1);
+		ft_putstr("^C\n");
 		rl_on_new_line();
 		rl_replace_line("", 0);
 		rl_redisplay();
@@ -42,8 +39,12 @@ int	rl_handle_signals(void)
 //sigquit is allowed to influence every command if it shows up in the parent
 void	sighands(int n)
 {
-	if (g_signo != SIGINT)
-		g_signo = n;
+	if (g_signo != SIGINT + 128 && rl_signal_event_hook != rl_heredoc)
+		g_signo = n + 128;
+	else if (n == SIGINT)
+		g_signo = SIGINT + 128;
+	if (n == SIGINT && rl_signal_event_hook == rl_heredoc)
+		ioctl(0, TIOCSTI, "\n");
 }
 
 //, .sa_flags = SA_RESTART;//exclude restart flag

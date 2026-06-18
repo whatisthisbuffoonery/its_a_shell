@@ -51,7 +51,11 @@ int	execute_buffer(t_env *env, t_tok **tok, char **buf)
 	if (g_signo)
 		update_last(env, g_signo);
 	else if (env->ast)
+	{
 		update_last(env, do_list(env->ast, env));
+		if (g_signo)
+			ft_putchar('\n');
+	}
 	else
 		update_last(env, 1 + !errno);
 	clean_ast(env->ast);
