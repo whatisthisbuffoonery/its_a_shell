@@ -27,7 +27,7 @@ void	path_error(char *new, int *status)
 //can return 0, not gud
 int	empty_path(char *dst, char *new, int *status)
 {
-	if (dst[0])
+	if (dst[0] && ft_strcmp(dst, ".") && ft_strcmp(dst, ".."))
 		return (0);
 	free(new);
 	*status = ENOENT;
