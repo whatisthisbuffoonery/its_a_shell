@@ -40,7 +40,7 @@ SRC         = main.c loop.c buf_check.c err.c signal.c word.c update.c cleanup.c
 			  ast_check.c ast_extras.c ast_init.c ast_logic.c ast_redir.c \
 			  expand.c expand_utils.c expand_handlers.c field.c glob_utils.c \
 			  echo.c exit.c pwd.c export.c export_helpers.c unset.c env.c cd.c cd_utils.c cd_exit.c \
-			  argv.c path.c argv_empty.c redir.c heredoc.c heredoc_line.c envp.c exec.c arg_cleanup.c \
+			  argv.c path.c argv_empty.c redir.c heredoc.c envp.c exec.c arg_cleanup.c \
 			  child.c pipe_utils.c do_list.c exec_cleanup.c \
 			  env_init.c shnode_cleanup.c shnode_utils.c find.c \
 			  tok_init.c tok_utils.c tok_checker.c

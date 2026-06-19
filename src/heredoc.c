@@ -16,7 +16,7 @@ int	heredoc_cmp(char *line, char *v, int v_len)
 {
 	int	line_len;
 
-	if (!line && !g_signo)
+	if (!line)
 	{
 		ft_putstr_fd("-minishell: ", 2);
 		ft_putstr_fd("heredoc delimited by EOF ", 2);
@@ -85,9 +85,10 @@ int	do_heredoc(char *file, t_env *env, int flag)
 	errno = 0;
 	buf = NULL;
 	v_len = ft_strlen(file);
+	rl_signal_event_hook = rl_heredoc;
 	while (!g_signo)
 	{
-		buf = heredoc_line();
+		buf = readline("> ");
 		if (!heredoc_cmp(buf, file, v_len) || heredoc_write(fd, buf, env, flag))
 			break ;
 		buf = NULL;
@@ -96,6 +97,7 @@ int	do_heredoc(char *file, t_env *env, int flag)
 	close(fd[1]);
 	if (g_signo)
 		unset(&fd[0]);
+	rl_signal_event_hook = rl_handle_signals;
 	return (fd[0]);
 }
 
