@@ -36,7 +36,7 @@ HDR_BONUS	:= $(HDR)
 # **************************************************************************** #
 SRC_DIR     := src/
 
-SRC         = main.c loop.c buf_check.c err.c signal.c word.c update.c cleanup.c checker.c \
+SRC         = main.c loop.c display.c buf_check.c err.c signal.c word.c update.c cleanup.c checker.c \
 			  ast_check.c ast_extras.c ast_init.c ast_logic.c ast_redir.c \
 			  expand.c expand_utils.c expand_handlers.c field.c glob_utils.c \
 			  echo.c exit.c pwd.c export.c export_helpers.c unset.c env.c cd.c cd_utils.c cd_exit.c \

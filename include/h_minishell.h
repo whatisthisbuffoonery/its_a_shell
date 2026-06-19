@@ -6,7 +6,7 @@
 /*   By: achew <achew@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/19 00:02:36 by achew             #+#    #+#             */
-/*   Updated: 2026/06/19 00:46:54 by dthoo            ###   ########.fr       */
+/*   Updated: 2026/06/19 21:05:20 by dthoo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@
 # include <sys/wait.h>
 # include <sys/types.h>
 # include <sys/stat.h>
-# include <asm/termbits.h>
 # include <sys/ioctl.h>
+# include <termios.h>
 # include <dirent.h>
 # include <errno.h>
 # include <fcntl.h>
@@ -120,8 +120,9 @@ typedef struct s_env
 int			group_kind(char c);
 int			simple_cond(t_tok *src);
 
-/*shell entry*/
+/*shell buffer loop*/
 int			loop(char **e);
+void		replace_nl(void);
 
 /*buffer checking*/
 int			buf_check(char *buf);
