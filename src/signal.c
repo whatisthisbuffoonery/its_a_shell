@@ -12,16 +12,6 @@
 
 #include "h_minishell.h"
 
-int	rl_heredoc(void)
-{
-	if (g_signo == SIGINT + 128)
-	{
-		rl_done = 1;
-		ft_putstr("^C");
-	}
-	return (0);
-}
-
 int	rl_handle_signals(void)
 {
 	if (g_signo == SIGINT + 128)
@@ -39,12 +29,8 @@ int	rl_handle_signals(void)
 //sigquit is allowed to influence every command if it shows up in the parent
 void	sighands(int n)
 {
-	if (g_signo != SIGINT + 128 && rl_signal_event_hook != rl_heredoc)
+	if (g_signo != SIGINT + 128)
 		g_signo = n + 128;
-	else if (n == SIGINT)
-		g_signo = SIGINT + 128;
-	if (n == SIGINT && rl_signal_event_hook == rl_heredoc)
-		ioctl(0, TIOCSTI, "\n");
 }
 
 //, .sa_flags = SA_RESTART;//exclude restart flag

@@ -20,8 +20,9 @@
 # include <sys/wait.h>
 # include <sys/types.h>
 # include <sys/stat.h>
-# include <asm/termbits.h>
+//# include <asm/termbits.h>
 # include <sys/ioctl.h>
+# include <termios.h>
 # include <dirent.h>
 # include <errno.h>
 # include <fcntl.h>
@@ -130,7 +131,6 @@ int			isempty(char *buf);
 /*signal handling*/
 void		signal_init(void);
 int			rl_handle_signals(void);
-int			rl_heredoc(void);
 
 /*word funcs*/
 void		make_word(t_tok *iter);
@@ -187,6 +187,7 @@ int			is_assignment_word(char *s);
 /*heredoc funcs*/
 int			find_quote(t_tok *tok);
 int			do_heredoc(char *file, t_env *env, int flag);
+char		*heredoc_line(void);
 char		**catch_heredoc(t_node *src, t_env *env,
 				int (*f)(t_arg **, t_tok *));
 
