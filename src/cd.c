@@ -113,5 +113,5 @@ int	cd(int argc, char **argv, t_env *env)
 		else
 			free(dst);
 	}
-	return (status);
+	return (cd_exit(status, argv[1], env->pwd));
 }

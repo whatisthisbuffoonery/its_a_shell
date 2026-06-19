@@ -286,6 +286,7 @@ int			update_val(char *val, t_shnode *existing);
 
 /*cd utils*/
 int			new_pwd(char *pwd, char *v);
+int			cd_exit(int status, char *argv, char *newpwd);
 
 /*cleanup*/
 void		tok_delone(t_tok *tok);
