@@ -36,6 +36,7 @@ int	do_builtin_match(int argc, char **argv, t_env *env, int *fd)
 	int	status;
 
 	status = 0;
+	errno = 0;
 	if ((*argv)[0] == 'c')
 		status = cd(argc, argv, env);
 	else if ((*argv)[0] == 'u')
@@ -50,6 +51,7 @@ int	do_builtin_match(int argc, char **argv, t_env *env, int *fd)
 		status = ft_export(argc, argv, env, fd[1]);
 	else if ((*argv)[2] == 'i')
 		status = exit_builtin(argc, argv, env, fd);
+	status += builtin_err(!status && errno, *argv, "write error");
 	return (status);
 }
 

@@ -12,6 +12,17 @@
 
 #include "h_minishell.h"
 
+void	pwd_trim(char *pwd)
+{
+	int	pwdlen;
+
+	if (!pwd)
+		return ;
+	pwdlen = ft_strlen(pwd);
+	if (pwdlen > 1 && pwd[pwdlen - 1] == '/')
+		pwd[pwdlen - 1] = '\0';
+}
+
 int	cd_exit(int status, char *argv, char *newpwd)
 {
 	if (!status && argv && !ft_strcmp(argv, "-") && newpwd)

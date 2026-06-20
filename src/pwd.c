@@ -14,15 +14,12 @@
 
 int	pwd(t_env *env, int out)
 {
-	int	pwdlen;
 
 	if (!env->pwd)
 		env->pwd = getcwd(NULL, 0);
 	if (env->pwd)
 	{
-		pwdlen = ft_strlen(env->pwd);
-		if (env->pwd[pwdlen - 1] == '/')
-			env->pwd[pwdlen - 1] = '\0';
+		pwd_trim(env->pwd);
 		ft_putstr_fd(env->pwd, out);
 		ft_putchar_fd('\n', out);
 	}

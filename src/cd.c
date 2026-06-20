@@ -65,6 +65,7 @@ int	change_dir(char *dst, char *v, t_env *env)
 		free(env->oldpwd);
 		env->oldpwd = env->pwd;
 		env->pwd = dst;
+		pwd_trim(dst);
 		shnode_update("OLDPWD", env->oldpwd, env);
 		shnode_update("PWD", env->pwd, env);
 	}
