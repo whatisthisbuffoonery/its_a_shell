@@ -229,7 +229,6 @@ char		*grab_home(t_env *env);
 
 /*env updating*/
 int			update_shell_lvl(t_env *dst, int is_subshell);
-int			update_shell_name(t_env *dst);
 
 /*glob utils*/
 int			has_glob(t_arg *field);

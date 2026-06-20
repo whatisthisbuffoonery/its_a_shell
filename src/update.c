@@ -41,29 +41,3 @@ int	update_shell_lvl(t_env *dst, int is_subshell)
 		iter->str = ret;
 	return (shell_assert(!iter && !is_subshell, "shlvl missing in env"));
 }
-
-int	update_shell_name(t_env *dst)
-{
-	t_shnode	*iter;
-	char		*ret;
-
-	iter = find_env("SHELL", dst->export);
-	if (!iter)
-	{
-		iter = env_init_node("SHELL=minishell");
-		if (!iter)
-			return (ft_err(-1, "could not replace missing shell name"));
-		env_add(dst, iter, "env");
-		env_add(dst, iter, "export");
-		return (0);
-	}
-	ret = ft_strdup("minishell");
-	if (!ret)
-		return (ft_err(-1, "shell name update error"));
-	free(iter->str);
-	iter->str = ret;
-	iter = find_env("SHELL", dst->env);
-	if (!shell_assert(!iter, "shell name missing in env"))
-		iter->str = ret;
-	return (0);
-}
