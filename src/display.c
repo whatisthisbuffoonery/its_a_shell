@@ -12,31 +12,38 @@
 
 #include "h_minishell.h"
 
-int	check_terminal(struct termios *term, char *err_str)
+int	check_terminal(struct termios *term)
 {
 	int	cond[2];
 
-	cond[0] = !ft_err(tcgetattr(0, &term[2]), err_str);
+	cond[0] = tcgetattr(0, &term[2]);
 	cond[1] = 1;
 	if (!cond[0])
 	{
-		cond[1] = ft_memcmp(&term[1], &term[2], sizeof(struct termios));
-		shell_assert(cond[1], err_str);
+		cond[1] = 0;
+		cond[1] += (term[1].c_lflag != term[2].c_lflag);
+		cond[1] += (term[1].c_cc[VMIN] != term[2].c_cc[VMIN]);
+		cond[1] += (term[1].c_cc[VTIME] != term[2].c_cc[VTIME]);
 	}
+	if (cond[1])
+		errno = (0 * !cond[0]) + (errno * (cond[0] != 0));
 	return (cond[1]);
 }
 
-int	query_terminal(char *err_str)
+//cant emit errors itself due to terminal attr
+int	query_terminal(void)
 {
-	size_t	i;
-	size_t	k;
+	int		i;
+	int		k;
+	int		len;
 	char	*query;
 
-	query = "/033[6n";
+	query = "\033[6n";
+	len = ft_strlen(query);
 	i = 0;
-	while (i < ft_strlen(query))
+	while (i < len)
 	{
-		k = ft_err(write(1, &query[i], 4 - i), err_str);
+		k = write(1, &query[i], len - i);
 		if (k < 0 && errno != EINTR)
 			return (1);
 		i += k;
@@ -45,24 +52,26 @@ int	query_terminal(char *err_str)
 }
 
 //do not consider sigint
-int	check_nl(char *err_str)
+int	check_nl(void)
 {
 	int		read_col;
 	int		col;
 	int		len;
-	int		done;
 	char	buf;
 
-	done = 0;
+	buf = '\0';
 	read_col = 0;
 	col = 0;
-	if (query_terminal(err_str))
-		return (0);
-	while (!done)
+	if (query_terminal())
+		return (-1);
+	while (1)
 	{
-		len = ft_err(read(0, &buf, 1), err_str);
+		len = read(0, &buf, 1);
 		if ((len < 0 && errno != EINTR) || !len || buf == 'R')
+		{
+			col = (col * (buf == 'R')) - (buf != 'R');
 			break ;
+		}
 		else if (!read_col && buf != ';')
 			continue ;
 		read_col = 1;
@@ -71,6 +80,17 @@ int	check_nl(char *err_str)
 	return (col);
 }
 
+void	nl_err(int result, char *err_str)
+{
+	if (result >= 0)
+		return ;
+	else if (errno)
+		ft_err(-1, err_str);
+	else
+		shell_assert(1, err_str);
+}
+
+//not my dumbass forgetting to memset term reeeee
 void	replace_nl(void)
 {
 	struct termios	term[3];
@@ -78,6 +98,7 @@ void	replace_nl(void)
 	int				result;
 
 	err_str = "error while checking terminal display";
+	ft_memset(term, 0, 3 * sizeof(struct termios));
 	if (ft_err(tcgetattr(0, &term[0]), err_str))
 		return ;
 	term[1] = term[0];
@@ -87,9 +108,10 @@ void	replace_nl(void)
 	result = 0;
 	if (ft_err(tcsetattr(0, TCSANOW, &term[1]), err_str))
 		return ;
-	else if (!check_terminal(term, err_str))
-		result = check_nl(err_str);
+	else if (!check_terminal(term))
+		result = check_nl();
 	ft_err(tcsetattr(0, TCSANOW, &term[0]), "error restoring terminal");
 	if (result > 1)
 		ft_putchar('\n');
+	nl_err(result, err_str);
 }
