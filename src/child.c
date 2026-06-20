@@ -16,26 +16,24 @@ void	env_import(t_env *env)
 {
 	t_shnode	*iter;
 	t_shnode	*prev;
+	t_shnode	*next;
 
 	prev = NULL;
 	iter = env->export;
 	while (iter)
 	{
+		next = iter->next;
 		if (!iter->str)
 		{
 			if (prev)
 				prev->next = iter->next;
 			else
 				env->export = iter->next;
-			clean_shnode(&iter);
-			if (prev)
-				iter = prev->next;
-			else
-				iter = env->export;
-			continue ;
+			clean_one_shnode(iter);
 		}
-		prev = iter;
-		iter = iter->next;
+		else
+			prev = iter;
+		iter = next;
 	}
 	update_shell_lvl(env, 1);
 }
