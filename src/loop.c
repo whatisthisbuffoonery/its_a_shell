@@ -56,7 +56,8 @@ int	execute_buffer(t_env *env, t_tok **tok, char **buf)
 		update_last(env, 1 + !errno);
 	clean_ast(env->ast);
 	env->ast = NULL;
-	replace_nl();
+	if (g_signo && env->last == g_signo)
+		replace_nl();
 	return (env->last);
 }
 
