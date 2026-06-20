@@ -11,5 +11,18 @@ Minishell is an emulation of a small subset of Bash. This subset includes:
 	checking exit status through $?  
 	single and double quote handling, except for unclosed quotes  
 	redirections: >, >>, <, <<  
-	pipelines  
+	pipelines 
 
+## Instructions 
+Compile in the root directory with
+```
+make
+```
+Run the executable without arguments or with --version
+```
+./minishell
+```
+
+## Resources
+- https://www.gnu.org/software/bash/manual/html_node/index.html#SEC_Contents
+- AI was used in various places for refactoring
