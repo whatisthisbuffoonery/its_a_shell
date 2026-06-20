@@ -48,11 +48,9 @@ void	argv_remove_empty(char **argv, t_tok *src)
 	while (argv[i])
 	{
 		if (!argv[i][0] && !argv_check_quote(src))
-		{
 			move_argv(&argv[i]);
-			src = src->next;
-			continue ;
-		}
-		i ++;
+		else
+			i ++;
+		src = src->next;
 	}
 }
