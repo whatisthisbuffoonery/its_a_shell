@@ -143,6 +143,7 @@ int			tok_init(char *buf, t_tok **tok);
 int			node_init(t_tok **dst, char *src, int *cry);
 void		env_init(t_env *dst, char **e);
 void		pipemanager_init(t_pipemanager *dst, int p_index);
+void		env_import(t_env *env);
 
 /*tok init*/
 int			tok_node_init(t_tok **dst, char *src, int *cry);

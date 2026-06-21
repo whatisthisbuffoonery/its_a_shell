@@ -46,8 +46,6 @@ pid_t	shell_fork(t_env *env)
 	if (g_signo)
 		return (-1);
 	pid = fork();
-	if (!pid)
-		env_import(env);
 	return (ft_err(pid, "shell fork"));
 }
 

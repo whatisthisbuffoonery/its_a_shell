@@ -91,4 +91,5 @@ void	env_init(t_env *dst, char **e)
 	}
 	update_shell_lvl(dst, 0);
 	pwd_init(dst);
+	env_import(dst);
 }
