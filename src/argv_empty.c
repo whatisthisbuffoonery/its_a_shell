@@ -12,32 +12,10 @@
 
 #include "h_minishell.h"
 
-void	move_argv(char **argv)
-{
-	char	*tmp;
-	int		i;
-
-	i = 0;
-	tmp = *argv;
-	while (argv[i])
-	{
-		argv[i] = argv[i + 1];
-		i ++;
-	}
-	free(tmp);
-}
-
-int	argv_check_quote(t_tok *src)
-{
-	while (src)
-	{
-		if (ft_isquote(src->type))
-			return (1);
-		src = src->word_next;
-	}
-	return (0);
-}
-
+//ft_printf("loop start: argv[%s],
+//src[%s], type[%c]\n", argv[i], src->str, src->type);
+//
+//ft_printf("loop end: argv[%s], src[%s]\n", argv[i], src?src->str:"null");
 void	argv_remove_empty(char **argv, t_tok *src)
 {
 	int	i;
@@ -45,8 +23,11 @@ void	argv_remove_empty(char **argv, t_tok *src)
 	if (!argv)
 		return ;
 	i = 0;
-	while (argv[i])
+	while (argv[i] && src)
 	{
+		align_argv(argv, &i, &src);
+		if (!src)
+			return ;
 		if (!argv[i][0] && !argv_check_quote(src))
 			move_argv(&argv[i]);
 		else
