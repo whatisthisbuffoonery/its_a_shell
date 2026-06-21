@@ -211,6 +211,7 @@ int			redir_to_fd(t_node *node, t_env *env, int *fd, int *pfd);
 void		find_path(char *path, char **dst, char *new, int *status);
 void		argv_remove_empty(char **argv, t_tok *src);
 void		align_argv(char **v, int *i, t_tok **s);
+int			argv_check_quote(t_tok *src);
 
 /*env utils*/
 t_shnode	*env_init_node(char *e);
