@@ -6,7 +6,7 @@
 #    By: achew <achew@student.42singapore.sg>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/10/28 21:29:55 by achew             #+#    #+#              #
-#    Updated: 2026/06/19 01:00:40 by dthoo            ###   ########.fr        #
+#    Updated: 2026/06/21 17:36:14 by dthoo            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 # **************************************************************************** #
@@ -40,7 +40,7 @@ SRC_BASE	:= main.c loop.c display.c buf_check.c err.c signal.c word.c update.c c
 			ast_check.c ast_init.c ast_logic.c ast_redir.c \
 			expand.c expand_utils.c expand_handlers.c field.c glob_utils.c \
 			echo.c exit.c pwd.c export.c export_helpers.c unset.c env.c cd.c cd_utils.c cd_exit.c \
-			argv.c path.c argv_empty.c redir.c heredoc.c envp.c exec.c arg_cleanup.c \
+			argv.c path.c argv_empty.c argv_empty_utils.c redir.c heredoc.c envp.c exec.c arg_cleanup.c \
 			child.c pipe_utils.c do_list.c exec_cleanup.c \
 			env_init.c shnode_cleanup.c shnode_utils.c find.c \
 			tok_init.c tok_utils.c
