@@ -11,3 +11,5 @@
 **/*.tgz
 **/*minishell
 **/*minishell_bonus
+./bruh/*
+./bruh
