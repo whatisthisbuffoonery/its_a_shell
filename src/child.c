@@ -12,6 +12,7 @@
 
 #include "h_minishell.h"
 
+//removed shlvl update
 void	env_import(t_env *env)
 {
 	t_shnode	*iter;
@@ -35,7 +36,6 @@ void	env_import(t_env *env)
 			prev = iter;
 		iter = next;
 	}
-	update_shell_lvl(env, 1);
 }
 
 pid_t	shell_fork(t_env *env)

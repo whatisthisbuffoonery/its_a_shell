@@ -6,7 +6,7 @@
 /*   By: dthoo <dthoo@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/14 07:48:47 by dthoo             #+#    #+#             */
-/*   Updated: 2026/06/14 07:48:47 by dthoo            ###   ########.fr       */
+/*   Updated: 2026/06/21 13:10:14 by dthoo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 int	pwd(t_env *env, int out)
 {
-
 	if (!env->pwd)
 		env->pwd = getcwd(NULL, 0);
 	if (env->pwd)
